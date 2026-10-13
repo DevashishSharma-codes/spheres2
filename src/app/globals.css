@@ -1,26 +1,106 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --purple: #7057D9;
+  --purple-light: #8E79E8;
+  --purple-dark: #573EBF;
+  --offwhite: #FCFCFA;
+  --grey: #DADADD;
+  --grey-light: #EDEDF0;
+  --graphite: #2A2A2E;
+  --graphite-dark: #19191C;
+  --black: #000000;
+  --white: #FFFFFF;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-purple: var(--purple);
+  --color-purple-light: var(--purple-light);
+  --color-purple-dark: var(--purple-dark);
+  --color-offwhite: var(--offwhite);
+  --color-grey: var(--grey);
+  --color-grey-light: var(--grey-light);
+  --color-graphite: var(--graphite);
+  --color-graphite-dark: var(--graphite-dark);
+  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Minimalist Base Styles */
+html {
+  scroll-behavior: smooth;
+  background-color: var(--offwhite);
+  color: var(--graphite);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--offwhite);
+  color: var(--graphite);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
+
+/* Vercel-Style Hairline Grid & Dots */
+.border-hairline {
+  border-color: #DADADD;
+}
+
+.bg-dot-grid {
+  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(42, 42, 46, 0.08) 1px, transparent 1px);
+}
+
+.bg-line-grid {
+  background-size: 48px 48px;
+  background-image: 
+    linear-gradient(to right, rgba(218, 218, 221, 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(218, 218, 221, 0.5) 1px, transparent 1px);
+}
+
+/* Clean Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--offwhite);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--grey);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--graphite);
+}
+
+/* Marquee & Mask Utilities (Reference Aesthetic) */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.mask-gradient-sides {
+  mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+
