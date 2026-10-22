@@ -1,28 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import FolderTabCard from "@/components/ui/FolderTabCard";
 import { CompanyStatisticsSection } from "@/components/about/CompanyStatisticsSection";
 
-const PHRASES = [
-  "WE LISTEN",
-  "WE DESIGN",
-  "WE DELIVER",
-  "EVERY STEP",
-  "SHAPED AROUND YOU",
-];
-
 export function AboutSection() {
-  const [activePhraseIdx, setActivePhraseIdx] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActivePhraseIdx((prev) => (prev + 1) % PHRASES.length);
-    }, 2200);
-    return () => clearInterval(timer);
-  }, []);
-
   return (
     <section 
       id="about" 
@@ -68,10 +49,6 @@ export function AboutSection() {
 
           {/* =========================================================
               2. THE MIDDLE PART: 4 SHARP FOLDER-TAB CARDS (CORE PILLARS)
-              - Strategic Technology
-              - Data-Driven Insights
-              - Business Enablement
-              - Intelligent Automation
               ========================================================= */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-5 lg:gap-6 items-center justify-items-center w-full my-auto py-2">
             
@@ -114,85 +91,7 @@ export function AboutSection() {
           </div>
 
           {/* =========================================================
-              PREVIOUS METRIC CARDS (KEPT COMMENTED TO BE PLACED JUST BELOW)
-              - 20+ — AI and Automation Modules
-              - 10+ — Smart Web Applications
-              - 5+ — Modern Mobile Apps
-              - 15+ — Backend AI Modules
-              =========================================================
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6 lg:gap-7 xl:gap-8 items-center justify-items-center w-full my-auto py-2">
-            <div className="w-full flex justify-center">
-              <FolderTabCard
-                title="AI & Automation"
-                subtitle="Automation Modules"
-                tagsCount="20+"
-                tagsLabel="Modules"
-                shotsCount="AI Systems"
-              />
-            </div>
-            <div className="w-full flex justify-center">
-              <FolderTabCard
-                title="Smart Web"
-                subtitle="Web Applications"
-                tagsCount="10+"
-                tagsLabel="Web Apps"
-                shotsCount="Fullstack"
-              />
-            </div>
-            <div className="w-full flex justify-center">
-              <FolderTabCard
-                title="Modern Mobile"
-                subtitle="Mobile Apps"
-                tagsCount="5+"
-                tagsLabel="Mobile Apps"
-                shotsCount="iOS & Android"
-              />
-            </div>
-            <div className="w-full flex justify-center">
-              <FolderTabCard
-                title="Backend AI"
-                subtitle="Backend AI Modules"
-                tagsCount="15+"
-                tagsLabel="Modules"
-                shotsCount="High Scale"
-              />
-            </div>
-          </div>
-          */}
-
-          {/* =========================================================
-              3. BOTTOM ROW: CENTERED IN THE MIDDLE WITH BREATHING ROOM
-                 - Kinetic cycling phrase ONE AT A TIME in BLACK
-                 - Concise Narrative Paragraph Text
-              ========================================================= */}
-          <div className="flex flex-col items-center text-center max-w-3xl mx-auto w-full pt-6 border-t border-black/10 gap-2.5">
-            {/* Cycling Kinetic Text: Strictly ONE at a time in BLACK */}
-            <div className="h-[40px] sm:h-[48px] lg:h-[52px] flex items-center justify-center overflow-hidden w-full">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activePhraseIdx}
-                  initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -12, filter: "blur(4px)" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-2xl sm:text-3xl lg:text-[38px] font-light tracking-[-0.04em] leading-none text-black select-none whitespace-nowrap"
-                >
-                  {PHRASES[activePhraseIdx]}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Concise Centered Narrative Paragraph */}
-            <p className="text-xs sm:text-sm lg:text-[14px] text-black/70 font-light leading-relaxed max-w-2xl">
-              At 21 Spheres, we empower organizations through advanced AI, automation, and modern engineering — built with precision, designed for scalability, and aligned with real business goals.
-            </p>
-          </div>
-
-          {/* =========================================================
-              4. COMPANY STATISTICS (INTEGRATED AS PART OF ABOUT US)
-              - 5+ Modern Mobile Apps
-              - 10+ Smart Web Applications
-              - 15+ Backend AI & 20+ Automation Modules
+              3. COMPANY STATISTICS (INTEGRATED AS PART OF ABOUT US)
               ========================================================= */}
           <CompanyStatisticsSection embedded />
 

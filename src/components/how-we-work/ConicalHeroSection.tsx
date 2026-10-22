@@ -147,35 +147,51 @@ const FRAGMENT_SHADER = `
 const EXACT_CONE_CLIP_PATH = 
   "polygon(120.5px 0, 120.5px 235.5px, 242.5px 235.5px, 242.5px 345px, 364.5px 345px, 364.5px 438px, 488.5px 438px, 488.5px 522px, 612.5px 522px, 612.5px 604px, 737.5px 604px, 737.5px 522px, 861.5px 522px, 861.5px 438px, 985.5px 438px, 985.5px 345px, 1107.5px 345px, 1107.5px 235.5px, 1229.5px 235.5px, 1229.5px 0)";
 
-// 4 Sprint Stages: Stage 1, Stage 2, Stage 3, Stage 4
+// 4 Sprint Stages: Stage 1, Stage 2, Stage 3, Stage 4 with clean, rich architecture data
 const SPRINT_STEPS = [
   {
     step: "01",
-    stageNum: "STAGE 1",
-    title: "Discovery & Wireframes",
-    text: "45–60 min discovery call, wireframes & detailed SRS specifications approved before coding.",
-    badge: "SPECIFICATIONS",
+    stageNum: "STAGE 01 // DISCOVERY & TOPOLOGY",
+    title: "Discovery, Wireframes & Systems Topology",
+    text: "Deep technical intake session, architectural feasibility analysis, and full interactive wireframes approved before coding.",
+    keyPoints: [
+      "45–60 min technical architecture & feasibility discovery",
+      "Interactive wireframes, UX journeys & click prototype",
+      "Strict SRS specification, data contracts & latency budgets",
+    ],
   },
   {
     step: "02",
-    stageNum: "STAGE 2",
-    title: "Zero-Bloat Tech Stack",
-    text: "Zero-bloat tech stack selection tailored for scale, maintainability & sub-50ms execution SLAs.",
-    badge: "ARCHITECTURE",
+    stageNum: "STAGE 02 // ARCHITECTURE & ENGINE",
+    title: "Zero-Bloat Tech Stack & Engine Design",
+    text: "Selecting bespoke runtimes tailored for high concurrency, deterministic execution, and sub-50ms P99 SLAs with zero legacy bloat.",
+    keyPoints: [
+      "Zero-bloat stack (Next.js 15, TypeScript, Rust, Python)",
+      "Distributed multi-agent logic loops & state graph",
+      "Sub-50ms hybrid vector search & streaming pipelines",
+    ],
   },
   {
     step: "03",
-    stageNum: "STAGE 3",
-    title: "Structured Sprints",
-    text: "Structured sprints with async CRM access, continuous feedback & full development transparency.",
-    badge: "SPRINTS & CRM",
+    stageNum: "STAGE 03 // SPRINTS & TACTILE UI",
+    title: "Structured Sprints & 120 FPS Interface Lab",
+    text: "High-velocity 14-day sprint cadences with asynchronous CRM access, continuous pull-request reviews, and tactile desktop-grade micro-interactions.",
+    keyPoints: [
+      "Bi-weekly sprint deliverables with live cloud staging",
+      "Direct client CRM access, Slack sync & 24h PR reviews",
+      "120 FPS fluid micro-interactions with zero layout shift",
+    ],
   },
   {
     step: "04",
-    stageNum: "STAGE 4",
-    title: "Security, Edge & Growth",
-    text: "Structured QA, security audits, cloud edge deployment & continuous post-launch growth support.",
-    badge: "FLEET & GROWTH",
+    stageNum: "STAGE 04 // HARDENING & FLEET",
+    title: "Security Audits, Edge Fleet & Handover",
+    text: "Rigorous automated penetration testing, zero-trust cloud edge hardening, and complete intellectual property handover with post-launch hypercare.",
+    keyPoints: [
+      "Automated OWASP security audits & zero-trust auth",
+      "Global multi-region edge deployment with sub-20ms CDN",
+      "100% repository IP handover + 30-day hypercare",
+    ],
   },
 ];
 
@@ -286,7 +302,7 @@ export function ConicalHeroSection() {
       </div>
 
       {/* 2. CENTERED CONICAL STAGE CONTAINER WITH ALL ELEMENTS AROUND IT (Exactly matching reference tars.pro) */}
-      <div className="relative w-full max-w-[1520px] mx-auto min-h-[580px] sm:min-h-[620px] lg:min-h-[620px] xl:min-h-[660px] px-4 sm:px-6 lg:px-8 xl:px-12">
+      <div className="relative w-full max-w-[1520px] mx-auto min-h-[560px] sm:min-h-[600px] lg:min-h-[620px] xl:min-h-[650px] px-4 sm:px-6 lg:px-8 xl:px-12">
         
         {/* Background Amphitheater (Clipped strictly to the stepped conical funnel and centered) */}
         <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 w-[1350px] h-[610px] scale-[0.46] sm:scale-[0.52] md:scale-[0.56] lg:scale-[0.56] xl:scale-[0.63] origin-top">
@@ -370,104 +386,120 @@ export function ConicalHeroSection() {
           </motion.div>
         </div>
 
-        {/* 3. STEPS POSITIONED IN THE LEFT AND RIGHT SPACE AROUND THE CONICAL FUNNEL (In Big Text, Pure Typography, Zero Cards) */}
+        {/* 3. STEPS POSITIONED IN THE LEFT AND RIGHT SPACE AROUND THE CONICAL FUNNEL (Larger typography, pills removed, space filled) */}
         
-        {/* LEFT FLANK: Steps 01 & 02 (Desktop lg+) */}
-        <div className="hidden lg:flex flex-col justify-between absolute left-4 lg:left-6 xl:left-12 top-4 bottom-14 w-[260px] lg:w-[280px] xl:w-[320px] z-30 pointer-events-auto text-left">
+        {/* LEFT FLANK: Step 01 at top left, Step 02 brought above to fill vertical space */}
+        <div className="hidden lg:flex flex-col absolute left-4 lg:left-6 xl:left-8 top-3 w-[270px] lg:w-[295px] xl:w-[325px] z-30 pointer-events-auto text-left gap-7 xl:gap-9">
           {/* Step 01 */}
-          <div className="flex flex-col">
+          <div className="flex flex-col max-w-[310px] xl:max-w-[330px]">
             <div className="flex items-baseline gap-2.5 mb-1.5">
-              <span className="text-3xl xl:text-4xl font-mono font-light text-[#7057D9] tracking-tight leading-none">
+              <span className="text-4xl xl:text-5xl font-mono font-light text-[#7057D9] tracking-tight leading-none">
                 {SPRINT_STEPS[0].step}
               </span>
               <span className="text-xs xl:text-sm font-mono tracking-widest uppercase text-black/60 font-semibold">
                 {SPRINT_STEPS[0].stageNum}
               </span>
             </div>
-            <h3 className="text-2xl xl:text-[30px] font-light tracking-[-0.03em] text-black leading-[1.15]">
+            <h3 className="text-lg xl:text-xl font-medium tracking-tight text-black leading-snug">
               {SPRINT_STEPS[0].title}
             </h3>
-            <p className="text-xs xl:text-sm font-light text-black/65 leading-relaxed mt-2 max-w-[300px]">
+            <p className="text-sm font-light text-black/75 leading-relaxed mt-1.5">
               {SPRINT_STEPS[0].text}
             </p>
-            <div className="mt-2.5 inline-flex items-center gap-1.5 text-[10px] xl:text-[11px] font-mono tracking-wider uppercase text-black/40">
-              <span className="w-1 h-1 rounded-full bg-[#7057D9]" />
-              <span>{SPRINT_STEPS[0].badge}</span>
-            </div>
+            <ul className="mt-2 space-y-1">
+              {SPRINT_STEPS[0].keyPoints.map((point, pIdx) => (
+                <li key={pIdx} className="flex items-start gap-1.5 text-xs xl:text-[13px] text-black/80 font-light leading-snug">
+                  <span className="text-[#7057D9] shrink-0 text-[9px] mt-0.5">✦</span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Step 02 */}
-          <div className="flex flex-col">
+          <div className="flex flex-col max-w-[310px] xl:max-w-[330px]">
             <div className="flex items-baseline gap-2.5 mb-1.5">
-              <span className="text-3xl xl:text-4xl font-mono font-light text-[#7057D9] tracking-tight leading-none">
+              <span className="text-4xl xl:text-5xl font-mono font-light text-[#7057D9] tracking-tight leading-none">
                 {SPRINT_STEPS[1].step}
               </span>
               <span className="text-xs xl:text-sm font-mono tracking-widest uppercase text-black/60 font-semibold">
                 {SPRINT_STEPS[1].stageNum}
               </span>
             </div>
-            <h3 className="text-2xl xl:text-[30px] font-light tracking-[-0.03em] text-black leading-[1.15]">
+            <h3 className="text-lg xl:text-xl font-medium tracking-tight text-black leading-snug">
               {SPRINT_STEPS[1].title}
             </h3>
-            <p className="text-xs xl:text-sm font-light text-black/65 leading-relaxed mt-2 max-w-[300px]">
+            <p className="text-sm font-light text-black/75 leading-relaxed mt-1.5">
               {SPRINT_STEPS[1].text}
             </p>
-            <div className="mt-2.5 inline-flex items-center gap-1.5 text-[10px] xl:text-[11px] font-mono tracking-wider uppercase text-black/40">
-              <span className="w-1 h-1 rounded-full bg-[#7057D9]" />
-              <span>{SPRINT_STEPS[1].badge}</span>
-            </div>
+            <ul className="mt-2 space-y-1">
+              {SPRINT_STEPS[1].keyPoints.map((point, pIdx) => (
+                <li key={pIdx} className="flex items-start gap-1.5 text-xs xl:text-[13px] text-black/80 font-light leading-snug">
+                  <span className="text-[#7057D9] shrink-0 text-[9px] mt-0.5">✦</span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        {/* RIGHT FLANK: Steps 03 & 04 (Desktop lg+) */}
-        <div className="hidden lg:flex flex-col justify-between absolute right-4 lg:right-6 xl:right-12 top-4 bottom-14 w-[260px] lg:w-[280px] xl:w-[320px] z-30 pointer-events-auto text-left">
+        {/* RIGHT FLANK: Step 03 at top right, Step 04 brought above to fill vertical space */}
+        <div className="hidden lg:flex flex-col absolute right-4 lg:right-6 xl:right-8 top-3 w-[270px] lg:w-[295px] xl:w-[325px] z-30 pointer-events-auto text-left gap-7 xl:gap-9">
           {/* Step 03 */}
-          <div className="flex flex-col">
+          <div className="flex flex-col max-w-[310px] xl:max-w-[330px]">
             <div className="flex items-baseline gap-2.5 mb-1.5">
-              <span className="text-3xl xl:text-4xl font-mono font-light text-[#7057D9] tracking-tight leading-none">
+              <span className="text-4xl xl:text-5xl font-mono font-light text-[#7057D9] tracking-tight leading-none">
                 {SPRINT_STEPS[2].step}
               </span>
               <span className="text-xs xl:text-sm font-mono tracking-widest uppercase text-black/60 font-semibold">
                 {SPRINT_STEPS[2].stageNum}
               </span>
             </div>
-            <h3 className="text-2xl xl:text-[30px] font-light tracking-[-0.03em] text-black leading-[1.15]">
+            <h3 className="text-lg xl:text-xl font-medium tracking-tight text-black leading-snug">
               {SPRINT_STEPS[2].title}
             </h3>
-            <p className="text-xs xl:text-sm font-light text-black/65 leading-relaxed mt-2 max-w-[300px]">
+            <p className="text-sm font-light text-black/75 leading-relaxed mt-1.5">
               {SPRINT_STEPS[2].text}
             </p>
-            <div className="mt-2.5 inline-flex items-center gap-1.5 text-[10px] xl:text-[11px] font-mono tracking-wider uppercase text-black/40">
-              <span className="w-1 h-1 rounded-full bg-[#7057D9]" />
-              <span>{SPRINT_STEPS[2].badge}</span>
-            </div>
+            <ul className="mt-2 space-y-1">
+              {SPRINT_STEPS[2].keyPoints.map((point, pIdx) => (
+                <li key={pIdx} className="flex items-start gap-1.5 text-xs xl:text-[13px] text-black/80 font-light leading-snug">
+                  <span className="text-[#7057D9] shrink-0 text-[9px] mt-0.5">✦</span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Step 04 */}
-          <div className="flex flex-col">
+          <div className="flex flex-col max-w-[310px] xl:max-w-[330px]">
             <div className="flex items-baseline gap-2.5 mb-1.5">
-              <span className="text-3xl xl:text-4xl font-mono font-light text-[#7057D9] tracking-tight leading-none">
+              <span className="text-4xl xl:text-5xl font-mono font-light text-[#7057D9] tracking-tight leading-none">
                 {SPRINT_STEPS[3].step}
               </span>
               <span className="text-xs xl:text-sm font-mono tracking-widest uppercase text-black/60 font-semibold">
                 {SPRINT_STEPS[3].stageNum}
               </span>
             </div>
-            <h3 className="text-2xl xl:text-[30px] font-light tracking-[-0.03em] text-black leading-[1.15]">
+            <h3 className="text-lg xl:text-xl font-medium tracking-tight text-black leading-snug">
               {SPRINT_STEPS[3].title}
             </h3>
-            <p className="text-xs xl:text-sm font-light text-black/65 leading-relaxed mt-2 max-w-[300px]">
+            <p className="text-sm font-light text-black/75 leading-relaxed mt-1.5">
               {SPRINT_STEPS[3].text}
             </p>
-            <div className="mt-2.5 inline-flex items-center gap-1.5 text-[10px] xl:text-[11px] font-mono tracking-wider uppercase text-black/40">
-              <span className="w-1 h-1 rounded-full bg-[#7057D9]" />
-              <span>{SPRINT_STEPS[3].badge}</span>
-            </div>
+            <ul className="mt-2 space-y-1">
+              {SPRINT_STEPS[3].keyPoints.map((point, pIdx) => (
+                <li key={pIdx} className="flex items-start gap-1.5 text-xs xl:text-[13px] text-black/80 font-light leading-snug">
+                  <span className="text-[#7057D9] shrink-0 text-[9px] mt-0.5">✦</span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
         {/* CENTER BOTTOM: Start Now CTA directly below the cone tip */}
-        <div className="hidden lg:flex flex-col items-center justify-center gap-2.5 absolute left-1/2 -translate-x-1/2 bottom-2 z-30 pointer-events-auto">
+        <div className="hidden lg:flex flex-col items-center justify-center gap-2 absolute left-1/2 -translate-x-1/2 bottom-2 z-30 pointer-events-auto">
           <Link
             href="/contact"
             className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#18181B] hover:bg-[#7057D9] text-white text-xs sm:text-sm font-medium tracking-wide transition-all shadow-md hover:shadow-lg active:scale-95 cursor-pointer group"
@@ -483,7 +515,7 @@ export function ConicalHeroSection() {
           </a>
         </div>
 
-        {/* MOBILE & TABLET LAYOUT (< 1024px): 4 Steps in big text below the scaled cone (No cards) */}
+        {/* MOBILE & TABLET LAYOUT (< 1024px): 4 Steps in big text below the scaled cone */}
         <div className="lg:hidden relative z-30 w-full px-6 pt-[320px] sm:pt-[360px] pb-10 flex flex-col gap-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-left">
             {SPRINT_STEPS.map((step) => (
@@ -499,12 +531,17 @@ export function ConicalHeroSection() {
                 <h3 className="text-xl sm:text-2xl font-light tracking-tight text-black leading-snug">
                   {step.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-black/65 font-light leading-relaxed mt-2">
+                <p className="text-xs sm:text-sm text-black/70 font-light leading-relaxed mt-2">
                   {step.text}
                 </p>
-                <div className="mt-2.5 text-[10px] font-mono uppercase tracking-wider text-black/40">
-                  {step.badge}
-                </div>
+                <ul className="mt-2 space-y-1">
+                  {step.keyPoints.map((point, pIdx) => (
+                    <li key={pIdx} className="flex items-start gap-1.5 text-xs text-black/75 font-light leading-snug">
+                      <span className="text-[#7057D9] mt-0.5 shrink-0 text-[9px]">✦</span>
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
