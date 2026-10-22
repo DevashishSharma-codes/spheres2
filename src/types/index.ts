@@ -4,6 +4,13 @@ export interface NavItem {
   description?: string;
 }
 
+export interface StackedPillItem {
+  iconType: string;
+  iconBg: string;
+  title: string;
+  subtitle: string;
+}
+
 export interface ServiceItem {
   id: string;
   number: string;
@@ -12,6 +19,10 @@ export interface ServiceItem {
   description: string;
   features: string[];
   tags: string[];
+  category?: string;
+  icon?: string;
+  metric?: string;
+  pills?: StackedPillItem[];
 }
 
 export interface WorkStepItem {

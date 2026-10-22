@@ -806,25 +806,27 @@ export function CompanyStatisticsSection({ embedded = false }: { embedded?: bool
 
   if (embedded) {
     return (
-      <div id="statistics" className="w-full pt-14 sm:pt-18 border-t border-black/10">
-        {/* =========================================================
-            COMPANY STATISTICS HEADER WITHIN ABOUT US
-            ========================================================= */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-black/10 mb-10 sm:mb-12">
-          <div>
-            <h3 className="text-3xl sm:text-4xl md:text-[44px] font-light tracking-[-0.03em] leading-tight text-black">
-              Company Statistics &amp; Deliverables
-            </h3>
+      <div 
+        id="statistics" 
+        className="relative z-10 w-full pt-10 sm:pt-14 pb-16 sm:pb-24 lg:pb-28 text-black"
+      >
+        <div className="w-full max-w-[1480px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-16">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-10 border-b border-black/10 mb-12 sm:mb-16">
+            <div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light tracking-[-0.04em] leading-[1.05] text-black">
+                Company Statistics &amp; Deliverables
+              </h2>
+            </div>
+
+            <div className="max-w-md text-left md:text-right">
+              <p className="text-sm sm:text-base font-light text-black/75 leading-relaxed">
+                Empirical deployment metrics across autonomous AI agents, enterprise web applications, and resilient mobile architectures.
+              </p>
+            </div>
           </div>
 
-          <div className="max-w-md text-left md:text-right">
-            <p className="text-sm sm:text-base font-light text-black/75 leading-relaxed">
-              Empirical deployment metrics across autonomous AI agents, enterprise web applications, and resilient mobile architectures.
-            </p>
-          </div>
+          {bentoGrid}
         </div>
-
-        {bentoGrid}
       </div>
     );
   }
@@ -832,12 +834,27 @@ export function CompanyStatisticsSection({ embedded = false }: { embedded?: bool
   return (
     <section 
       id="statistics" 
-      className="relative z-0 overflow-hidden bg-white border-b border-[#DADADD]/70 py-16 sm:py-24 lg:py-28"
+      className="relative z-0 overflow-hidden text-black border-b border-[#DADADD]/70 py-16 sm:py-24 lg:py-28"
+      style={{
+        background: `
+          /* 1. Luminous glowing white core in the center (matching reference photo) */
+          radial-gradient(ellipse 70% 65% at 50% 40%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.90) 30%, rgba(246, 240, 255, 0.65) 60%, transparent 88%),
+
+          /* 2. Left flank saturated purple glow from photo */
+          radial-gradient(ellipse 55% 85% at 0% 40%, #8E6BF7 0%, #764CE8 42%, rgba(118, 76, 232, 0.35) 75%, transparent 100%),
+
+          /* 3. Right flank saturated purple glow from photo */
+          radial-gradient(ellipse 55% 85% at 100% 40%, #8E6BF7 0%, #764CE8 42%, rgba(118, 76, 232, 0.35) 75%, transparent 100%),
+
+          /* 4. Smooth base linear gradient: soft lilac and luminous white, no horizontal bars */
+          linear-gradient(180deg, #FFFFFF 0%, #FAF7FF 25%, #F4EEFF 50%, #FAF7FF 80%, #FFFFFF 100%)
+        `,
+      }}
     >
       {/* Diffused ambient background glows */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full blur-[140px] bg-[#8E79E8]/06" />
-        <div className="absolute bottom-1/4 right-1/4 w-[550px] h-[550px] rounded-full blur-[120px] bg-[#7057D9]/05" />
+        <div className="absolute top-1/4 left-0 w-[550px] h-[550px] rounded-full blur-[130px] bg-[#8E6BF7]/15" />
+        <div className="absolute top-1/4 right-0 w-[550px] h-[550px] rounded-full blur-[130px] bg-[#764CE8]/15" />
       </div>
 
       <div className="relative z-10 w-full max-w-[1480px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-16">
