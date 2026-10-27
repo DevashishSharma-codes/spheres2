@@ -10,24 +10,29 @@ import { Menu, X, ChevronDown, ChevronRight, ArrowRight } from "lucide-react";
 
 const ABOUT_LINKS = [
   {
-    title: "Strategic Technology",
-    tag: "Modernization",
-    href: "/about#strategic-technology",
+    title: "Seamless Integration",
+    tag: "Effortless Connectivity",
+    href: "/about#seamless-integration",
   },
   {
-    title: "Data-Driven Insights",
-    tag: "Intelligence",
-    href: "/about#data-driven-insights",
+    title: "Exceptional Security",
+    tag: "Deterministic Guardrails",
+    href: "/about#exceptional-security",
   },
   {
-    title: "Business Enablement",
-    tag: "Scalable Growth",
-    href: "/about#business-enablement",
+    title: "High Performance",
+    tag: "Sub-Second Latency",
+    href: "/about#high-performance",
   },
   {
     title: "Intelligent Automation",
-    tag: "Workflows",
+    tag: "Self-Healing Workflows",
     href: "/about#intelligent-automation",
+  },
+  {
+    title: "Multi-Agent Swarms",
+    tag: "Autonomous Swarms",
+    href: "/about#multi-agent-swarms",
   },
   {
     title: "Production Track Record & Metrics",
@@ -371,10 +376,10 @@ export function Navbar() {
             })}
           </div>
 
-          {/* Mobile About Us 4 Pillars Sub-Links */}
+          {/* Mobile About Us 5 Pillars Sub-Links */}
           <div className="pt-3 border-t border-[#DADADD]/70 bg-[#FAF9F7] p-3">
             <span className="text-[10px] font-mono uppercase tracking-wider text-[#7057D9] font-medium block mb-2">
-              ABOUT US &bull; 4 PILLARS
+              ABOUT US &bull; 5 CORE PILLARS
             </span>
             <div className="flex flex-col divide-y divide-black/5">
               {ABOUT_LINKS.map((item) => (

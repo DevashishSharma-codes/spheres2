@@ -48,13 +48,11 @@ function GlassFolderTabServiceCard({
   service,
   isMobile,
   isHovered,
-  isOtherHovered,
   onClick,
 }: {
   service: ServiceItem;
   isMobile: boolean;
   isHovered: boolean;
-  isOtherHovered: boolean;
   onClick: () => void;
 }) {
   const Icon = SERVICE_ICON_MAP[service.icon || "Cpu"] || Cpu;
@@ -79,25 +77,54 @@ function GlassFolderTabServiceCard({
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
       className={`
-        group relative w-full h-[390px] sm:h-[410px] rounded-2xl
-        transition-all duration-300 ease-out p-2 select-none flex flex-col cursor-pointer
+        group relative w-full h-[390px] sm:h-[410px] rounded-2xl overflow-hidden
+        transition-all duration-300 ease-out p-[1.5px] select-none flex flex-col cursor-pointer
         ${
           isHovered
-            ? "bg-white/[0.12] backdrop-blur-2xl border-white/40 shadow-[0_20px_45px_rgba(0,0,0,0.45)]"
-            : isOtherHovered
-            ? "bg-white/[0.02] backdrop-blur-md border-white/10 shadow-none"
-            : "bg-white/[0.08] hover:bg-white/[0.11] backdrop-blur-2xl border-white/20 hover:border-white/35 shadow-[0_12px_32px_rgba(0,0,0,0.35)]"
+            ? "shadow-[0_0_35px_rgba(168,85,247,0.35),0_20px_50px_rgba(0,0,0,0.55)]"
+            : "shadow-[0_12px_32px_rgba(0,0,0,0.35)]"
         }
       `}
     >
-      {/* Inner Canvas */}
-      <div className="relative w-full h-full rounded-xl overflow-hidden flex flex-col justify-between">
-        
-        {/* ── 1. Animated Mesh Aurora Gradient (Lilac & Purple Theme from About Us) ── */}
-        <div className={`absolute inset-0 overflow-hidden pointer-events-none transition-opacity duration-300 ${
-          isOtherHovered ? "opacity-15" : "opacity-85"
-        }`}>
-          <div className="absolute inset-0 bg-[#090715]/40" />
+      {/* 1. Static Border Outline (visible when not hovered) */}
+      <div 
+        className={`absolute inset-0 rounded-2xl border border-white/20 transition-opacity duration-300 pointer-events-none ${
+          isHovered ? "opacity-0" : "opacity-100"
+        }`} 
+      />
+
+      {/* 2. Soft Glowing Halo following the minimal light strip */}
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 2.8, ease: "linear" }}
+        className={`absolute -inset-[150%] pointer-events-none filter blur-[8px] transition-opacity duration-300 ${
+          isHovered ? "opacity-75" : "opacity-0"
+        }`}
+        style={{
+          background: "conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 320deg, rgba(147, 51, 234, 0) 325deg, #7E22CE 338deg, #A855F7 348deg, #FFFFFF 355deg, rgba(192, 132, 252, 0) 360deg)",
+        }}
+      />
+
+      {/* 3. Crisp Minimal Moving Light Strip around the perimeter */}
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 2.8, ease: "linear" }}
+        className={`absolute -inset-[150%] pointer-events-none transition-opacity duration-300 ${
+          isHovered ? "opacity-100" : "opacity-0"
+        }`}
+        style={{
+          background: "conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 325deg, rgba(126, 34, 206, 0) 328deg, #7E22CE 338deg, #A855F7 348deg, #FFFFFF 356deg, rgba(233, 213, 255, 0) 360deg)",
+        }}
+      />
+
+      {/* 4. Card Body: Covers the center so only the 1.5px minimal moving light strip is visible */}
+      <div className="relative w-full h-full rounded-[14.5px] p-2 bg-[#0A0718] backdrop-blur-2xl flex flex-col justify-between overflow-hidden">
+        {/* Inner Canvas */}
+        <div className="relative w-full h-full rounded-xl overflow-hidden flex flex-col justify-between">
+          
+          {/* ── 1. Animated Mesh Aurora Gradient (Lilac & Purple Theme from About Us) ── */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-85 transition-opacity duration-300">
+            <div className="absolute inset-0 bg-[#090715]/40" />
 
           {/* Continuous Swirling Mesh Container */}
           <motion.div
@@ -160,21 +187,21 @@ function GlassFolderTabServiceCard({
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-white/10 pointer-events-none" />
         </div>
 
-        {/* ── 2. Top Bar: Glassy Number Badge at Top Left & Glass Action Button (↗) at Top Right ── */}
-        <div className={`absolute z-20 top-3 left-3 sm:top-3.5 sm:left-3.5 flex items-center pointer-events-none transition-opacity duration-300 ${
-          isOtherHovered ? "opacity-20" : "opacity-100"
-        }`}>
-          <div className="h-9 sm:h-10 px-3 rounded-xl bg-white/15 backdrop-blur-md border border-white/25 text-white font-mono text-xs sm:text-[13px] font-semibold flex items-center justify-center tracking-wider shadow-sm">
+        {/* ── 2. Top Bar: Glassy Number Badge at Top Left & Action Button (↗) at Top Right ── */}
+        <div className="absolute z-20 top-3 left-3 sm:top-3.5 sm:left-3.5 flex items-center pointer-events-none">
+          <div className={`h-9 sm:h-10 px-3 rounded-xl backdrop-blur-md border text-white font-mono text-xs sm:text-[13px] font-semibold flex items-center justify-center tracking-wider shadow-sm transition-all duration-300 ${
+            isHovered
+              ? "bg-white/25 border-[#C084FC]/70 text-white shadow-[0_0_12px_rgba(168,85,247,0.35)]"
+              : "bg-white/15 border-white/25 text-white"
+          }`}>
             <span>{service.number}</span>
           </div>
         </div>
 
-        <div className={`absolute z-20 top-3 right-3 sm:top-3.5 sm:right-3.5 transition-opacity duration-300 ${
-          isOtherHovered ? "opacity-20" : "opacity-100"
-        }`}>
+        <div className="absolute z-20 top-3 right-3 sm:top-3.5 sm:right-3.5">
           <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl backdrop-blur-md border transition-all shadow-sm flex items-center justify-center ${
             isHovered
-              ? "bg-white/25 border-white/40 text-white"
+              ? "bg-[#7C3AED] border-white/60 text-white shadow-[0_0_16px_rgba(147,51,234,0.5)] scale-105"
               : "bg-white/15 hover:bg-white/25 border-white/25 text-white"
           }`}>
             <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -188,9 +215,7 @@ function GlassFolderTabServiceCard({
             <svg
               viewBox="0 0 380 240"
               preserveAspectRatio="none"
-              className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${
-                isOtherHovered ? "opacity-25" : "opacity-100"
-              }`}
+              className="absolute inset-0 w-full h-full opacity-100 transition-opacity duration-300"
             >
               <defs>
                 <linearGradient id={`glass-tab-${service.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
@@ -215,7 +240,7 @@ function GlassFolderTabServiceCard({
                 stroke="none"
               />
 
-              {/* Seamless Continuous Inner Line with smooth corner arcs matching card curvature */}
+              {/* Seamless Continuous Inner Line with smooth corner arcs matching card curvature & glowing outline on hover */}
               <path
                 d="M 0.75 0.75
                    L 225 0.75
@@ -227,87 +252,63 @@ function GlassFolderTabServiceCard({
                    A 15 11 0 0 1 0.75 228
                    Z"
                 fill="none"
-                stroke="rgba(255, 255, 255, 0.38)"
-                strokeWidth="1.2"
+                stroke={isHovered ? "rgba(216, 180, 254, 0.95)" : "rgba(255, 255, 255, 0.38)"}
+                strokeWidth={isHovered ? "1.6" : "1.2"}
                 vectorEffect="non-scaling-stroke"
                 strokeLinejoin="round"
                 strokeLinecap="round"
+                className="transition-all duration-300"
               />
             </svg>
 
-            {/* Content inside the Transparent Glass Folder Flap */}
+            {/* Content inside the Transparent Glass Folder Flap (Always Visible, No Skeletons) */}
             <div className="relative z-20 w-full h-full flex flex-col justify-between p-3.5 sm:p-4.5 pointer-events-auto">
               
               {/* Upper Left Tab Shelf (0 to 225px): Service Icon */}
               <div className="flex items-center h-8">
                 <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg border flex items-center justify-center shrink-0 shadow-xs transition-all ${
-                  isOtherHovered 
-                    ? "bg-white/5 border-white/10 text-white/30"
-                    : isHovered
-                    ? "bg-white/30 border-white/50 text-white scale-105"
+                  isHovered
+                    ? "bg-[#7C3AED]/40 border-[#C084FC]/60 text-white scale-105 shadow-[0_0_12px_rgba(168,85,247,0.35)]"
                     : "bg-white/20 border-white/30 text-white"
                 }`}>
                   <Icon className="w-4 h-4" />
                 </div>
               </div>
 
-              {/* Conditional Content: Glass Skeleton State vs Full Content */}
-              {isOtherHovered ? (
-                /* ── Transparent Glass Skeleton View (matching user's reference photo) ── */
-                <div className="flex-1 flex flex-col justify-between pt-2.5 transition-opacity duration-300">
-                  <div className="space-y-3">
-                    {/* Skeleton Title Bar */}
-                    <div className="h-4 w-3/4 rounded-full bg-white/20 animate-pulse" />
-                    
-                    {/* Skeleton Description Bars */}
-                    <div className="space-y-2 pt-1">
-                      <div className="h-2.5 w-full rounded-full bg-white/10" />
-                      <div className="h-2.5 w-5/6 rounded-full bg-white/10" />
-                      <div className="h-2.5 w-1/2 rounded-full bg-white/10" />
-                    </div>
-                  </div>
-
-                  {/* Skeleton Footer Bar */}
-                  <div className="pt-2.5 border-t border-white/5 flex items-center justify-end">
-                    <div className="h-3 w-16 rounded-full bg-white/10" />
-                  </div>
+              {/* Always Normal Full View with Clear Typography */}
+              <div className="flex-1 flex flex-col justify-between pt-2">
+                <div>
+                  {/* Full Heading */}
+                  <h3 className={`font-semibold text-white text-[16px] sm:text-[17.5px] tracking-tight leading-snug mb-1.5 transition-colors ${
+                    isHovered ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" : "text-white"
+                  }`}>
+                    {service.title}
+                  </h3>
+                  
+                  {/* Narrative & Description */}
+                  <p className="text-[11.5px] sm:text-[12.5px] font-light text-white/80 leading-relaxed line-clamp-3">
+                    {service.description || service.headline}
+                  </p>
                 </div>
-              ) : (
-                /* ── Active / Normal Full View ── */
-                <div className="flex-1 flex flex-col justify-between pt-2 transition-opacity duration-300">
-                  <div>
-                    {/* Full Heading without any ellipsis */}
-                    <h3 className={`font-semibold text-white text-[16px] sm:text-[17.5px] tracking-tight leading-snug mb-1.5 transition-colors ${
-                      isHovered ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" : "text-white"
-                    }`}>
-                      {service.title}
-                    </h3>
-                    
-                    {/* Narrative & Description */}
-                    <p className="text-[11.5px] sm:text-[12.5px] font-light text-white/80 leading-relaxed line-clamp-3">
-                      {service.description || service.headline}
-                    </p>
-                  </div>
 
-                  {/* Footer Action Row: Just SPECS and arrow for navigation */}
-                  <div className="pt-2.5 border-t border-white/10 flex items-center justify-end text-[11px] font-mono">
-                    <span className={`flex items-center gap-1.5 font-medium transition-colors ${
-                      isHovered ? "text-white" : "text-[#C4B5FD] group-hover:text-white"
-                    }`}>
-                      <span>{isMobile ? "SIMULATOR" : "SPECS"}</span>
-                      <span className="group-hover:translate-x-1 transition-transform">→</span>
-                    </span>
-                  </div>
+                {/* Footer Action Row: SPECS or SIMULATOR and arrow for navigation */}
+                <div className="pt-2.5 border-t border-white/10 flex items-center justify-end text-[11px] font-mono">
+                  <span className={`flex items-center gap-1.5 font-medium transition-colors ${
+                    isHovered ? "text-white" : "text-[#C4B5FD] group-hover:text-white"
+                  }`}>
+                    <span>{isMobile ? "SIMULATOR" : "SPECS"}</span>
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </span>
                 </div>
-              )}
+              </div>
 
             </div>
           </div>
         </div>
-
       </div>
     </div>
-  );
+  </div>
+);
 }
 
 export function AllServicesCatalog({
@@ -341,13 +342,7 @@ export function AllServicesCatalog({
   return (
     <section 
       id="all-services" 
-      className="relative z-10 py-20 sm:py-28 overflow-hidden bg-[#03020A] text-white border-t border-white/10"
-      style={{
-        background: `
-          radial-gradient(ellipse 100% 60% at 50% 0%, rgba(107, 60, 235, 0.25) 0%, transparent 60%),
-          linear-gradient(180deg, #03020A 0%, #060515 50%, #03020A 100%)
-        `,
-      }}
+      className="relative z-10 pt-4 pb-20 sm:pb-28 overflow-hidden bg-transparent text-white"
     >
       <Container>
         {/* =========================================================
@@ -390,16 +385,15 @@ export function AllServicesCatalog({
         </div>
 
         {/* =========================================================
-            GRID: ALL 10 SERVICE CARDS (SPOTLIGHT & SKELETON INTERACTION)
+            GRID: ALL 10 SERVICE CARDS (NORMAL GLOWING OUTLINE HIGHLIGHT)
             ========================================================= */}
         <div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-6 items-stretch"
           onMouseLeave={() => setHoveredId(null)}
         >
-          {filteredServices.map((service, idx) => {
+          {filteredServices.map((service) => {
             const isMobile = service.id === "mobile-application-development";
             const isHovered = hoveredId === service.id;
-            const isOtherHovered = hoveredId !== null && !isHovered;
 
             return (
               <motion.div
@@ -409,15 +403,15 @@ export function AllServicesCatalog({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 animate={{
-                  scale: isHovered ? 1.05 : isOtherHovered ? 0.96 : 1,
-                  y: isHovered ? -12 : 0,
-                  zIndex: isHovered ? 30 : 10,
-                  opacity: isOtherHovered ? 0.45 : 1,
+                  scale: isHovered ? 1.02 : 1,
+                  y: isHovered ? -6 : 0,
+                  zIndex: isHovered ? 20 : 1,
+                  opacity: 1,
                 }}
                 transition={{
                   type: "spring",
-                  stiffness: 380,
-                  damping: 28,
+                  stiffness: 400,
+                  damping: 26,
                 }}
                 onMouseEnter={() => setHoveredId(service.id)}
                 className="relative"
@@ -426,7 +420,6 @@ export function AllServicesCatalog({
                   service={service}
                   isMobile={isMobile}
                   isHovered={isHovered}
-                  isOtherHovered={isOtherHovered}
                   onClick={() => {
                     if (isMobile) {
                       onOpenMobileSimulator();

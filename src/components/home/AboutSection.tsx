@@ -188,6 +188,24 @@ export function AboutSection() {
     return () => clearInterval(interval);
   }, [isHovered, selectedCard, handleNext]);
 
+  // Handle URL hash navigation (e.g. from navbar clicks) to focus targeted card
+  useEffect(() => {
+    const handleHash = () => {
+      if (typeof window === "undefined") return;
+      const hash = window.location.hash.replace("#", "");
+      if (!hash) return;
+      const foundIdx = BASE_CARDS.findIndex((c) => c.id === hash);
+      if (foundIdx !== -1) {
+        setWithTransition(true);
+        setCurrentIndex(baseCount + foundIdx);
+      }
+    };
+
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, [baseCount]);
+
   // Calculate track position to center active card horizontally
   const updateTrackPosition = useCallback(() => {
     if (!containerRef.current) return;
@@ -267,7 +285,7 @@ export function AboutSection() {
                 OUR STORY
               </span>
 
-              <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-bold tracking-tight text-[#111114] leading-[1.15]">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light tracking-[-0.04em] leading-none text-[#111114] select-none">
                 About Us
               </h2>
 
@@ -332,7 +350,7 @@ export function AboutSection() {
                   return (
                     <div
                       key={`${card.id}-${index}`}
-                      id={card.id}
+                      id={index >= baseCount && index < baseCount * 2 ? card.id : undefined}
                       onClick={() => {
                         if (isActive) {
                           setSelectedCard(card);
@@ -378,13 +396,13 @@ export function AboutSection() {
                             <card.icon className="w-5 h-5 text-[#5B3299]" />
                           </div>
 
-                          {/* BOTTOM: Mac UI font title, description, and bottom row with pill badge and arrow */}
+                          {/* BOTTOM: Signature font title, description, and bottom row with pill badge and arrow */}
                           <div className="relative z-10 px-4 sm:px-5 pt-1 pb-4 flex flex-col justify-between flex-1">
                             <div className="flex flex-col">
-                              <h3 className="font-sans font-bold text-[18px] sm:text-[19px] lg:text-[20px] text-[#180E2E] tracking-tight leading-[1.2]">
+                              <h3 className="font-light tracking-[-0.035em] text-[18px] sm:text-[19px] lg:text-[20px] text-[#180E2E] leading-[1.2]">
                                 {card.title}
                               </h3>
-                              <p className="font-sans font-normal text-[11px] sm:text-[11.5px] text-[#382E4F]/85 leading-relaxed mt-1.5 line-clamp-2">
+                              <p className="font-light text-[11px] sm:text-[11.5px] text-[#382E4F]/85 tracking-[-0.01em] leading-relaxed mt-1.5 line-clamp-2">
                                 {card.description}
                               </p>
                             </div>
@@ -397,7 +415,7 @@ export function AboutSection() {
                               }}
                               className="mt-auto w-full px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-white/90 shadow-[0_4px_14px_rgba(130,120,165,0.2)] flex items-center justify-between group/pill hover:bg-white hover:shadow-[0_6px_18px_rgba(130,120,165,0.26)] transition-all duration-300 cursor-pointer"
                             >
-                              <span className="font-sans font-semibold text-[10.5px] sm:text-[11px] text-[#2B1F48] tracking-tight pl-1">
+                              <span className="font-normal text-[10.5px] sm:text-[11px] text-[#2B1F48] tracking-[-0.02em] pl-1">
                                 {card.pill}
                               </span>
                               <div className="w-6.5 h-6.5 rounded-full bg-[#180E2E] text-white flex items-center justify-center shadow-xs group-hover/pill:scale-105 group-hover/pill:bg-[#341F5E] transition-all">
@@ -435,10 +453,10 @@ export function AboutSection() {
                           {/* BOTTOM: Content */}
                           <div className="relative z-10 px-3.5 sm:px-4 pt-1 pb-3.5 flex flex-col justify-between flex-1">
                             <div className="flex flex-col">
-                              <h4 className="font-sans font-bold text-[16px] sm:text-[17px] text-[#180E2E] tracking-tight leading-[1.2]">
+                              <h4 className="font-light tracking-[-0.035em] text-[16px] sm:text-[17px] text-[#180E2E] leading-[1.2]">
                                 {card.title}
                               </h4>
-                              <p className="font-sans font-normal text-[10.5px] sm:text-[11px] text-[#382E4F]/85 leading-relaxed mt-1 line-clamp-2">
+                              <p className="font-light text-[10.5px] sm:text-[11px] text-[#382E4F]/85 tracking-[-0.01em] leading-relaxed mt-1 line-clamp-2">
                                 {card.description}
                               </p>
                             </div>
@@ -451,7 +469,7 @@ export function AboutSection() {
                               }}
                               className="mt-auto w-full px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-white/80 shadow-[0_3px_10px_rgba(130,120,165,0.16)] flex items-center justify-between cursor-pointer hover:bg-white transition-all"
                             >
-                              <span className="font-sans font-semibold text-[9.5px] sm:text-[10px] text-[#2B1F48] tracking-tight pl-0.5">
+                              <span className="font-normal text-[9.5px] sm:text-[10px] text-[#2B1F48] tracking-[-0.02em] pl-0.5">
                                 {card.pill}
                               </span>
                               <div className="w-5.5 h-5.5 rounded-full bg-[#180E2E] text-white flex items-center justify-center shadow-xs">
@@ -508,9 +526,6 @@ export function AboutSection() {
             <div 
               className="relative w-full max-w-[860px] bg-white rounded-[26px] sm:rounded-[30px] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.45)] flex flex-col md:flex-row border border-black/5"
               onClick={(e) => e.stopPropagation()}
-              style={{
-                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif'
-              }}
             >
               {/* Left 48%: Full Photo with "← Back" pill button */}
               <div className="relative w-full md:w-[48%] min-h-[260px] sm:min-h-[340px] md:min-h-[460px] overflow-hidden bg-slate-100">
@@ -526,14 +541,14 @@ export function AboutSection() {
                 {/* Gradient Pill "← Back" Button (Gradient of Purple and White) */}
                 <button
                   onClick={() => setSelectedCard(null)}
-                  className="absolute top-4 left-4 sm:top-5 sm:left-5 z-20 inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-[13px] font-bold shadow-[0_4px_18px_rgba(94,46,229,0.38)] border border-white/60 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-sm group/back"
+                  className="absolute top-4 left-4 sm:top-5 sm:left-5 z-20 inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-[13px] font-medium shadow-[0_4px_18px_rgba(94,46,229,0.38)] border border-white/60 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-sm group/back"
                   style={{
                     background: "linear-gradient(115deg, #4C1D95 0%, #7C3AED 40%, #DDD6FE 75%, #FFFFFF 100%)",
                     color: "#FFFFFF",
                   }}
                 >
                   <ArrowLeft className="w-4 h-4 stroke-[2.5] text-white drop-shadow-[0_1px_2px_rgba(26,6,48,0.85)] group-hover/back:-translate-x-0.5 transition-transform" />
-                  <span className="tracking-tight text-white drop-shadow-[0_1px_2px_rgba(26,6,48,0.85)]">
+                  <span className="tracking-[-0.01em] text-white drop-shadow-[0_1px_2px_rgba(26,6,48,0.85)] font-medium">
                     Back
                   </span>
                 </button>
@@ -558,12 +573,12 @@ export function AboutSection() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-2xl sm:text-[28px] font-bold text-[#111114] tracking-tight leading-tight mb-4">
+                  <h3 className="text-2xl sm:text-[28px] font-light text-[#111114] tracking-[-0.035em] leading-tight mb-4">
                     {selectedCard.title}
                   </h3>
 
                   {/* Narrative paragraphs */}
-                  <div className="space-y-3.5 text-gray-600 text-xs sm:text-[13px] leading-relaxed">
+                  <div className="space-y-3.5 text-gray-600 text-xs sm:text-[13px] font-light leading-relaxed">
                     <p>{selectedCard.modalParagraph1}</p>
                     <p>{selectedCard.modalParagraph2}</p>
                   </div>
@@ -574,10 +589,10 @@ export function AboutSection() {
                   {selectedCard.stats.map((stat, i) => (
                     <React.Fragment key={i}>
                       <div className="flex-1 flex flex-col">
-                        <span className="text-xl sm:text-2xl font-bold text-[#111114] tracking-tight">
+                        <span className="text-xl sm:text-2xl font-light text-[#111114] tracking-[-0.04em]">
                           {stat.value}
                         </span>
-                        <span className="text-[10px] sm:text-[11.5px] text-gray-500 font-normal leading-snug mt-0.5">
+                        <span className="text-[10px] sm:text-[11.5px] text-gray-500 font-light leading-snug mt-0.5">
                           {stat.label}
                         </span>
                       </div>
