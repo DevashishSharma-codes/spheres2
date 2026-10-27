@@ -23,6 +23,7 @@
   --color-graphite: var(--graphite);
   --color-graphite-dark: var(--graphite-dark);
   --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-cursive: var(--font-cursive), "Caveat", cursive;
 }
 
 /* Minimalist Base Styles */

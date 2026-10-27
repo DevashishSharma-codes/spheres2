@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Caveat } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const caveat = Caveat({
+  variable: "--font-cursive",
   subsets: ["latin"],
   display: "swap",
 });
@@ -39,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} scroll-smooth`}>
+    <html lang="en" className={`${geistSans.variable} ${caveat.variable} scroll-smooth`}>
       <body className="min-h-screen bg-white text-[#2A2A2E] font-sans selection:bg-[#7057D9]/15 selection:text-[#7057D9] flex flex-col">
         <Navbar />
         <main className="flex-1">{children}</main>

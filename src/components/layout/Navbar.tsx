@@ -6,36 +6,33 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAVIGATION_ITEMS } from "@/content/navigation";
 import { Logo } from "@/components/ui/Logo";
-import { Menu, X, ArrowUpRight, Cpu, Sparkles, TrendingUp, Zap } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, ArrowRight } from "lucide-react";
 
-const ABOUT_SECTIONS = [
+const ABOUT_LINKS = [
   {
-    subtitle: "01 // MODERNIZATION",
     title: "Strategic Technology",
-    description: "Guiding businesses with clear, actionable roadmaps for AI and digital modernization.",
-    icon: Cpu,
-    href: "/about",
+    tag: "Modernization",
+    href: "/about#strategic-technology",
   },
   {
-    subtitle: "02 // INTELLIGENCE",
     title: "Data-Driven Insights",
-    description: "Transforming information into accurate, meaningful intelligence for confident decision-making.",
-    icon: Sparkles,
-    href: "/about",
+    tag: "Intelligence",
+    href: "/about#data-driven-insights",
   },
   {
-    subtitle: "03 // SCALABLE GROWTH",
     title: "Business Enablement",
-    description: "Supporting organizations with the tools, structure, and expertise needed for scalable growth.",
-    icon: TrendingUp,
-    href: "/about",
+    tag: "Scalable Growth",
+    href: "/about#business-enablement",
   },
   {
-    subtitle: "04 // WORKFLOWS",
     title: "Intelligent Automation",
-    description: "Designing automated workflows that reduce complexity and drive operational excellence.",
-    icon: Zap,
-    href: "/about",
+    tag: "Workflows",
+    href: "/about#intelligent-automation",
+  },
+  {
+    title: "Production Track Record & Metrics",
+    tag: "20+ Automations // 15+ AI Models",
+    href: "/about#statistics",
   },
 ];
 
@@ -53,10 +50,22 @@ export function Navbar() {
   };
 
   const handleAboutMouseLeave = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     hoverTimeoutRef.current = setTimeout(() => {
       setAboutHovered(false);
-    }, 180);
+    }, 220);
   };
+
+  // Close dropdown on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setAboutHovered(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -116,8 +125,8 @@ export function Navbar() {
   // Primary links to matching routes
   const primaryNav = [
     { label: "About Us", href: "/about" },
-    { label: "How We Work", href: "/how-we-work" },
     { label: "Services", href: "/services" },
+    { label: "How We Work", href: "/how-we-work" },
     { label: "Portfolio", href: "/portfolio" },
     { label: "Industries", href: "/industries" },
     { label: "Insights", href: "/insights" },
@@ -146,7 +155,7 @@ export function Navbar() {
       <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-6">
         
         {/* Brand / Logo */}
-        <Link href="/" className="shrink-0 flex items-center">
+        <Link href="/" className="shrink-0 flex items-center" onClick={() => setAboutHovered(false)}>
           <Logo size={28} />
         </Link>
 
@@ -166,8 +175,8 @@ export function Navbar() {
                 >
                   <Link
                     href={item.href}
-                    className={`text-[14px] tracking-[-0.01em] transition-all relative ${
-                      active
+                    className={`text-[14px] tracking-[-0.01em] transition-all relative inline-flex items-center gap-1 ${
+                      active || aboutHovered
                         ? "text-[#7057D9] font-medium"
                         : "text-[#2A2A2E] opacity-70 hover:opacity-100 hover:text-black"
                     }`}
@@ -182,91 +191,12 @@ export function Navbar() {
                         />
                       )}
                     </span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 pb-0.5 transition-transform duration-200 ${
+                        aboutHovered ? "rotate-180 text-[#7057D9]" : "opacity-60"
+                      }`}
+                    />
                   </Link>
-
-                  {/* About Us Hover Mega-Menu Dropdown */}
-                  <AnimatePresence>
-                    {aboutHovered && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 6, scale: 0.99 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 4, scale: 0.99 }}
-                        transition={{ duration: 0.16, ease: "easeOut" }}
-                        className="absolute top-full -left-2 pt-2.5 z-50 w-[540px] sm:w-[580px]"
-                        onMouseEnter={handleAboutMouseEnter}
-                        onMouseLeave={handleAboutMouseLeave}
-                      >
-                        <div className="bg-white border border-[#DADADD] shadow-[0_20px_50px_rgba(0,0,0,0.12)] p-4 sm:p-5 rounded-none text-left">
-                          
-                          {/* Top Header of Dropdown */}
-                          <div className="flex items-center justify-between pb-3 mb-3 border-b border-black/8">
-                            <div>
-                              <span className="text-[10px] font-mono uppercase tracking-wider text-[#7057D9] font-medium block">
-                                ABOUT 21SPHERES
-                              </span>
-                              <span className="text-sm font-light text-black">
-                                Core Strategic Pillars &amp; Foundations
-                              </span>
-                            </div>
-                            <Link
-                              href="/about"
-                              onClick={() => setAboutHovered(false)}
-                              className="text-[11px] font-mono text-black/50 hover:text-[#7057D9] transition-colors flex items-center gap-1"
-                            >
-                              <span>Explore About</span>
-                              <ArrowUpRight className="w-3 h-3" />
-                            </Link>
-                          </div>
-
-                          {/* 4 Sections Grid (from About Us Cards) */}
-                          <div className="grid grid-cols-2 gap-2.5">
-                            {ABOUT_SECTIONS.map((sec) => {
-                              const IconComponent = sec.icon;
-                              return (
-                                <Link
-                                  key={sec.title}
-                                  href={sec.href}
-                                  onClick={() => setAboutHovered(false)}
-                                  className="p-3 bg-[#FAF9F7] hover:bg-white border border-black/6 hover:border-[#7057D9]/40 transition-all group/item rounded-none text-left flex flex-col justify-between"
-                                >
-                                  <div>
-                                    <div className="flex items-center justify-between mb-1.5">
-                                      <span className="text-[9.5px] font-mono text-black/50 group-hover/item:text-[#7057D9] transition-colors">
-                                        {sec.subtitle}
-                                      </span>
-                                      <IconComponent className="w-3.5 h-3.5 text-black/40 group-hover/item:text-[#7057D9] transition-colors" />
-                                    </div>
-                                    <div className="text-[13px] font-medium text-black group-hover/item:text-[#7057D9] transition-colors">
-                                      {sec.title}
-                                    </div>
-                                    <p className="text-[11px] text-black/65 font-light leading-snug mt-1">
-                                      {sec.description}
-                                    </p>
-                                  </div>
-                                </Link>
-                              );
-                            })}
-                          </div>
-
-                          {/* Bottom Strip: Company Statistics Track Record */}
-                          <div className="mt-3.5 pt-2.5 border-t border-black/8 flex items-center justify-between">
-                            <span className="text-[10px] font-mono text-black/50">
-                              PRODUCTION TRACK RECORD &bull; 20+ AUTOMATION &bull; 15+ AI
-                            </span>
-                            <Link
-                              href="/about#statistics"
-                              onClick={() => setAboutHovered(false)}
-                              className="inline-flex items-center gap-1 text-[11px] text-[#7057D9] font-medium hover:underline"
-                            >
-                              <span>Company Statistics</span>
-                              <ArrowUpRight className="w-3 h-3" />
-                            </Link>
-                          </div>
-
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
               );
             }
@@ -340,9 +270,87 @@ export function Navbar() {
         </button>
       </div>
 
+      {/* =========================================================
+          FULL-WIDTH TCS-STYLE "ABOUT US" MEGA MENU DROPDOWN
+          Left side: Narrative information, headline & CTA link
+          Right side: 4 Main Things of About Us with dividing lines & chevrons
+          ========================================================= */}
+      <AnimatePresence>
+        {aboutHovered && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="hidden lg:block absolute top-full left-0 w-full bg-[#111114] border-b border-[#25252B] shadow-[0_30px_70px_rgba(0,0,0,0.6)] text-white z-50 overflow-hidden"
+            onMouseEnter={handleAboutMouseEnter}
+            onMouseLeave={handleAboutMouseLeave}
+          >
+            {/* Ambient subtle violet bloom in top right */}
+            <div className="absolute top-0 right-1/4 w-[500px] h-[300px] bg-[#7057D9]/10 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-14 relative z-10">
+              <div className="grid grid-cols-12 gap-8 lg:gap-16 items-start">
+                
+                {/* Left Side: Information & Headline */}
+                <div className="col-span-5 flex flex-col justify-between pr-4 lg:pr-8">
+                  <div>
+                    <h3 className="text-2xl sm:text-[28px] lg:text-[32px] font-normal tracking-[-0.03em] leading-[1.2] mb-4 bg-gradient-to-r from-white via-[#D8C7FF] to-[#8E79E8] bg-clip-text text-transparent">
+                      Infrastructure to Intelligence
+                    </h3>
+                    <p className="text-sm sm:text-[15px] font-light text-white/70 leading-relaxed max-w-[420px] mb-8">
+                      Navigate the AI era with confidence. 21Spheres turns modern software architecture and autonomous intelligence into a strategic partner that empowers talent, reimagines processes, and accelerates business transformation.
+                    </p>
+                  </div>
+
+                  <div>
+                    <Link
+                      href="/about"
+                      onClick={() => setAboutHovered(false)}
+                      className="group/cta inline-flex items-center gap-2 text-sm sm:text-[15px] font-medium text-white hover:text-[#9D87F5] transition-all"
+                    >
+                      <span>Unlock enterprise intelligence</span>
+                      <ArrowRight className="w-4 h-4 text-white group-hover/cta:text-[#9D87F5] group-hover/cta:translate-x-1.5 transition-all duration-200" />
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Right Side: The 4 Main Things of About Us like links */}
+                <div className="col-span-7 flex flex-col">
+                  {ABOUT_LINKS.map((item, index) => (
+                    <Link
+                      key={item.title}
+                      href={item.href}
+                      onClick={() => setAboutHovered(false)}
+                      className={`group/item flex items-center justify-between py-4 sm:py-4.5 border-b border-[#25252B] hover:border-white/20 transition-all duration-200 px-3 hover:bg-white/[0.03] ${
+                        index === 0 ? "border-t border-[#25252B]" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-[16px] sm:text-[17px] lg:text-[18px] font-light tracking-[-0.01em] text-white/90 group-hover/item:text-white transition-colors">
+                          {item.title}
+                        </span>
+                        {item.tag && (
+                          <span className="text-[10px] sm:text-[11px] font-mono text-white/40 group-hover/item:text-[#9D87F5] transition-colors uppercase tracking-wider">
+                            {item.tag}
+                          </span>
+                        )}
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-white/40 group-hover/item:text-white group-hover/item:translate-x-1.5 transition-all duration-200 shrink-0 ml-4" />
+                    </Link>
+                  ))}
+                </div>
+
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-[#DADADD] bg-white px-4 py-5 space-y-3 animate-in fade-in duration-150">
+        <div className="lg:hidden border-b border-[#DADADD] bg-white px-4 py-5 space-y-4 animate-in fade-in duration-150 max-h-[85vh] overflow-y-auto">
+          {/* Mobile Main Links */}
           <div className="grid grid-cols-2 gap-2">
             {NAVIGATION_ITEMS.map((item) => {
               const active = isItemActive(item.href);
@@ -362,7 +370,28 @@ export function Navbar() {
               );
             })}
           </div>
-          <div className="pt-3 border-t border-[#DADADD] flex flex-col gap-2">
+
+          {/* Mobile About Us 4 Pillars Sub-Links */}
+          <div className="pt-3 border-t border-[#DADADD]/70 bg-[#FAF9F7] p-3">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#7057D9] font-medium block mb-2">
+              ABOUT US &bull; 4 PILLARS
+            </span>
+            <div className="flex flex-col divide-y divide-black/5">
+              {ABOUT_LINKS.map((item) => (
+                <Link
+                  key={item.title}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-2 flex items-center justify-between text-xs text-black/80 hover:text-[#7057D9]"
+                >
+                  <span>{item.title}</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-black/40" />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-[#DADADD] flex flex-col gap-2">
             <Link
               href="/contact"
               onClick={() => setMobileMenuOpen(false)}
