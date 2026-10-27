@@ -86,7 +86,7 @@ const BASE_CARDS: AboutCardItem[] = [
     pill: "Self-Healing Workflows",
     title: "Intelligent Automation",
     description: "Designing self-healing automated telemetry workflows that reduce operational overhead across distributed pipelines.",
-    image: "/about/card-automation.jpg",
+    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1000&q=85",
     icon: Cpu,
     modalParagraph1: "Our journey started with a simple idea — to use autonomous automation and innovation to solve real-world operational bottlenecks. What began as an experimental framework has now matured into an enterprise-standard system.",
     modalParagraph2: "Through continuous self-healing graphs and proactive telemetry mitigation, 21Spheres minimizes operational friction, freeing strategic talent to focus on groundbreaking opportunities.",
