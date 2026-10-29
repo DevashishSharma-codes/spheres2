@@ -1,127 +1,202 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
-  FileCode, 
-  Cpu, 
-  Layers, 
-  Rocket, 
   CheckCircle2, 
-  ArrowRight, 
   Clock, 
+  ArrowRight, 
   ShieldCheck, 
+  Layers, 
+  Cpu, 
+  FileCode, 
+  Sparkles, 
   Terminal, 
-  GitBranch, 
-  Sliders, 
-  Activity,
-  Check,
+  Check, 
+  ExternalLink,
+  ChevronRight,
   Zap,
-  Lock,
-  ChevronRight
+  Activity
 } from "lucide-react";
-import { HOW_WE_WORK_CONTENT } from "@/content/howWeWork";
 
-interface StageDetail {
+export interface StageDetailItem {
   id: string;
   step: string;
   name: string;
+  room: string;
   duration: string;
-  badge: string;
+  tagline: string;
+  image: string;
   summary: string;
-  detailedProcess: string[];
+  execution: string[];
   deliverables: { title: string; desc: string }[];
-  tags: string[];
-  artifactType: "rfc" | "agent" | "ui" | "edge";
+  metrics: { label: string; value: string }[];
+  techStack: string[];
 }
 
-const STAGES: StageDetail[] = [
+const STAGES: StageDetailItem[] = [
   {
-    id: "01",
+    id: "discovery-srs",
     step: "01",
-    name: "Architectural RFC & Problem Synthesis",
-    duration: "48 – 72 Hours",
-    badge: "STAGE 01 // FOUNDATION",
-    summary: "We dissect requirements, eliminate ambiguities, define strict API contracts, and draft database schemas before writing a single line of production code.",
-    detailedProcess: [
-      "Decompose product specs into deterministic engineering acceptance criteria.",
-      "Model PostgreSQL / vector schemas with strict relational constraints and indexing.",
-      "Draft OpenAPI 3.1 & TypeScript RPC contracts with input/output Zod validation.",
-      "Publish an RFC document to your team for formal architectural sign-off."
+    name: "Discovery & SRS Design",
+    room: "DISCOVERY & REQUIREMENTS LAB",
+    duration: "Week 1",
+    tagline: "Deterministic Scope, Clear Architecture",
+    image: "/how-we-work/stage-1-discovery-srs.jpg",
+    summary: "Collaborative stakeholder workshops to translate high-level business vision into an exhaustive, unambiguous Software Requirements Specification (SRS). We establish deterministic acceptance criteria, map end-to-end user journeys, and eliminate scope ambiguity before engineering commences.",
+    execution: [
+      "Stakeholder interviews to distill product goals and technical boundaries.",
+      "Persona journey mapping with edge-case stress identification.",
+      "Feature prioritization matrix (MoSCoW) separating MVP from post-launch horizons."
     ],
     deliverables: [
-      { title: "Systems Topology RFC", desc: "Complete architectural blueprint, cloud topology, and data flow map." },
-      { title: "Strict Data Contracts", desc: "Zod schemas and TypeScript types shared across client and server." },
-      { title: "Latency & SLA Budgets", desc: "Defined P95/P99 latency constraints for every endpoint and microservice." },
-      { title: "Threat & Auth Model", desc: "Row-level security, JWT rotation, and OAuth/RBAC boundary definitions." }
+      { title: "Software Requirements Spec (SRS)", desc: "Exhaustive functional and technical document with deterministic acceptance criteria." },
+      { title: "User Journey & Experience Flows", desc: "Granular persona workflows, permission states, and edge-case handling routes." },
+      { title: "Feature Priority Matrix", desc: "Structured priority hierarchy defining milestone boundaries and MVP releases." },
+      { title: "Deterministic Sprint Roadmap", desc: "Time-bound execution blueprint with weekly deliverables and sign-off criteria." }
     ],
-    tags: ["OpenAPI 3.1", "TypeScript", "PostgreSQL", "Zod", "System Topology"],
-    artifactType: "rfc"
+    metrics: [
+      { label: "Acceptance Criteria", value: "100% Defined" },
+      { label: "Scope Ambiguity", value: "Zero Tolerance" },
+      { label: "Sign-Off Status", value: "RFC Approved" }
+    ],
+    techStack: ["SRS Specification", "User Research", "MoSCoW Matrix", "Roadmapping", "OpenAPI 3.1"]
   },
   {
-    id: "02",
+    id: "architecture-stack",
     step: "02",
-    name: "Core Engine & Agent Infrastructure",
+    name: "Architecture & Tech Stack Selection",
+    room: "SYSTEMS TOPOLOGY & CLOUD LAB",
     duration: "Week 1 – Week 2",
-    badge: "STAGE 02 // INTELLIGENCE",
-    summary: "Constructing high-throughput distributed microservices, multi-agent LLM reasoning loops, and deterministic vector pipelines.",
-    detailedProcess: [
-      "Implement multi-agent supervisor loops with stateful context management.",
-      "Build hybrid semantic vector search pipelines with reranking and semantic deduplication.",
-      "Write automated integration tests with simulated edge-case adversarial prompts.",
-      "Deploy low-latency background workers and event queues (BullMQ / Temporal)."
+    tagline: "Low-Latency Topology & Resilient Schemas",
+    image: "/how-we-work/stage-2-architecture-stack.jpg",
+    summary: "Architecting a resilient, low-latency system topology designed for extreme scale. We formalize relational and vector data schemas, write strongly-typed API contracts, evaluate cloud infrastructure, and establish deterministic latency and security budgets.",
+    execution: [
+      "Cloud topology mapping including caching tiers and event-driven worker queues.",
+      "Relational (PostgreSQL) and vector (pgvector) database schema modeling.",
+      "Strict TypeScript RPC / OpenAPI 3.1 interface contracts with Zod validation."
     ],
     deliverables: [
-      { title: "Multi-Agent Graph", desc: "LangGraph / custom state machine with automated fallback strategies." },
-      { title: "Vector Indexing Engine", desc: "Pinecone / pgvector cluster with sub-50ms hybrid similarity retrieval." },
-      { title: "Automated Test Harness", desc: "End-to-end integration suite covering 100% of critical business workflows." },
-      { title: "Streaming Gateway", desc: "Server-Sent Events (SSE) and WebSocket streams for real-time tokens." }
+      { title: "Systems Topology RFC", desc: "Cloud infrastructure diagrams, microservice boundaries, and caching layers." },
+      { title: "Relational & Vector Schemas", desc: "Normalized SQL migrations, indexing strategies, and vector embeddings design." },
+      { title: "End-to-End Typed API Contracts", desc: "Shared TypeScript interfaces and Zod schemas guaranteeing compile-time safety." },
+      { title: "Latency & SLA Budgets", desc: "P95 and P99 latency constraints defined for every core query and API route." }
     ],
-    tags: ["LangGraph", "pgvector", "Redis/BullMQ", "FastAPI", "Python/Rust"],
-    artifactType: "agent"
+    metrics: [
+      { label: "P95 Latency Target", value: "< 35ms Global" },
+      { label: "Data Integrity", value: "100% Typed" },
+      { label: "Architecture RFC", value: "Peer Reviewed" }
+    ],
+    techStack: ["PostgreSQL", "pgvector", "TypeScript", "FastAPI / Node", "Cloudflare Edge", "Redis"]
   },
   {
-    id: "03",
+    id: "ui-ux-prototyping",
     step: "03",
-    name: "120 FPS Tactile Interface Lab",
-    duration: "Week 3 – Week 4",
-    badge: "STAGE 03 // SURFACE",
-    summary: "Engineering fluid, keyboard-navigable interfaces in Next.js and TypeScript with spring physics, optimistic mutations, and zero layout shift.",
-    detailedProcess: [
-      "Construct a bespoke design system with CSS custom properties and atomic tokens.",
-      "Implement optimistic mutations so user actions render in 0ms before server confirmation.",
-      "Fine-tune spring animations and micro-interactions for tactile desktop-class feel.",
-      "Audit Core Web Vitals to achieve 100/100 performance and zero Cumulative Layout Shift."
+    name: "UI/UX Design & Prototyping",
+    room: "TACTILE INTERFACE & DESIGN LAB",
+    duration: "Week 2 – Week 3",
+    tagline: "Tactile Interactivity & 120fps Fluidity",
+    image: "/how-we-work/stage-3-ui-ux-prototyping.jpg",
+    summary: "Translating system architecture into an aesthetic, intuitive, and tactile digital interface. We build a comprehensive design token system, high-fidelity responsive components, and interactive prototypes with fluid 120fps motion design.",
+    execution: [
+      "Bespoke design system tokens for color, typography, spacing, and micro-motions.",
+      "Interactive clickable Figma prototype simulating real application logic.",
+      "Multi-device responsive parity audits across mobile, tablet, desktop, and ultra-wide."
     ],
     deliverables: [
-      { title: "Design Tokens & System", desc: "Modular, accessible components built without bloated third-party wrappers." },
-      { title: "Optimistic State Engine", desc: "Instantaneous mutations with automatic rollback on network anomalies." },
-      { title: "Spring Physics Engine", desc: "Framer Motion tuned transitions matching native operating system standards." },
-      { title: "Responsive Multi-Screen", desc: "Pixel-perfect rendering tested across mobile, tablet, and ultra-wide viewports." }
+      { title: "Design System & Tokens", desc: "Modular, accessible UI component library built for speed and visual consistency." },
+      { title: "Interactive Clickable Prototype", desc: "Clickable prototypes validating workflows before frontend engineering begins." },
+      { title: "Tactile Motion & Animation Specs", desc: "Hardware-accelerated spring curves tuned for fluid 120fps tactile feel." },
+      { title: "Accessibility (WCAG 2.1) Audit", desc: "Color contrast, screen reader semantics, and keyboard navigation verified." }
     ],
-    tags: ["Next.js App Router", "React 19", "Framer Motion", "Tailwind CSS", "120 FPS"],
-    artifactType: "ui"
+    metrics: [
+      { label: "Motion Performance", value: "120 FPS Fluid" },
+      { label: "Accessibility", value: "WCAG 2.1 AA" },
+      { label: "Device Coverage", value: "Mobile to 4K" }
+    ],
+    techStack: ["Figma Prototyping", "Design Tokens", "Framer Motion", "Tailwind CSS", "Atomic Design"]
   },
   {
-    id: "04",
+    id: "agile-development",
     step: "04",
-    name: "Edge Hardening & Production Fleet Handover",
-    duration: "Week 5 Onward",
-    badge: "STAGE 04 // DEPLOYMENT",
-    summary: "Rolling out production fleets across global edge nodes, calibrating telemetry monitors, and handing over complete repository ownership.",
-    detailedProcess: [
-      "Configure zero-downtime blue/green deployment workflows with automated rollbacks.",
-      "Hook up distributed tracing, APM, and error alerting (Datadog / Sentry / Prometheus).",
-      "Conduct automated load testing up to 10,000 requests/sec with stress-scenario verification.",
-      "Execute complete GitHub organization transfer with environment keys and runbooks."
+    name: "Agile Development & Integration",
+    room: "SPRINT EXECUTION & CODE LAB",
+    duration: "Week 3 – Week 5",
+    tagline: "High-Frequency Cadence & Clean Engineering",
+    image: "/how-we-work/stage-4-agile-development.jpg",
+    summary: "Iterative two-week engineering sprints building clean, modular software. We construct high-throughput backend services, autonomous agent pipelines, responsive frontends, and third-party integrations with continuous PR preview deployments.",
+    execution: [
+      "Rapid two-week sprint cadences with automated CI/CD staging environments.",
+      "Full-stack implementation adhering strictly to agreed architectural contracts.",
+      "Third-party service integrations (authentication, payments, AI models, webhooks)."
     ],
     deliverables: [
-      { title: "Zero-Downtime CI/CD", desc: "Automated GitHub Actions pipelines with lint, test, and preview environments." },
-      { title: "Real-Time Telemetry", desc: "Grafana / Datadog dashboards monitoring P99 latency, error rates, and CPU." },
-      { title: "Security & SOC2 Audit", desc: "Dependency CVE scanning, OWASP Top 10 mitigation, and audit report." },
-      { title: "100% Repository Transfer", desc: "Full git ownership, Docker manifests, architecture documentation, and runbooks." }
+      { title: "Modular Full-Stack Codebase", desc: "Production-ready TypeScript frontend with scalable backend services." },
+      { title: "API & Event Integrations", desc: "Robust third-party integrations with idempotent retries and error isolation." },
+      { title: "Automated Preview Deployments", desc: "Live PR environments updated on every push for stakeholder visibility." },
+      { title: "Autonomous Agent Workflows", desc: "Multi-agent pipelines configured with deterministic guardrails and fallback logic." }
     ],
-    tags: ["GitHub Actions", "Docker / K8s", "Cloudflare Edge", "Datadog", "Terraform"],
-    artifactType: "edge"
+    metrics: [
+      { label: "Sprint Cadence", value: "2-Week Sprints" },
+      { label: "Deploy Frequency", value: "Continuous PR" },
+      { label: "Test Coverage", value: "> 90% Core" }
+    ],
+    techStack: ["Next.js App Router", "TypeScript", "FastAPI / Node", "BullMQ / Redis", "Docker", "Tailwind CSS"]
+  },
+  {
+    id: "qa-security-testing",
+    step: "05",
+    name: "QA, Security & Testing",
+    room: "QA & SECURITY AUDIT LAB",
+    duration: "Week 5 – Week 6",
+    tagline: "Zero Vulnerability & Deep Stress Hardening",
+    image: "/how-we-work/stage-5-qa-security-testing.jpg",
+    summary: "Exhaustive automated verification and security hardening. We execute Playwright end-to-end regression suites, simulate peak load concurrency with k6, and perform deep static analysis and vulnerability scanning to ensure bulletproof reliability.",
+    execution: [
+      "Automated Playwright regression suites verifying critical user workflows.",
+      "Stress and concurrency benchmarking simulating up to 10,000 requests/sec.",
+      "OWASP Top 10 vulnerability scan, dependency audit, and secret exposure checks."
+    ],
+    deliverables: [
+      { title: "Automated E2E Test Suite", desc: "Comprehensive Playwright test suite integrated into CI for regression prevention." },
+      { title: "Security Vulnerability Report", desc: "Independent audit confirming zero high-severity CVEs or data exposure risks." },
+      { title: "Load & Concurrency Benchmark", desc: "Empirical proof of latency resilience under peak simulated user traffic." },
+      { title: "Cross-Platform QA Sign-Off", desc: "Verified functional fidelity across Chrome, Safari, Firefox, iOS, and Android." }
+    ],
+    metrics: [
+      { label: "CVE Vulnerabilities", value: "Zero Critical" },
+      { label: "E2E Test Pass Rate", value: "100% Green" },
+      { label: "Stress Capacity", value: "10k req/sec" }
+    ],
+    techStack: ["Playwright", "Jest", "k6 Stress Testing", "OWASP Security", "Snyk / Dependabot"]
+  },
+  {
+    id: "deployment-launch-support",
+    step: "06",
+    name: "Deployment, Launch & Support",
+    room: "PRODUCTION EDGE & SLA LAB",
+    duration: "Week 6 Onward",
+    tagline: "Zero-Downtime Rollout & Dedicated SLAs",
+    image: "/how-we-work/stage-6-deployment-launch-support.jpg",
+    summary: "Zero-downtime production launch and dedicated post-go-live engineering support. We orchestrate blue/green rollouts, configure edge caching and real-time observability telemetry, and provide complete repository ownership transfer.",
+    execution: [
+      "Blue/green zero-downtime deployment with automated rollback safeguards.",
+      "Multi-region CDN edge caching, SSL termination, and DNS optimization.",
+      "Real-time APM telemetry, error tracking, and automated 24/7 alerting setup."
+    ],
+    deliverables: [
+      { title: "Zero-Downtime Edge Fleet", desc: "Globally distributed production infrastructure with instant automated failover." },
+      { title: "Real-Time Telemetry Dashboard", desc: "Live APM observability tracking uptime, request latency, and error thresholds." },
+      { title: "100% Repository Transfer", desc: "Complete git ownership, Docker manifests, CI/CD scripts, and operational runbooks." },
+      { title: "Ongoing SLA Engineering", desc: "Guaranteed uptime, proactive performance tuning, and technical advisory." }
+    ],
+    metrics: [
+      { label: "Uptime SLA", value: "99.95% Target" },
+      { label: "Rollout Downtime", value: "0ms Seamless" },
+      { label: "IP & Code Transfer", value: "100% Client Owned" }
+    ],
+    techStack: ["Cloudflare Edge", "Docker / K8s", "Datadog / Sentry", "Vercel Enterprise", "GitHub Actions"]
   }
 ];
 
@@ -129,66 +204,82 @@ export function SprintStagesSection() {
   const [activeStageIndex, setActiveStageIndex] = useState(0);
   const activeStage = STAGES[activeStageIndex];
 
-  // Artifact sub-tab for Stage 01
-  const [rfcTab, setRfcTab] = useState<"spec" | "schema" | "sla">("spec");
-  
-  // Interactive spring physics demo for Stage 03
-  const [stiffness, setStiffness] = useState(380);
-  const [damping, setDamping] = useState(28);
-  const [isDemoActive, setIsDemoActive] = useState(false);
+  // Sync with URL hash if navigated from the interactive floorplan hero or "See Details" buttons
+  useEffect(() => {
+    const handleHash = () => {
+      if (typeof window !== "undefined") {
+        const hash = window.location.hash.replace("#", "");
+        if (hash) {
+          const foundIdx = STAGES.findIndex(s => s.id === hash || s.step === hash);
+          if (foundIdx !== -1) {
+            setActiveStageIndex(foundIdx);
+            const el = document.getElementById(hash) || document.getElementById("sprint-stages");
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth" });
+            }
+          }
+        }
+      }
+    };
+
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
 
   return (
-    <section id="sprint-stages" className="py-20 sm:py-28 bg-[#FAF9F7] border-b border-[#DADADD]/70">
-      <div className="w-full max-w-[1480px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-16">
+    <section 
+      id="sprint-stages" 
+      className="py-16 sm:py-24 bg-[#FCFCFA] border-b border-[#E5E5EA] scroll-mt-20"
+    >
+      <div className="w-full max-w-[1400px] mx-auto px-5 sm:px-8 lg:px-12">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-14">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-none bg-[#7057D9]/10 border border-[#7057D9]/20 text-[11px] font-mono font-medium tracking-wider text-[#7057D9] mb-4 uppercase">
-              <span className="w-1.5 h-1.5 rounded-none bg-[#7057D9]" />
-              <span>THE 4-STAGE SPRINT CADENCE // ZERO SURPRISES</span>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#7C3AED]/10 border border-[#7C3AED]/20 text-[11px] font-mono font-semibold tracking-wider text-[#7C3AED] mb-3 uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]" />
+              <span>THE 6-STAGE SPRINT METHODOLOGY // DETAILED BREAKDOWN</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-light tracking-[-0.04em] text-black leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-[-0.035em] text-[#111114] leading-tight">
               Deterministic milestones from architecture to global edge.
             </h2>
           </div>
           <div className="max-w-md">
-            <p className="text-sm sm:text-base text-black/65 font-light leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#515154] font-light leading-relaxed">
               We eliminate black-box consulting. Every phase produces audited artifacts, executable code, and verifiable telemetry reports with full transparency.
             </p>
           </div>
         </div>
 
-        {/* Stage Selector Tabs */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-10">
+        {/* Stage Selector Tabs (6 Columns, Minimalist & Aesthetic) */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-2.5 mb-8">
           {STAGES.map((stage, idx) => {
             const isActive = activeStageIndex === idx;
             return (
               <button
                 key={stage.id}
+                id={stage.id}
                 onClick={() => setActiveStageIndex(idx)}
-                className={`text-left p-4 sm:p-5 border transition-all rounded-none relative cursor-pointer ${
+                className={`text-left p-3.5 sm:p-4 rounded-xl border transition-all cursor-pointer relative overflow-hidden ${
                   isActive 
-                    ? "bg-white border-[#7057D9] shadow-sm" 
-                    : "bg-white/60 border-[#DADADD] hover:bg-white hover:border-[#7057D9]/40"
+                    ? "bg-white border-[#7C3AED] shadow-[0_4px_20px_rgba(124,58,237,0.12)] ring-1 ring-[#7C3AED]" 
+                    : "bg-white/80 border-[#E5E5EA] hover:bg-white hover:border-[#7C3AED]/40 hover:shadow-xs"
                 }`}
               >
-                {/* Active Indicator Top Border */}
-                {isActive && (
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-[#7057D9]" />
-                )}
-
-                <div className="flex items-center justify-between mb-2">
-                  <span className={`text-xs font-mono font-semibold ${isActive ? "text-[#7057D9]" : "text-black/40"}`}>
-                    STAGE {stage.step}
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className={`text-[11px] font-mono font-semibold tracking-wider ${isActive ? "text-[#7C3AED]" : "text-[#86868B]"}`}>
+                    0{idx + 1}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-mono text-black/55 bg-black/5 px-2 py-0.5 rounded-none">
-                    <Clock className="w-3 h-3 text-black/40" />
+                  <span className={`inline-flex items-center gap-1 text-[9.5px] font-mono px-1.5 py-0.5 rounded-full ${
+                    isActive ? "bg-[#7C3AED]/10 text-[#7C3AED]" : "bg-[#F5F5F7] text-[#86868B]"
+                  }`}>
+                    <Clock className="w-2.5 h-2.5" />
                     {stage.duration}
                   </span>
                 </div>
 
-                <div className={`text-sm sm:text-base font-medium leading-snug line-clamp-1 ${isActive ? "text-black" : "text-black/75"}`}>
+                <div className={`text-xs sm:text-[12.5px] font-medium leading-snug line-clamp-2 ${isActive ? "text-[#111114] font-semibold" : "text-[#4A4A50]"}`}>
                   {stage.name}
                 </div>
               </button>
@@ -196,397 +287,181 @@ export function SprintStagesSection() {
           })}
         </div>
 
-        {/* Active Stage Deep-Dive Card */}
-        <div className="bg-white border border-[#DADADD] rounded-none p-6 sm:p-10 lg:p-12 mb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-            
-            {/* Left Column: Stage Detail (7 cols) */}
-            <div className="lg:col-span-7 flex flex-col justify-between">
-              <div>
-                
-                {/* Eyebrow & Duration Badge */}
-                <div className="flex flex-wrap items-center gap-2.5 mb-4">
-                  <span className="text-[11px] font-mono font-semibold px-2.5 py-1 bg-[#7057D9]/10 text-[#7057D9] border border-[#7057D9]/20 rounded-none uppercase">
-                    {activeStage.badge}
-                  </span>
-                  <span className="text-[11px] font-mono text-black/60 px-2.5 py-1 bg-black/5 border border-black/10 rounded-none flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-[#7057D9]" />
-                    <span>TIMELINE: {activeStage.duration.toUpperCase()}</span>
-                  </span>
-                </div>
-
-                {/* Stage Title */}
-                <h3 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-tight text-black mb-4">
-                  {activeStage.name}
-                </h3>
-
-                {/* Summary Lead */}
-                <p className="text-base sm:text-lg text-black/75 font-light leading-relaxed mb-8">
-                  {activeStage.summary}
-                </p>
-
-                {/* Engineering Process Steps */}
-                <div className="mb-8">
-                  <div className="text-xs font-mono uppercase tracking-wider text-black/50 mb-3 flex items-center gap-2">
-                    <Terminal className="w-3.5 h-3.5 text-[#7057D9]" />
-                    <span>ENGINEERING SPRINT EXECUTION</span>
-                  </div>
-                  <div className="space-y-2.5">
-                    {activeStage.detailedProcess.map((proc, pIdx) => (
-                      <div key={pIdx} className="flex items-start gap-3 p-3 bg-[#FAF9F7] border border-[#DADADD]/60 rounded-none">
-                        <div className="w-5 h-5 bg-[#7057D9]/10 text-[#7057D9] flex items-center justify-center shrink-0 mt-0.5 text-xs font-mono font-semibold">
-                          {pIdx + 1}
-                        </div>
-                        <p className="text-sm text-black/85 font-normal leading-relaxed">
-                          {proc}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Production Deliverables Grid */}
-                <div className="mb-8">
-                  <div className="text-xs font-mono uppercase tracking-wider text-black/50 mb-3 flex items-center gap-2">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>VERIFIABLE DELIVERABLES HANDOVER</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {activeStage.deliverables.map((deliv, dIdx) => (
-                      <div key={dIdx} className="p-3.5 border border-[#DADADD] bg-white rounded-none hover:border-[#7057D9]/40 transition-colors">
-                        <div className="flex items-center gap-2 mb-1">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                          <span className="text-sm font-medium text-black">{deliv.title}</span>
-                        </div>
-                        <p className="text-xs text-black/60 font-light leading-snug pl-6">
-                          {deliv.desc}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Technology Badges */}
-                <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-[#DADADD]/70">
-                  <span className="text-xs font-mono text-black/45 mr-1">TECH STACK:</span>
-                  {activeStage.tags.map((tag) => (
-                    <span 
-                      key={tag}
-                      className="text-xs font-mono px-2 py-0.5 bg-[#FAF9F7] border border-[#DADADD] text-black/75 rounded-none"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-              </div>
-            </div>
-
-            {/* Right Column: Live Interactive Artifact Preview (5 cols) */}
-            <div className="lg:col-span-5 bg-[#18181B] text-white p-6 sm:p-7 border border-black/20 rounded-none shadow-sm min-h-[480px] flex flex-col justify-between">
+        {/* Active Stage Deep-Dive Card (Split Layout: Relevant Info & Deliverables on Left + Beautiful Image Showcase on Right) */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeStage.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className="bg-white border border-[#E5E5EA] rounded-[26px] p-6 sm:p-9 lg:p-11 shadow-[0_8px_30px_rgba(0,0,0,0.04)]"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
               
-              {/* Artifact Header */}
-              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-none bg-red-500/80 inline-block" />
-                    <span className="w-2.5 h-2.5 rounded-none bg-amber-500/80 inline-block" />
-                    <span className="w-2.5 h-2.5 rounded-none bg-emerald-500/80 inline-block" />
+              {/* Left Column: Stage Detail, Deliverables & Methodology (7 cols) */}
+              <div className="lg:col-span-7 flex flex-col justify-between">
+                <div>
+                  
+                  {/* Eyebrow & Timeline */}
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="text-[10.5px] font-mono font-semibold px-2.5 py-0.5 bg-[#7C3AED]/10 text-[#7C3AED] border border-[#7C3AED]/20 rounded-full uppercase tracking-wider">
+                      STAGE {activeStage.step} // {activeStage.room}
+                    </span>
+                    <span className="text-[10.5px] font-mono text-[#515154] px-2.5 py-0.5 bg-[#F5F5F7] border border-[#E5E5EA] rounded-full flex items-center gap-1.5">
+                      <Clock className="w-3 h-3 text-[#7C3AED]" />
+                      <span>TIMELINE: {activeStage.duration.toUpperCase()}</span>
+                    </span>
                   </div>
-                  <span className="text-xs font-mono text-white/50 pl-2">
-                    {activeStage.artifactType === "rfc" && "rfc_v1.0.ts — Systems Spec"}
-                    {activeStage.artifactType === "agent" && "agent_graph.py — State Machine"}
-                    {activeStage.artifactType === "ui" && "interface_lab.tsx — 120 FPS Lab"}
-                    {activeStage.artifactType === "edge" && "edge_fleet.yaml — CI/CD Telemetry"}
-                  </span>
+
+                  {/* Title & Tagline */}
+                  <h3 className="text-2xl sm:text-3xl font-light tracking-[-0.03em] text-[#111114] mb-1">
+                    {activeStage.name}
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-[#7C3AED] font-medium tracking-tight mb-4">
+                    {activeStage.tagline}
+                  </p>
+
+                  {/* Summary Lead */}
+                  <p className="text-xs sm:text-[13.5px] text-[#515154] font-light leading-relaxed mb-6">
+                    {activeStage.summary}
+                  </p>
+
+                  {/* Verifiable Deliverables Grid (2x2) */}
+                  <div className="mb-6">
+                    <div className="text-[11px] font-mono uppercase tracking-wider text-[#86868B] mb-2.5 flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#7C3AED]" />
+                      <span>VERIFIABLE DELIVERABLES &amp; ARTIFACTS</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {activeStage.deliverables.map((deliv, dIdx) => (
+                        <div 
+                          key={dIdx} 
+                          className="p-3 sm:p-3.5 border border-[#E5E5EA] bg-[#FCFCFA] rounded-xl hover:border-[#7C3AED]/40 hover:bg-white transition-all duration-200"
+                        >
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-4 h-4 rounded-full bg-[#7C3AED]/10 text-[#7C3AED] flex items-center justify-center shrink-0">
+                              <Check className="w-2.5 h-2.5 stroke-[2.5]" />
+                            </div>
+                            <span className="text-xs sm:text-[12.5px] font-medium text-[#111114] tracking-tight">
+                              {deliv.title}
+                            </span>
+                          </div>
+                          <p className="text-[11px] sm:text-[11.5px] text-[#6E6E73] font-light leading-relaxed pl-6">
+                            {deliv.desc}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Engineering Sprint Execution Protocol */}
+                  <div className="mb-6">
+                    <div className="text-[11px] font-mono uppercase tracking-wider text-[#86868B] mb-2.5 flex items-center gap-1.5">
+                      <Terminal className="w-3.5 h-3.5 text-[#7C3AED]" />
+                      <span>SPRINT EXECUTION PROTOCOL</span>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      {activeStage.execution.map((item, eIdx) => (
+                        <div key={eIdx} className="flex items-start gap-2.5 text-xs text-[#515154] leading-relaxed">
+                          <span className="font-mono text-[10.5px] font-semibold text-[#7C3AED] mt-0.5">
+                            0{eIdx + 1}.
+                          </span>
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Technology Badges */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-4 border-t border-[#E5E5EA]">
+                    <span className="text-[10.5px] font-mono text-[#86868B] mr-1">TECH STACK:</span>
+                    {activeStage.techStack.map((tech) => (
+                      <span 
+                        key={tech}
+                        className="text-[10px] sm:text-[10.5px] font-mono px-2 py-0.5 bg-[#F5F5F7] border border-[#E5E5EA] text-[#4A4A50] rounded-full"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-none">
-                  LIVE ARTIFACT
-                </span>
               </div>
 
-              {/* Artifact Content based on Stage */}
-              <div className="flex-1 font-mono text-xs text-white/85 flex flex-col justify-center">
+              {/* Right Column: Curated Pinterest-Grade High-Resolution Image & Metric Showcase (5 cols) */}
+              <div className="lg:col-span-5 flex flex-col justify-between">
                 
-                {/* STAGE 01: Interactive RFC Spec */}
-                {activeStage.artifactType === "rfc" && (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-[11px] pb-2 border-b border-white/10">
-                      <button 
-                        onClick={() => setRfcTab("spec")}
-                        className={`px-2.5 py-1 rounded-none transition-colors ${rfcTab === "spec" ? "bg-[#7057D9] text-white" : "text-white/60 hover:text-white"}`}
-                      >
-                        Topology.rfc
-                      </button>
-                      <button 
-                        onClick={() => setRfcTab("schema")}
-                        className={`px-2.5 py-1 rounded-none transition-colors ${rfcTab === "schema" ? "bg-[#7057D9] text-white" : "text-white/60 hover:text-white"}`}
-                      >
-                        Schema.prisma
-                      </button>
-                      <button 
-                        onClick={() => setRfcTab("sla")}
-                        className={`px-2.5 py-1 rounded-none transition-colors ${rfcTab === "sla" ? "bg-[#7057D9] text-white" : "text-white/60 hover:text-white"}`}
-                      >
-                        SLA_Budget.json
-                      </button>
-                    </div>
+                {/* Image Showcase Card */}
+                <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] lg:aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100 border border-[#E5E5EA] shadow-md group">
+                  <Image
+                    src={activeStage.image}
+                    alt={activeStage.name}
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 550px"
+                    className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
 
-                    {rfcTab === "spec" && (
-                      <div className="space-y-1.5 leading-relaxed text-[11px] text-white/80 overflow-x-auto">
-                        <div className="text-purple-400">/** @rfc 21S-RFC-048 Problem Synthesis */</div>
-                        <div><span className="text-blue-400">export interface</span> <span className="text-amber-300">SystemArchitecture</span> &#123;</div>
-                        <div className="pl-4">edgeGateway: <span className="text-emerald-400">&apos;Cloudflare Workers&apos;</span>;</div>
-                        <div className="pl-4">inferenceEngine: <span className="text-emerald-400">&apos;vLLM + DeepSeek/Claude 3.7&apos;</span>;</div>
-                        <div className="pl-4">vectorCluster: <span className="text-emerald-400">&apos;pgvector + HNSW Index&apos;</span>;</div>
-                        <div className="pl-4">p95LatencyBudget: <span className="text-amber-400">&apos;&lt; 28ms&apos;</span>;</div>
-                        <div className="pl-4">authEnforcement: <span className="text-emerald-400">&apos;Ed25519 JWT + RLS&apos;</span>;</div>
-                        <div>&#125;</div>
-                        <div className="pt-2 text-white/40">// RFC Status: APPROVED &bull; Version 1.0.4</div>
-                      </div>
-                    )}
-
-                    {rfcTab === "schema" && (
-                      <div className="space-y-1.5 leading-relaxed text-[11px] text-white/80 overflow-x-auto">
-                        <div className="text-purple-400">// Strict PostgreSQL Data Contract</div>
-                        <div><span className="text-blue-400">model</span> <span className="text-amber-300">AgentExecutionLoop</span> &#123;</div>
-                        <div className="pl-4">id          String   @id @default(uuid())</div>
-                        <div className="pl-4">sessionHash String   @db.VarChar(64)</div>
-                        <div className="pl-4">embedding   Unsupported(&apos;vector(1536)&apos;)</div>
-                        <div className="pl-4">latencyMs   Int</div>
-                        <div className="pl-4">status      ExecutionState @default(SETTLED)</div>
-                        <div>&#125;</div>
-                      </div>
-                    )}
-
-                    {rfcTab === "sla" && (
-                      <div className="space-y-2 text-[11px] p-3 bg-black/40 border border-white/10">
-                        <div className="flex justify-between items-center text-white/70">
-                          <span>Edge Cold Start Budget:</span>
-                          <span className="text-emerald-400 font-bold">&lt; 15ms [PASS]</span>
-                        </div>
-                        <div className="flex justify-between items-center text-white/70">
-                          <span>Vector RAG Retrieval P95:</span>
-                          <span className="text-emerald-400 font-bold">&lt; 32ms [PASS]</span>
-                        </div>
-                        <div className="flex justify-between items-center text-white/70">
-                          <span>Full Page TTFB (Global):</span>
-                          <span className="text-emerald-400 font-bold">&lt; 45ms [PASS]</span>
-                        </div>
-                        <div className="flex justify-between items-center text-white/70">
-                          <span>Database Query Latency P99:</span>
-                          <span className="text-emerald-400 font-bold">&lt; 8ms [PASS]</span>
-                        </div>
-                      </div>
-                    )}
+                  {/* Top-Left Floating Stage Pill */}
+                  <div className="absolute top-3 left-3 z-10">
+                    <span className="px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[#111114] text-[10.5px] font-mono font-semibold tracking-wider shadow-sm border border-white/60">
+                      STAGE {activeStage.step} OF 06
+                    </span>
                   </div>
-                )}
 
-                {/* STAGE 02: Multi-Agent Logic Graph */}
-                {activeStage.artifactType === "agent" && (
-                  <div className="space-y-4">
-                    <div className="text-[11px] text-white/50 mb-2">
-                      ACTIVE MULTI-AGENT INFERENCE GRAPH:
-                    </div>
-
-                    {/* Visual DAG Nodes */}
-                    <div className="space-y-2.5">
-                      <div className="p-2.5 bg-black/50 border border-white/15 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-none bg-blue-400 animate-pulse" />
-                          <span className="text-blue-300 font-bold">Node 1: Dispatcher Router</span>
-                        </div>
-                        <span className="text-[10px] text-white/50">Zero-Shot Intent</span>
-                      </div>
-
-                      <div className="flex justify-center text-white/30 text-xs py-0.5">
-                        &darr; [Streams Token Context]
-                      </div>
-
-                      <div className="p-2.5 bg-black/50 border border-[#7057D9]/50 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-none bg-[#7057D9] animate-pulse" />
-                          <span className="text-purple-300 font-bold">Node 2: Vector RAG Swarm</span>
-                        </div>
-                        <span className="text-[10px] text-emerald-400 font-mono">1,420 tokens/s</span>
-                      </div>
-
-                      <div className="flex justify-center text-white/30 text-xs py-0.5">
-                        &darr; [Evaluator Verification]
-                      </div>
-
-                      <div className="p-2.5 bg-black/50 border border-emerald-500/40 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-none bg-emerald-400" />
-                          <span className="text-emerald-300 font-bold">Node 3: Deterministic Guardrail</span>
-                        </div>
-                        <span className="text-[10px] text-emerald-400 font-mono">100% Passed</span>
-                      </div>
-                    </div>
-
-                    <div className="pt-2 text-[10px] text-white/50 flex items-center justify-between border-t border-white/10">
-                      <span>Telemetry: 48 Integration Tests</span>
-                      <span className="text-emerald-400 font-semibold">ALL TESTS GREEN</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* STAGE 03: 120 FPS Tactile Interface Lab */}
-                {activeStage.artifactType === "ui" && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between text-[11px] text-white/60 pb-2 border-b border-white/10">
-                      <span>PHYSICS BENCHMARK</span>
-                      <span className="text-emerald-400 font-bold flex items-center gap-1">
-                        <Activity className="w-3.5 h-3.5" />
-                        120.0 FPS &bull; ZERO CLS
+                  {/* Bottom Glassmorphic Metric Card */}
+                  <div className="absolute inset-x-3 bottom-3 z-10 p-3 sm:p-3.5 rounded-xl bg-white/95 backdrop-blur-md border border-white/70 shadow-md">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-[#7C3AED] font-semibold mb-2 flex items-center justify-between">
+                      <span>AUDITED PHASE CRITERIA</span>
+                      <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                        <CheckCircle2 className="w-3 h-3" /> VERIFIED
                       </span>
                     </div>
 
-                    {/* Interactive Motion Sandbox */}
-                    <div className="p-4 bg-black/60 border border-white/15 text-center">
-                      <div className="text-[11px] text-white/50 mb-3">
-                        CLICK BUTTON TO TEST SPRING ACCELERATION:
-                      </div>
-                      <button
-                        onClick={() => setIsDemoActive(!isDemoActive)}
-                        style={{
-                          transform: isDemoActive ? "scale(0.96) translateY(2px)" : "scale(1) translateY(0px)",
-                          transition: `transform 0.18s cubic-bezier(0.16, 1, 0.3, 1)`
-                        }}
-                        className="px-6 py-3 bg-[#7057D9] hover:bg-[#8068E0] text-white font-mono text-xs uppercase tracking-wider border border-white/20 shadow-lg cursor-pointer select-none"
-                      >
-                        {isDemoActive ? "PRESSED (0ms REACTION)" : "TRIGGER TACTILE ACTION"}
-                      </button>
-                    </div>
-
-                    {/* Sliders for stiffness & damping */}
-                    <div className="space-y-2 text-[11px] text-white/70">
-                      <div className="flex justify-between items-center">
-                        <span>Spring Stiffness:</span>
-                        <span className="text-purple-300 font-bold">{stiffness}</span>
-                      </div>
-                      <input 
-                        type="range" 
-                        min="200" 
-                        max="600" 
-                        value={stiffness} 
-                        onChange={(e) => setStiffness(Number(e.target.value))}
-                        className="w-full accent-[#7057D9] cursor-pointer"
-                      />
-
-                      <div className="flex justify-between items-center pt-1">
-                        <span>Damping Ratio:</span>
-                        <span className="text-purple-300 font-bold">{damping}</span>
-                      </div>
-                      <input 
-                        type="range" 
-                        min="15" 
-                        max="50" 
-                        value={damping} 
-                        onChange={(e) => setDamping(Number(e.target.value))}
-                        className="w-full accent-[#7057D9] cursor-pointer"
-                      />
+                    <div className="grid grid-cols-3 gap-2 pt-1 border-t border-gray-100">
+                      {activeStage.metrics.map((m, mIdx) => (
+                        <div key={mIdx} className="flex flex-col">
+                          <span className="text-xs sm:text-[13px] font-semibold text-[#111114] tracking-tight">
+                            {m.value}
+                          </span>
+                          <span className="text-[9.5px] text-[#86868B] font-light leading-snug">
+                            {m.label}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                )}
 
-                {/* STAGE 04: Edge Hardening & Fleet Status */}
-                {activeStage.artifactType === "edge" && (
-                  <div className="space-y-4">
-                    <div className="text-[11px] text-white/50 mb-1 flex items-center justify-between">
-                      <span>GLOBAL EDGE POP REPLICAS:</span>
-                      <span className="text-emerald-400 font-semibold">FLEET HEALTHY</span>
-                    </div>
+                </div>
 
-                    <div className="space-y-2 text-[11px]">
-                      <div className="p-2.5 bg-black/50 border border-white/10 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-none bg-emerald-400" />
-                          <span>iad1 (US East • N. Virginia)</span>
-                        </div>
-                        <span className="text-emerald-400 font-mono">11ms • 100%</span>
-                      </div>
+                {/* Next Stage Navigation Link */}
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#E5E5EA]">
+                  <span className="text-xs text-[#86868B] font-light">
+                    Progression: {activeStage.step} / 06
+                  </span>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setActiveStageIndex((prev) => (prev + 1) % STAGES.length)}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-[#7C3AED] hover:text-black transition-colors cursor-pointer group"
+                  >
+                    <span>Next Stage</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                </div>
 
-                      <div className="p-2.5 bg-black/50 border border-white/10 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-none bg-emerald-400" />
-                          <span>fra1 (Europe • Frankfurt)</span>
-                        </div>
-                        <span className="text-emerald-400 font-mono">16ms • 100%</span>
-                      </div>
-
-                      <div className="p-2.5 bg-black/50 border border-white/10 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-none bg-emerald-400" />
-                          <span>sin1 (Asia Pacific • Singapore)</span>
-                        </div>
-                        <span className="text-emerald-400 font-mono">22ms • 100%</span>
-                      </div>
-                    </div>
-
-                    {/* Transfer Status */}
-                    <div className="p-3 bg-emerald-950/40 border border-emerald-500/40 text-[11px] text-emerald-200">
-                      <div className="font-bold flex items-center gap-1.5 text-emerald-300 mb-1">
-                        <ShieldCheck className="w-4 h-4" />
-                        <span>100% IP HANDOVER READY</span>
-                      </div>
-                      <p className="text-[10px] text-emerald-300/80 leading-snug">
-                        Full GitHub commit history, Docker compose manifests, environment variables, and AWS/GCP IAM roles transferred.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-              </div>
-
-              {/* Artifact Footer */}
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-white/50">
-                <span>STRICT REPRODUCIBILITY GUARANTEE</span>
-                <span className="text-[#7057D9] font-bold">21SPHERES CORE</span>
               </div>
 
             </div>
-
-          </div>
-        </div>
-
-        {/* Next Stage Teaser Strip */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 bg-white border border-[#DADADD] rounded-none">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#7057D9]/10 text-[#7057D9] flex items-center justify-center font-mono text-xs font-semibold">
-              &rarr;
-            </div>
-            <div>
-              <div className="text-xs font-mono text-black/50 uppercase">
-                Currently Viewing: Stage {activeStage.step} of 04
-              </div>
-              <div className="text-sm font-medium text-black">
-                {activeStageIndex < 3 
-                  ? `Next Sprint Phase: Stage ${STAGES[activeStageIndex + 1].step} — ${STAGES[activeStageIndex + 1].name}` 
-                  : "Final Phase: Complete Production Fleet Handover & Ongoing Support"}
-              </div>
-            </div>
-          </div>
-          {activeStageIndex < 3 ? (
-            <button
-              onClick={() => setActiveStageIndex(activeStageIndex + 1)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-black hover:bg-[#7057D9] text-white text-xs font-mono uppercase tracking-wider transition-colors rounded-none cursor-pointer"
-            >
-              <span>Explore Stage {STAGES[activeStageIndex + 1].step}</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          ) : (
-            <button
-              onClick={() => setActiveStageIndex(0)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#7057D9] hover:bg-[#5f46c6] text-white text-xs font-mono uppercase tracking-wider transition-colors rounded-none cursor-pointer"
-            >
-              <span>Return to Stage 01</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
+          </motion.div>
+        </AnimatePresence>
 
       </div>
     </section>
   );
 }
+
+export default SprintStagesSection;

@@ -130,8 +130,8 @@ export function Navbar() {
   // Primary links to matching routes
   const primaryNav = [
     { label: "About Us", href: "/about" },
-    { label: "Services", href: "/services" },
     { label: "How We Work", href: "/how-we-work" },
+    { label: "Services", href: "/services" },
     { label: "Portfolio", href: "/portfolio" },
     { label: "Industries", href: "/industries" },
     { label: "Insights", href: "/insights" },

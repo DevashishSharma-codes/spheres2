@@ -1,11 +1,7 @@
 import { HeroSection } from "@/components/home/HeroSection";
 import { PartnerMarquee } from "@/components/home/PartnerMarquee";
 import { AboutSection } from "@/components/home/AboutSection";
-import { ConicalHeroSection } from "@/components/how-we-work/ConicalHeroSection";
-import { Container } from "@/components/ui/Container";
-import Link from "next/link";
-import { ArrowUpRight, Cpu, Zap, Shield, Sparkles } from "lucide-react";
-
+import { HowWeWorkFloorplanSection } from "@/components/how-we-work/HowWeWorkFloorplanSection";
 import { ServicesSection } from "@/components/services/ServicesSection";
 
 export default function HomePage() {
@@ -17,14 +13,15 @@ export default function HomePage() {
       {/* "Trusted by" Client Marquee */}
       <PartnerMarquee />
 
-      {/* Second Section: About Us (includes Company Statistics as part of About Us) */}
+      {/* About Us */}
       <AboutSection />
 
-      {/* Studio Capabilities: Services Section */}
-      <ServicesSection embedded />
+      {/* Second Section: How We Work (Interactive Architectural Floorplan Map) */}
+      <HowWeWorkFloorplanSection />
 
-      {/* Conical Stage: How We Work Section */}
-      <ConicalHeroSection />
+      {/* Third Section: Services (Studio Capabilities) */}
+      <ServicesSection embedded />
     </div>
   );
 }
+

@@ -29,13 +29,22 @@ export const metadata: Metadata = {
     "InsurTech",
     "Fintech",
   ],
-  authors: [{ name: "21Spheres Studio" }],
   openGraph: {
     title: "21Spheres — Next-Gen Software Architecture & Product Studio",
     description: "Niche engineering studio architecting autonomous AI agents and high-scale software platforms.",
     siteName: "21Spheres",
     locale: "en_US",
     type: "website",
+  },
+  icons: {
+    icon: [
+      { url: "/logo-square.png", type: "image/png" },
+      { url: "/icon.png", type: "image/png" },
+      { url: "/favicon.ico" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", type: "image/png" },
+    ],
   },
 };
 

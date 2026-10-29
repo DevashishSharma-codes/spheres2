@@ -2,8 +2,8 @@ import { NavItem } from "@/types";
 
 export const NAVIGATION_ITEMS: NavItem[] = [
   { label: "About Us", href: "/about", description: "Who we are and our engineering principles" },
-  { label: "Services", href: "/services", description: "Core technical capabilities and squads" },
   { label: "How We Work", href: "/how-we-work", description: "Our 4-stage sprint methodology" },
+  { label: "Services", href: "/services", description: "Core technical capabilities and squads" },
   { label: "Portfolio", href: "/portfolio", description: "Production systems and platforms" },
   { label: "Industries", href: "/industries", description: "Vertical domains and sector expertise" },
   { label: "Insights", href: "/insights", description: "Engineering memos, RFCs and architecture notes" },
