@@ -213,18 +213,21 @@ export function SprintStagesSection() {
           const foundIdx = STAGES.findIndex(s => s.id === hash || s.step === hash);
           if (foundIdx !== -1) {
             setActiveStageIndex(foundIdx);
-            const el = document.getElementById(hash) || document.getElementById("sprint-stages");
-            if (el) {
-              el.scrollIntoView({ behavior: "smooth" });
-            }
+          }
+          const target = document.getElementById("deterministic-milestones") || document.getElementById("sprint-stages");
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth" });
           }
         }
       }
     };
 
-    handleHash();
+    const timer = setTimeout(handleHash, 80);
     window.addEventListener("hashchange", handleHash);
-    return () => window.removeEventListener("hashchange", handleHash);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("hashchange", handleHash);
+    };
   }, []);
 
   return (
@@ -237,11 +240,10 @@ export function SprintStagesSection() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-14">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#7C3AED]/10 border border-[#7C3AED]/20 text-[11px] font-mono font-semibold tracking-wider text-[#7C3AED] mb-3 uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]" />
-              <span>THE 6-STAGE SPRINT METHODOLOGY // DETAILED BREAKDOWN</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-[-0.035em] text-[#111114] leading-tight">
+            <h2 
+              id="deterministic-milestones"
+              className="text-3xl sm:text-4xl md:text-5xl font-light tracking-[-0.035em] text-[#111114] leading-tight scroll-mt-24"
+            >
               Deterministic milestones from architecture to global edge.
             </h2>
           </div>
@@ -259,7 +261,6 @@ export function SprintStagesSection() {
             return (
               <button
                 key={stage.id}
-                id={stage.id}
                 onClick={() => setActiveStageIndex(idx)}
                 className={`text-left p-3.5 sm:p-4 rounded-xl border transition-all cursor-pointer relative overflow-hidden ${
                   isActive 
@@ -302,18 +303,6 @@ export function SprintStagesSection() {
               {/* Left Column: Stage Detail, Deliverables & Methodology (7 cols) */}
               <div className="lg:col-span-7 flex flex-col justify-between">
                 <div>
-                  
-                  {/* Eyebrow & Timeline */}
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className="text-[10.5px] font-mono font-semibold px-2.5 py-0.5 bg-[#7C3AED]/10 text-[#7C3AED] border border-[#7C3AED]/20 rounded-full uppercase tracking-wider">
-                      STAGE {activeStage.step} // {activeStage.room}
-                    </span>
-                    <span className="text-[10.5px] font-mono text-[#515154] px-2.5 py-0.5 bg-[#F5F5F7] border border-[#E5E5EA] rounded-full flex items-center gap-1.5">
-                      <Clock className="w-3 h-3 text-[#7C3AED]" />
-                      <span>TIMELINE: {activeStage.duration.toUpperCase()}</span>
-                    </span>
-                  </div>
-
                   {/* Title & Tagline */}
                   <h3 className="text-2xl sm:text-3xl font-light tracking-[-0.03em] text-[#111114] mb-1">
                     {activeStage.name}
@@ -357,7 +346,7 @@ export function SprintStagesSection() {
                   </div>
 
                   {/* Engineering Sprint Execution Protocol */}
-                  <div className="mb-6">
+                  <div>
                     <div className="text-[11px] font-mono uppercase tracking-wider text-[#86868B] mb-2.5 flex items-center gap-1.5">
                       <Terminal className="w-3.5 h-3.5 text-[#7C3AED]" />
                       <span>SPRINT EXECUTION PROTOCOL</span>
@@ -373,19 +362,6 @@ export function SprintStagesSection() {
                         </div>
                       ))}
                     </div>
-                  </div>
-
-                  {/* Technology Badges */}
-                  <div className="flex flex-wrap items-center gap-1.5 pt-4 border-t border-[#E5E5EA]">
-                    <span className="text-[10.5px] font-mono text-[#86868B] mr-1">TECH STACK:</span>
-                    {activeStage.techStack.map((tech) => (
-                      <span 
-                        key={tech}
-                        className="text-[10px] sm:text-[10.5px] font-mono px-2 py-0.5 bg-[#F5F5F7] border border-[#E5E5EA] text-[#4A4A50] rounded-full"
-                      >
-                        {tech}
-                      </span>
-                    ))}
                   </div>
 
                 </div>
@@ -404,13 +380,6 @@ export function SprintStagesSection() {
                     sizes="(max-width: 1024px) 100vw, 550px"
                     className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
                   />
-
-                  {/* Top-Left Floating Stage Pill */}
-                  <div className="absolute top-3 left-3 z-10">
-                    <span className="px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[#111114] text-[10.5px] font-mono font-semibold tracking-wider shadow-sm border border-white/60">
-                      STAGE {activeStage.step} OF 06
-                    </span>
-                  </div>
 
                   {/* Bottom Glassmorphic Metric Card */}
                   <div className="absolute inset-x-3 bottom-3 z-10 p-3 sm:p-3.5 rounded-xl bg-white/95 backdrop-blur-md border border-white/70 shadow-md">

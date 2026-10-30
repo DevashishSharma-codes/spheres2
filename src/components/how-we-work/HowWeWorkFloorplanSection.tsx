@@ -346,7 +346,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                       if (typeof window !== "undefined" && window.location.pathname.includes("/how-we-work")) {
                         e.preventDefault();
                         window.location.hash = activeStep.id;
-                        const el = document.getElementById(activeStep.id) || document.getElementById("sprint-stages");
+                        const el = document.getElementById("deterministic-milestones") || document.getElementById("sprint-stages");
                         if (el) {
                           el.scrollIntoView({ behavior: "smooth" });
                         }

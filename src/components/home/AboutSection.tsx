@@ -342,7 +342,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
       
       {/* =========================================================
           HERO ABOUT US SECTION: 100VH ONE-SCREEN FIT
-          - Background office meeting photo clearly visible with increased opacity
+          - Background minimalist misty mountain panorama photo
           - SQUARED EDGES (rounded-none) throughout
           - NO TOP CLIPPING: Generous headroom so cards never cut off!
           ========================================================= */}
@@ -350,11 +350,11 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
         id="about" 
         className="relative z-10 w-full min-h-[calc(100vh-64px)] lg:h-[calc(100vh-64px)] lg:max-h-[890px] flex flex-col justify-between pt-5 sm:pt-6 lg:pt-7 pb-4 sm:pb-5 lg:pb-6 overflow-hidden"
       >
-        {/* Clearly Visible Background Office Photo with higher opacity */}
+        {/* Clearly Visible Background Photo with higher opacity */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <Image
-            src="/about-meeting-bg.png"
-            alt="Modern Team Meeting in a Bright Office"
+            src="/minimalist-misty-mountain-panorama.png"
+            alt="Minimalist Misty Mountain Panorama"
             fill
             priority
             className="object-cover object-center scale-[1.02] opacity-95"
