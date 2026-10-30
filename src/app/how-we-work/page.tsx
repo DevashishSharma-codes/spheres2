@@ -1,4 +1,3 @@
-import { HowWeWorkFloorplanSection } from "@/components/how-we-work/HowWeWorkFloorplanSection";
 import { SprintStagesSection } from "@/components/how-we-work/SprintStagesSection";
 import { CollaborationCadenceSection } from "@/components/how-we-work/CollaborationCadenceSection";
 import type { Metadata } from "next";
@@ -11,13 +10,10 @@ export const metadata: Metadata = {
 export default function HowWeWorkPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      {/* 1. Interactive Architectural Floorplan Blueprint Hero matching reference */}
-      <HowWeWorkFloorplanSection />
-
-      {/* 2. 4-Stage Sprint Cadence & Engineering Deliverables */}
+      {/* 1. 6-Stage Sprint Cadence & Engineering Deliverables (Starts directly with Deterministic Milestones) */}
       <SprintStagesSection />
 
-      {/* 3. Collaboration Cadence & Direct Access */}
+      {/* 2. Collaboration Cadence & Direct Access */}
       <CollaborationCadenceSection />
     </div>
   );

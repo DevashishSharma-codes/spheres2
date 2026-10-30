@@ -379,7 +379,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
         </div>
 
         {/* Inner Content Container */}
-        <div className="relative z-10 w-full max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 flex flex-col justify-between flex-1">
+        <div className="relative z-10 w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between flex-1">
           
           {/* 1. TOP HEADER ROW (Clean 'OUR STORY' label, no pill) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start justify-between">
