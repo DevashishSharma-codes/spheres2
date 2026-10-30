@@ -178,7 +178,7 @@ export function ServiceDetailDrawer({ service, onClose, onOpenInPhone }: Service
               onClick={onClose}
               className="w-full py-3 px-4 rounded-xl bg-black hover:bg-[#7057D9] text-white text-xs sm:text-sm font-medium flex items-center justify-center gap-2 transition-all shadow-sm"
             >
-              <span>Schedule Architecture Discovery</span>
+              <span>Contact Us</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <span className="text-[10px] font-mono text-center text-black/50">

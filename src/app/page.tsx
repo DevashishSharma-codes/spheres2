@@ -3,6 +3,7 @@ import { PartnerMarquee } from "@/components/home/PartnerMarquee";
 import { AboutSection } from "@/components/home/AboutSection";
 import { HowWeWorkFloorplanSection } from "@/components/how-we-work/HowWeWorkFloorplanSection";
 import { ServicesSection } from "@/components/services/ServicesSection";
+import { PortfolioLandingSection } from "@/components/portfolio/PortfolioLandingSection";
 
 export default function HomePage() {
   return (
@@ -21,6 +22,9 @@ export default function HomePage() {
 
       {/* Third Section: Services (Studio Capabilities) */}
       <ServicesSection embedded />
+
+      {/* Fourth Section: Portfolio (TCS-style borderless editorial showcase) */}
+      <PortfolioLandingSection />
     </div>
   );
 }
