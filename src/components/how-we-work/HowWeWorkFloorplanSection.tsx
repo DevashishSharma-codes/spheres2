@@ -1,371 +1,319 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { WORK_FLOORPLAN_STEPS } from "@/content/howWeWork";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  ArrowUpRight,
+  CalendarDays,
+  Check,
+  Clock3,
+  FolderOpen,
+  Layers,
+  Presentation,
+  Rocket,
+  UsersRound,
+} from "lucide-react";
+import { HOW_WE_WORK_CONTENT, WORK_FLOORPLAN_STEPS } from "@/content/howWeWork";
 
 interface HowWeWorkFloorplanSectionProps {
   embedded?: boolean;
 }
 
+const STAGE_TOPS = [180, 145, 110, 75, 40, 5];
+const STAGE_SUMMARIES = [
+  "Goals, user journeys, and a clear project scope.",
+  "System blueprint, data, APIs, and technology choices.",
+  "Design systems and interactive prototypes.",
+  "Focused sprints, integrations, and regular demos.",
+  "Quality, performance, and security checks.",
+  "Launch, monitoring, and ongoing support.",
+];
+const STAGE_ICONS = [CalendarDays, UsersRound, FolderOpen, Presentation, Layers, Rocket];
+
 export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorplanSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const prevIndexRef = useRef(5);
+  const [hasEntered, setHasEntered] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const [stemCount, setStemCount] = useState(0);
+  const [markerCount, setMarkerCount] = useState(0);
+  const [completedCount, setCompletedCount] = useState(0);
+  const [pillCount, setPillCount] = useState(0);
+  const [copyCount, setCopyCount] = useState(0);
+  const [firstPassComplete, setFirstPassComplete] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const stepCursor = useRef(0);
+  const prefersReducedMotion = useReducedMotion();
+  const allSteps = prefersReducedMotion ? WORK_FLOORPLAN_STEPS.length : 0;
+  const visibleStemCount = Math.max(stemCount, allSteps);
+  const visibleMarkerCount = Math.max(markerCount, allSteps);
+  const visibleCompletedCount = Math.max(completedCount, allSteps);
+  const visiblePillCount = Math.max(pillCount, allSteps);
+  const visibleCopyCount = Math.max(copyCount, allSteps);
+  const sequenceComplete = firstPassComplete || (hasEntered && Boolean(prefersReducedMotion));
 
-  const activeStep = WORK_FLOORPLAN_STEPS[activeIndex];
-  const fromStep = WORK_FLOORPLAN_STEPS[prevIndexRef.current];
-
-  const handleSelectIndex = (newIndex: number) => {
-    if (newIndex === activeIndex) return;
-    prevIndexRef.current = activeIndex;
-    setActiveIndex(newIndex);
-  };
-
-  const handleNext = () => {
-    prevIndexRef.current = activeIndex;
-    setActiveIndex((curr) => (curr + 1) % WORK_FLOORPLAN_STEPS.length);
-  };
-
-  const handlePrev = () => {
-    prevIndexRef.current = activeIndex;
-    setActiveIndex((curr) => (curr - 1 + WORK_FLOORPLAN_STEPS.length) % WORK_FLOORPLAN_STEPS.length);
-  };
-
-  // Continuous auto-cycle every 4.0 seconds
   useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveIndex((curr) => {
-        prevIndexRef.current = curr;
-        return (curr + 1) % WORK_FLOORPLAN_STEPS.length;
-      });
-    }, 4000);
+    const section = sectionRef.current;
+    if (!section) return;
 
-    return () => clearInterval(timer);
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsInView(entry.isIntersecting);
+      if (entry.isIntersecting) setHasEntered(true);
+    }, { threshold: 0.2 });
+
+    observer.observe(section);
+    return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!hasEntered || firstPassComplete || prefersReducedMotion) return;
+
+    let stageIndex = 0;
+    const timers: number[] = [];
+    const after = (delay: number, callback: () => void) => {
+      timers.push(window.setTimeout(callback, delay));
+    };
+
+    const revealNextStage = () => {
+      stepCursor.current = stageIndex;
+      setActiveIndex(stageIndex);
+      setStemCount(stageIndex + 1);
+
+      after(460, () => {
+        setMarkerCount(stageIndex + 1);
+        after(300, () => {
+          setPillCount(stageIndex + 1);
+          after(380, () => {
+            setCopyCount(stageIndex + 1);
+            after(360, () => {
+              setCompletedCount(stageIndex + 1);
+              after(420, () => {
+                stageIndex += 1;
+                if (stageIndex < WORK_FLOORPLAN_STEPS.length) {
+                  revealNextStage();
+                } else {
+                  setFirstPassComplete(true);
+                  stepCursor.current = 0;
+                  setActiveIndex(0);
+                  setCompletedCount(0);
+                }
+              });
+            });
+          });
+        });
+      });
+    };
+
+    revealNextStage();
+    return () => timers.forEach(window.clearTimeout);
+  }, [firstPassComplete, hasEntered, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (!sequenceComplete || !isInView || prefersReducedMotion) return;
+
+    let completionTimer = window.setTimeout(() => setCompletedCount(stepCursor.current + 1), 560);
+    const loopTimer = window.setInterval(() => {
+      stepCursor.current = (stepCursor.current + 1) % WORK_FLOORPLAN_STEPS.length;
+      setActiveIndex(stepCursor.current);
+      window.clearTimeout(completionTimer);
+
+      if (stepCursor.current === 0) {
+        setCompletedCount(0);
+        completionTimer = window.setTimeout(() => setCompletedCount(1), 560);
+      } else {
+        setCompletedCount(stepCursor.current);
+        completionTimer = window.setTimeout(() => setCompletedCount(stepCursor.current + 1), 560);
+      }
+    }, 2200);
+
+    return () => {
+      window.clearInterval(loopTimer);
+      window.clearTimeout(completionTimer);
+    };
+  }, [isInView, prefersReducedMotion, sequenceComplete]);
+
+  const activeStep = WORK_FLOORPLAN_STEPS[activeIndex];
+  const progress = activeIndex / (WORK_FLOORPLAN_STEPS.length - 1);
+
   return (
-    <section 
-      id="how-we-work" 
-      className="relative w-full min-h-[calc(100vh-64px)] lg:h-[calc(100vh-64px)] lg:max-h-[880px] flex flex-col justify-between text-[#1D1D1F] pt-3 pb-4 sm:pt-4 sm:pb-5 overflow-hidden border-b border-[#E5E5EA]"
+    <section
+      ref={sectionRef}
+      id="how-we-work"
+      data-embedded={embedded ? "true" : undefined}
+      className="how-we-work-process relative mx-auto my-3 min-h-[calc(100svh-5.5rem)] w-[calc(100%-1.5rem)] max-w-[1880px] overflow-hidden rounded-[22px] border border-white/10 text-white shadow-[0_22px_70px_rgba(20,10,40,0.18)] lg:min-h-[calc(100svh-5.5rem)]"
       style={{
         background: `
-          radial-gradient(ellipse 90% 50% at 50% 100%, rgba(124, 58, 237, 0.22) 0%, rgba(168, 85, 247, 0.08) 45%, transparent 75%),
-          radial-gradient(ellipse 50% 40% at 100% 100%, rgba(124, 58, 237, 0.14) 0%, transparent 60%),
-          radial-gradient(ellipse 50% 40% at 0% 100%, rgba(147, 51, 234, 0.12) 0%, transparent 60%),
-          linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 38%, #FAF6FF 60%, #F2E7FE 85%, #EADBFE 100%)
+          radial-gradient(ellipse 88% 90% at 78% 5%, rgba(112, 72, 194, 0.68) 0%, rgba(72, 43, 123, 0.42) 36%, transparent 76%),
+          radial-gradient(ellipse 70% 70% at 18% 100%, rgba(74, 43, 125, 0.38) 0%, transparent 72%),
+          linear-gradient(118deg, #0B0814 0%, #160D27 52%, #211039 100%)
         `,
       }}
     >
-      {/* Subtle bottom purple ambient glow so white top remains pure and gradient is evident */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -bottom-28 left-1/2 -translate-x-1/2 w-[900px] h-[380px] rounded-full blur-[140px] bg-[#7C3AED]/16" />
-      </div>
-
-      <div className="relative z-10 w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between flex-1 min-h-0 gap-2 sm:gap-3 lg:gap-4">
-        
-        {/* =========================================================
-            1. SECTION HEADER (SAME SCALE AS ABOUT US & SERVICES - FULL BLACK)
-        ========================================================= */}
-        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 shrink-0">
-          <div className="flex flex-col items-start">
-            <span className="text-[12px] sm:text-[13px] font-bold text-[#7C3AED] tracking-[0.18em] uppercase mb-1">
-              OUR PROCESS
-            </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light tracking-[-0.04em] leading-none text-black select-none">
+      <div
+        className="relative mx-auto flex min-h-[calc(100svh-5.5rem)] w-full max-w-[1600px] flex-col px-5 py-8 sm:px-8 sm:py-10 lg:min-h-[calc(100svh-5.5rem)] lg:px-12 lg:py-[clamp(32px,5vh,56px)]"
+      >
+        <header className="mb-6 flex shrink-0 flex-col gap-3 pb-2 sm:mb-8 lg:mb-5">
+          <div>
+            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.19em] text-[#C8B4FF] sm:text-xs">
+              Our process
+            </p>
+            <h2 className="text-[clamp(2.8rem,6vw,4.75rem)] font-light leading-[0.98] tracking-[-0.055em] text-white/90">
               How We Work
             </h2>
           </div>
-
-          <p className="text-xs sm:text-sm text-[#6E6E73] font-light leading-relaxed max-w-md sm:text-right pb-0.5">
-            A disciplined 6-stage engineering sprint methodology from discovery to global launch.
+          <p className="max-w-md text-xs leading-relaxed text-white/70 sm:text-[13px]">
+            Six clear stages. One accountable path from first brief to launch.
           </p>
-        </div>
+        </header>
 
-        {/* =========================================================
-            2. MAIN 2-COLUMN STAGE CANVAS (ONE SCREEN FIT, NO CURVED BOX)
-        ========================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center flex-1 min-h-0">
-          
-          {/* =========================================================
-              LEFT COLUMN (6 cols): ARCHITECTURAL BLUEPRINT
-              - Clean white architectural sheet with hairline border
-              - Thin crisp purple marching line (strokeWidth 1.6, no glow)
-              - 6 hotspot nodes with step numbers only
-          ========================================================= */}
-          <div className="lg:col-span-6 flex items-center justify-center h-full">
-            <div className="relative w-full rounded-2xl bg-white p-3 sm:p-4 border border-[#E5E5EA] shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden select-none flex items-center justify-center">
-              
-              {/* Precision Image Container: Exactly bounds the image so coordinates map 1:1 */}
-              <div className="relative w-full max-w-[530px] overflow-hidden">
-                <img
-                  src="/studio-floorplan.png"
-                  alt="Studio Architectural Floorplan"
-                  className="w-full h-auto block object-contain select-none pointer-events-none"
-                  loading="eager"
-                />
-
-                {/* Clean Purple Marching Line only when activeIndex > 0 (No line after 6, resets directly to 1) */}
-                {activeIndex > 0 && (
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
-                    <motion.line
-                      key={`line-${fromStep.id}->${activeStep.id}`}
-                      initial={{ opacity: 0 }}
-                      animate={{
-                        opacity: 1,
-                        strokeDashoffset: [0, -24],
-                      }}
-                      transition={{
-                        opacity: { duration: 0.2 },
-                        strokeDashoffset: { duration: 0.85, ease: "linear", repeat: Infinity },
-                      }}
-                      x1={fromStep.coord.left}
-                      y1={fromStep.coord.top}
-                      x2={activeStep.coord.left}
-                      y2={activeStep.coord.top}
-                      stroke="#7C3AED"
-                      strokeWidth="1.6"
-                      strokeDasharray="4 4"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                )}
-
-                {/* 6 Stage Marker Hotspots (Step numbers only) */}
-                {WORK_FLOORPLAN_STEPS.map((step, idx) => {
-                  const isActive = activeIndex === idx;
-                  const isCompleted = idx < activeIndex;
-
-                  return (
-                    <button
-                      key={step.id}
-                      type="button"
-                      onClick={() => handleSelectIndex(idx)}
-                      onMouseEnter={() => handleSelectIndex(idx)}
-                      style={{
-                        top: step.coord.top,
-                        left: step.coord.left,
-                        transform: "translate(-50%, -50%)",
-                      }}
-                      className="absolute z-20 cursor-pointer focus:outline-none flex items-center justify-center p-0 m-0 border-0 bg-transparent"
-                      aria-label={`Inspect Stage ${step.step} - ${step.title}`}
-                    >
-                      {isActive ? (
-                        /* Active Stage: Purple Diamond with Step Number Only */
-                        <div className="relative flex items-center justify-center">
-                          <motion.div
-                            animate={{ scale: [1, 1.8], opacity: [0.6, 0] }}
-                            transition={{ duration: 2.0, repeat: Infinity, ease: "easeOut" }}
-                            className="absolute -inset-1.5 rounded-full bg-[#7C3AED]/35 pointer-events-none"
-                          />
-                          <motion.div
-                            initial={{ scale: 0.85 }}
-                            animate={{ scale: 1 }}
-                            transition={{ type: "spring", stiffness: 450, damping: 25 }}
-                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-[6px] rotate-45 bg-[#7C3AED] text-white flex items-center justify-center border-2 border-white shadow-[0_4px_16px_rgba(124,58,237,0.45)]"
-                          >
-                            <span className="-rotate-45 font-mono text-[10px] sm:text-[11px] font-bold text-white">
-                              {step.step}
-                            </span>
-                          </motion.div>
-                        </div>
-                      ) : isCompleted ? (
-                        /* Completed Stage: Filled Black Circle */
-                        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black text-white font-mono text-[9.5px] sm:text-[10px] font-bold shadow-xs flex items-center justify-center">
-                          0{idx + 1}
-                        </div>
-                      ) : (
-                        /* Upcoming Stage: Clean Numbered White and Grey Circle */
-                        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white border border-[#D2D2D7] text-[#86868B] font-mono text-[9.5px] sm:text-[10px] font-semibold shadow-xs flex items-center justify-center hover:border-black hover:text-black transition-all">
-                          0{idx + 1}
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* =========================================================
-              RIGHT COLUMN (6 cols): PROPER 6 STEPS & CLEAR IMAGE SHOWCASE
-              - Continuous moving line animation 1 -> 2 -> 3 -> 4 -> 5 -> 6
-              - NO line after 6 (stops strictly at 6 and resets to 1)
-              - High-resolution clear 16:9 image with ample space
-              - Clear piece of info + Prev/Next + See Details button
-          ========================================================= */}
-          <div className="lg:col-span-6 flex flex-col justify-between h-full py-0.5">
-            
-            {/* 1. Proper 6 Steps Progression Stepper with Continuous Moving Line (1 to 6) */}
-            <div className="w-full mb-2 sm:mb-2.5">
-              {/* Row 1: The 6 Circles with exactly 5 continuous moving line segments between them (NO line after 6) */}
-              <div className="flex items-center justify-between">
-                {WORK_FLOORPLAN_STEPS.map((step, idx) => {
-                  const isActive = activeIndex === idx;
-                  const isCompleted = idx < activeIndex;
-                  const hasNext = idx < WORK_FLOORPLAN_STEPS.length - 1;
-
-                  return (
-                    <React.Fragment key={step.id}>
-                      {/* Step Circle Button: White and Grey initially, fills with Black as steps progress */}
-                      <button
-                        type="button"
-                        onClick={() => handleSelectIndex(idx)}
-                        className="flex items-center justify-center cursor-pointer focus:outline-none shrink-0"
-                        aria-label={`Go to Stage ${step.step} - ${step.title}`}
-                      >
-                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-mono text-[10.5px] sm:text-[11px] font-semibold transition-all duration-300 ${
-                          isActive 
-                            ? "bg-black text-white shadow-[0_4px_16px_rgba(0,0,0,0.35)] scale-110 ring-4 ring-black/20 ring-offset-2 ring-offset-white font-bold" 
-                            : isCompleted
-                            ? "bg-black text-white font-bold"
-                            : "bg-white text-[#86868B] border border-[#D2D2D7] hover:border-black hover:text-black"
-                        }`}>
-                          {step.step}
-                        </div>
-                      </button>
-
-                      {/* Continuous Moving Line Segment between this step and the next (none after 6) */}
-                      {hasNext && (
-                        <div className="flex-1 mx-1.5 sm:mx-2 relative h-[2.5px] bg-[#E5E5EA] overflow-hidden rounded-full">
-                          {/* Completed Segments: Solid Black */}
-                          {isCompleted && (
-                            <div className="absolute inset-0 bg-black" />
-                          )}
-
-                          {/* Active Segment: Continuous Moving Animation in Black */}
-                          {isActive && (
-                            <motion.div
-                              key={`moving-segment-${idx}`}
-                              initial={{ scaleX: 0 }}
-                              animate={{ scaleX: 1 }}
-                              transition={{ duration: 4.0, ease: "linear" }}
-                              className="absolute inset-0 bg-black origin-left"
-                            >
-                              {/* Leading pulse tip */}
-                              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white shadow-[0_0_6px_rgba(0,0,0,0.6)]" />
-                            </motion.div>
-                          )}
-                        </div>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </div>
-
-              {/* Row 2: Step Titles Underneath */}
-              <div className="hidden sm:flex items-start justify-between mt-1.5">
-                {WORK_FLOORPLAN_STEPS.map((step, idx) => {
-                  const isActive = activeIndex === idx;
-                  return (
-                    <button
-                      key={step.id}
-                      type="button"
-                      onClick={() => handleSelectIndex(idx)}
-                      className={`w-8 sm:w-16 text-center cursor-pointer focus:outline-none text-[10px] sm:text-[10.5px] font-medium tracking-tight transition-colors line-clamp-1 truncate ${
-                        isActive ? "text-[#1D1D1F] font-semibold" : "text-[#86868B] hover:text-[#1D1D1F]"
-                      }`}
-                    >
-                      {step.title.split("&")[0].trim()}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* 2. Active Step Content: Clear Image, Info & Action */}
-            <AnimatePresence mode="wait">
+        <div className="hidden h-[clamp(440px,58vh,560px)] shrink-0 lg:block">
+          <div className="relative h-full">
+            {/* Shared baseline and the animated journey marker. */}
+            <div
+              aria-hidden="true"
+              className="absolute bottom-[53px] left-[8.333%] right-[8.333%] h-[2px]"
+              style={{ backgroundImage: "repeating-linear-gradient(to right, rgba(255,255,255,0.42) 0 5px, transparent 5px 10px)" }}
+            >
               <motion.div
-                key={activeStep.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25 }}
-                className="flex-1 flex flex-col justify-start"
-              >
-                {/* Clear, High-Resolution Image Preview (Aspect Ratio 16:9, compact and sharp) */}
-                <div className="relative w-full aspect-[16/9] max-h-[200px] sm:max-h-[225px] lg:max-h-[235px] rounded-2xl overflow-hidden bg-white border border-[#E5E5EA] shadow-sm group">
-                  <Image
-                    src={activeStep.image}
-                    alt={activeStep.title}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 620px"
-                    className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                  />
-                </div>
+                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#A98AFF] to-[#E0D2FF]"
+                animate={{ width: `${progress * 100}%` }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.78, ease: [0.22, 1, 0.36, 1] }}
+              />
+              {sequenceComplete && !prefersReducedMotion && (
+                <motion.span
+                  aria-hidden="true"
+                  className="absolute -top-[5px] left-0 h-3 w-3 rounded-full bg-white shadow-[0_0_14px_5px_rgba(210,193,255,0.8)]"
+                  animate={{ left: `${progress * 100}%` }}
+                  transition={{ duration: 0.72, ease: [0.2, 0.8, 0.25, 1] }}
+                />
+              )}
+            </div>
 
-                {/* Nice Piece of Info: Step Number, Room, Prev/Next Arrows, Title & Description (Tightened Spacing) */}
-                <div className="flex flex-col gap-0.5 sm:gap-1 mt-1.5 sm:mt-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-mono text-[10.5px] sm:text-[11px] text-[#7C3AED] font-semibold tracking-wider uppercase">
-                      <span>STAGE {activeStep.step}</span>
-                      <span className="text-[#D2D2D7]">/</span>
-                      <span className="text-[#86868B] font-medium">{activeStep.room}</span>
-                    </div>
+            <div className="grid h-full grid-cols-6">
+              {WORK_FLOORPLAN_STEPS.map((step, index) => {
+                const hasStem = index < visibleStemCount;
+                const hasMarker = index < visibleMarkerCount;
+                const hasPill = index < visiblePillCount;
+                const hasCopy = index < visibleCopyCount;
+                const isActive = activeIndex === index;
+                const isComplete = index < visibleCompletedCount;
+                const duration = HOW_WE_WORK_CONTENT.steps[index]?.duration;
+                const lift = STAGE_TOPS[index];
+                const StageIcon = STAGE_ICONS[index];
 
-                    {/* Prev / Next Stepper Controls */}
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={handlePrev}
-                        className="w-7 h-7 rounded-full bg-white/80 hover:bg-white border border-[#7C3AED]/20 text-[#1D1D1F] flex items-center justify-center transition-all cursor-pointer backdrop-blur-sm shadow-xs"
-                        title="Previous Stage"
-                        aria-label="Previous Stage"
-                      >
-                        <ChevronLeft className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleNext}
-                        className="w-7 h-7 rounded-full bg-white/80 hover:bg-white border border-[#7C3AED]/20 text-[#1D1D1F] flex items-center justify-center transition-all cursor-pointer backdrop-blur-sm shadow-xs"
-                        title="Next Stage"
-                        aria-label="Next Stage"
-                      >
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                return (
+                  <div key={step.id} className="relative h-full min-w-0 text-center">
+                    {/* Stage copy rises progressively from left to right. */}
+                    {hasCopy && <Link
+                      href={`/how-we-work#${step.id}`}
+                      onClick={() => {
+                        stepCursor.current = index;
+                        setActiveIndex(index);
+                      }}
+                      aria-current={isActive ? "step" : undefined}
+                      aria-label={`Stage ${step.step}: ${step.title}`}
+                      className={`group process-copy-pop absolute left-2 right-2 flex flex-col items-center text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2C1FF] ${isActive ? "opacity-100" : "opacity-75"}`}
+                      style={{ top: `${lift}px`, minHeight: "132px" }}
+                    >
+                      <span className={`mb-2 font-mono text-[10px] tracking-[0.16em] transition-colors ${isActive ? "text-[#D2C1FF]" : "text-white/45"}`}>
+                        {step.step} / 06
+                      </span>
+                      <h3 className={`max-w-[190px] text-[15px] font-medium leading-[1.2] tracking-[-0.025em] transition-colors xl:text-base ${isActive ? "text-white" : "text-white/75 group-hover:text-white"}`}>
+                        {step.title}
+                      </h3>
+                      <p className="mt-2 max-w-[190px] text-[11px] leading-[1.45] text-white/60">
+                        {STAGE_SUMMARIES[index]}
+                      </p>
+                    </Link>}
+
+                    {/* Each fine vertical stem meets the shared process baseline. */}
+                    {hasStem && <div
+                      aria-hidden="true"
+                      className={`process-stem-rise absolute left-1/2 w-px -translate-x-1/2 ${isActive ? "bg-[#D2C1FF]" : "bg-white/35"}`}
+                      style={{
+                        top: `${lift + 140}px`,
+                        bottom: "53px",
+                        animationDelay: "0ms",
+                      }}
+                    />}
+
+                    {hasMarker && <span
+                      className={`process-stage-marker absolute left-1/2 z-10 flex h-[22px] w-[22px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 transition-all duration-300 ${
+                        isComplete
+                          ? "border-[#BCA5F5] bg-[#8B70E0] shadow-[0_0_0_4px_rgba(185,154,255,0.13)]"
+                          : isActive
+                            ? "border-[#E0D2FF] bg-[#321E5A] shadow-[0_0_0_5px_rgba(210,193,255,0.16)]"
+                            : "border-white/60 bg-[#1E1231] group-hover:border-[#D2C1FF]"
+                      }`}
+                      style={{ top: `${lift + 140}px` }}
+                    >
+                      {isComplete && <Check className="process-tick-draw h-[15px] w-[15px] text-white" strokeWidth={3.2} />}
+                    </span>}
+
+                    {hasPill && <Link
+                      href={`/how-we-work#${step.id}`}
+                      aria-label={`View details for ${step.title}`}
+                      className={`process-pill-pop absolute bottom-[35px] left-1/2 z-30 inline-flex h-9 -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border py-1 pl-3.5 pr-1 text-[10px] font-medium tracking-wide backdrop-blur-xl transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2C1FF] ${isActive ? "border-white/55 bg-white/20 text-white shadow-[0_5px_20px_rgba(0,0,0,0.2)]" : "border-white/30 bg-white/10 text-white/80 shadow-[0_3px_12px_rgba(0,0,0,0.12)] hover:border-white/55 hover:bg-white/20 hover:text-white"}`}
+                    >
+                        {duration}
+                      <span className={`flex h-7 w-7 items-center justify-center rounded-full border border-white/35 ${isActive ? "bg-[#A98AFF] text-[#170E29]" : "bg-[#7057D9] text-white"}`}>
+                        <StageIcon className="h-3.5 w-3.5" strokeWidth={1.8} />
+                      </span>
+                    </Link>}
                   </div>
-
-                  <h3 className="text-lg sm:text-xl font-light text-[#1D1D1F] tracking-tight leading-tight">
-                    {activeStep.title}
-                  </h3>
-
-                  <p className="text-xs sm:text-[12.5px] text-[#515154] leading-relaxed font-light max-w-xl">
-                    {activeStep.description}
-                  </p>
-                </div>
-
-                {/* See Details Button (More breathing room above, sleek compact button) */}
-                <div className="mt-4 sm:mt-5 pb-0">
-                  <Link
-                    href={`/how-we-work#${activeStep.id}`}
-                    onClick={(e) => {
-                      if (typeof window !== "undefined" && window.location.pathname.includes("/how-we-work")) {
-                        e.preventDefault();
-                        window.location.hash = activeStep.id;
-                        const el = document.getElementById("deterministic-milestones") || document.getElementById("sprint-stages");
-                        if (el) {
-                          el.scrollIntoView({ behavior: "smooth" });
-                        }
-                      }
-                    }}
-                    className="inline-flex items-center gap-2 px-4.5 py-1.5 sm:px-5 sm:py-2 rounded-full bg-[#1D1D1F] hover:bg-[#7C3AED] text-white text-xs sm:text-[12.5px] font-medium tracking-tight shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer"
-                  >
-                    <span>See Details</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                  </Link>
-                </div>
-
-              </motion.div>
-            </AnimatePresence>
-
-          </div>
-
+                );
+              })}
+        </div>
+        </div>
         </div>
 
+        {/* Mobile and tablet keep the same sequence without compressing the labels. */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:hidden">
+          {WORK_FLOORPLAN_STEPS.map((step, index) => {
+            if (index >= visibleCopyCount) return null;
+            const isActive = activeIndex === index;
+            const isComplete = index < visibleCompletedCount;
+            const duration = HOW_WE_WORK_CONTENT.steps[index]?.duration;
+
+            return (
+              <Link
+                key={step.id}
+                href={`/how-we-work#${step.id}`}
+                className={`group process-copy-pop relative flex min-h-[162px] flex-col items-start overflow-hidden rounded-xl border p-4 text-left transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2C1FF] ${isActive ? "border-white/35 bg-white/15 shadow-[0_8px_28px_rgba(0,0,0,0.16)] backdrop-blur-md" : "border-white/20 bg-white/[0.07] backdrop-blur-sm hover:bg-white/[0.12]"}`}
+              >
+                <div className="mb-3 flex w-full items-center justify-between gap-3">
+                  <span className={`flex h-7 w-7 items-center justify-center rounded-full font-mono text-[10px] font-semibold ${isActive ? "bg-[#B99AFF] text-[#211039]" : isComplete ? "bg-white/20 text-white" : "bg-white/10 text-white/65"}`}>
+                    {isComplete ? <Check className="h-3.5 w-3.5" /> : step.step}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-medium tracking-wide text-white/65">
+                    <Clock3 className="h-3 w-3" />
+                    {duration}
+                  </span>
+                </div>
+                <h3 className={`text-[15px] font-medium leading-snug tracking-tight ${isActive ? "text-white" : "text-white/75"}`}>
+                  {step.title}
+                </h3>
+                <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-white/60">
+                  {STAGE_SUMMARIES[index]}
+                </p>
+                <span className="group mt-auto inline-flex items-center gap-1 pt-3 text-[11px] font-semibold text-[#D2C1FF]">
+                  View stage <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </span>
+                {isActive && !prefersReducedMotion && (
+                  <motion.span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 bottom-0 h-[2px] origin-left bg-gradient-to-r from-[#B99AFF] to-white"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 4.6, ease: "linear" }}
+                  />
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        <span className="sr-only" aria-live="polite">Stage {activeStep.step}: {activeStep.title}</span>
       </div>
     </section>
   );

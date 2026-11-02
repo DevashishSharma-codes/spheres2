@@ -104,4 +104,81 @@ body {
   display: none;
 }
 
+@keyframes hww-process-copy-pop {
+  0% { opacity: 0; translate: 0 18px; scale: 0.96; }
+  72% { opacity: 1; translate: 0 -3px; scale: 1.015; }
+  100% { opacity: 1; translate: 0 0; scale: 1; }
+}
+
+@keyframes hww-process-stem-rise {
+  0% { scale: 1 0; }
+  72% { scale: 1 1.06; }
+  100% { scale: 1 1; }
+}
+
+@keyframes hww-process-pill-pop {
+  0% { opacity: 0; scale: 0.25; }
+  68% { opacity: 1; scale: 1.35; }
+  100% { opacity: 1; scale: 1; }
+}
+
+@keyframes hww-process-marker-form {
+  0% { opacity: 0; scale: 0.25; clip-path: inset(0 100% 0 0 round 50%); }
+  68% { opacity: 1; scale: 1.35; clip-path: inset(0 0 0 0 round 50%); }
+  100% { opacity: 1; scale: 1; clip-path: inset(0 0 0 0 round 50%); }
+}
+
+@keyframes hww-process-tick-pop {
+  0% { opacity: 0; scale: 0.2; rotate: -28deg; }
+  70% { opacity: 1; scale: 1.35; rotate: 8deg; }
+  100% { opacity: 1; scale: 1; rotate: 0deg; }
+}
+
+@keyframes hww-process-check-stroke {
+  from { stroke-dashoffset: 20; }
+  to { stroke-dashoffset: 0; }
+}
+
+.how-we-work-process .process-copy-pop {
+  animation: hww-process-copy-pop 520ms cubic-bezier(0.2, 0.9, 0.25, 1.2) both;
+}
+
+.how-we-work-process .process-stem-rise {
+  transform-origin: bottom;
+  animation: hww-process-stem-rise 620ms cubic-bezier(0.2, 0.9, 0.25, 1.15) both;
+}
+
+.how-we-work-process .process-pill-pop {
+  animation: hww-process-pill-pop 520ms cubic-bezier(0.2, 0.9, 0.25, 1.2) 30ms both;
+}
+
+.how-we-work-process .process-stage-marker {
+  animation: hww-process-marker-form 520ms cubic-bezier(0.2, 0.9, 0.25, 1.2) 30ms both;
+}
+
+.how-we-work-process .process-tick-draw {
+  animation: hww-process-tick-pop 420ms cubic-bezier(0.2, 0.9, 0.25, 1.2) both;
+}
+
+.how-we-work-process .process-tick-draw path {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: hww-process-check-stroke 280ms ease-out 90ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .how-we-work-process .process-copy-pop,
+  .how-we-work-process .process-stem-rise,
+  .how-we-work-process .process-pill-pop,
+  .how-we-work-process .process-stage-marker,
+  .how-we-work-process .process-tick-draw {
+    animation: none !important;
+  }
+
+  .how-we-work-process .process-tick-draw path {
+    stroke-dashoffset: 0;
+    animation: none !important;
+  }
+}
+
 
