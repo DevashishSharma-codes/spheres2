@@ -4,6 +4,7 @@ import { AboutSection } from "@/components/home/AboutSection";
 import { HowWeWorkFloorplanSection } from "@/components/how-we-work/HowWeWorkFloorplanSection";
 import { ServicesSection } from "@/components/services/ServicesSection";
 import { PortfolioLandingSection } from "@/components/portfolio/PortfolioLandingSection";
+import { IndustriesLandingSection } from "@/components/industries/IndustriesLandingSection";
 
 export default function HomePage() {
   return (
@@ -25,6 +26,9 @@ export default function HomePage() {
 
       {/* Fourth Section: Portfolio (TCS-style borderless editorial showcase) */}
       <PortfolioLandingSection />
+
+      {/* Fifth Section: Industries & Vertical Domains (Split Showcase with arrow stepper & modal) */}
+      <IndustriesLandingSection />
     </div>
   );
 }

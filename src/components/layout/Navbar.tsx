@@ -84,11 +84,13 @@ const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
     ctaText: "Explore our industry solutions",
     ctaHref: "/industries",
     links: [
-      { title: "InsurTech & Policy Distribution", tag: "100+ Insurers Connected", href: "/industries#insurtech" },
-      { title: "WealthTech & Quantitative Finance", tag: "$1.4B+ AUM Monitored", href: "/industries#fintech" },
-      { title: "Healthcare & Clinical AI", tag: "HIPAA • Clinical Reasoning", href: "/industries#healthtech" },
-      { title: "AI Agents & Autonomous Systems", tag: "3,800+ Autonomous Tasks/hr", href: "/industries#ai-saas" },
-      { title: "High-Throughput Logistics & Mesh", tag: "Sub-50ms Global Routing", href: "/industries#logistics" },
+      { title: "Healthcare", tag: "HIPAA • Clinical AI", href: "/industries#healthcare" },
+      { title: "SaaS", tag: "Multi-Tenant • 99.999% SLA", href: "/industries#saas" },
+      { title: "Fintech", tag: "$1.4B+ AUM • Sub-12ms", href: "/industries#fintech" },
+      { title: "eCommerce", tag: "Headless • 250k Concurrency", href: "/industries#ecommerce" },
+      { title: "GCC", tag: "Global Capability Centers", href: "/industries#gcc" },
+      { title: "Travel", tag: "GDS • Sub-400ms Search", href: "/industries#travel" },
+      { title: "Hospitality", tag: "PMS • Keyless IoT", href: "/industries#hospitality" },
     ],
   },
   insights: {
@@ -125,6 +127,9 @@ export function Navbar() {
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
 
+  const isHomePage = pathname === "/";
+  const isDarkHero = isHomePage && !scrolled;
+
   const handleMouseEnter = (key: string) => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     setHoveredKey(key);
@@ -155,7 +160,7 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 15);
+      setScrolled(window.scrollY > 40);
 
       // On homepage, track when viewing specific sections
       if (pathname === "/") {
@@ -169,6 +174,8 @@ export function Navbar() {
           { id: "about", key: "about" },
           { id: "how-we-work", key: "how-we-work" },
           { id: "services", key: "services" },
+          { id: "portfolio", key: "portfolio" },
+          { id: "industries", key: "industries" },
         ];
 
         let current = "";
@@ -226,22 +233,34 @@ export function Navbar() {
     if (cleanPath === "/" && activeSection === "about" && cleanHref === "/about") return true;
     if (cleanPath === "/" && activeSection === "how-we-work" && cleanHref === "/how-we-work") return true;
     if (cleanPath === "/" && activeSection === "services" && cleanHref === "/services") return true;
+    if (cleanPath === "/" && activeSection === "portfolio" && cleanHref === "/portfolio") return true;
+    if (cleanPath === "/" && activeSection === "industries" && cleanHref === "/industries") return true;
     return false;
   };
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        scrolled
-          ? "bg-white/95 backdrop-blur-md border-b border-[#DADADD] shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
-          : "bg-white border-b border-[#DADADD]/60"
+      className={`z-50 w-full transition-all duration-300 ease-out ${
+        isHomePage
+          ? `fixed top-0 left-0 right-0 ${
+              isDarkHero
+                ? hoveredKey
+                  ? "bg-[rgba(18,18,22,0.42)] backdrop-blur-2xl border-b border-white/[0.10] shadow-[0_4px_30px_rgba(0,0,0,0.35)]"
+                  : "bg-transparent border-b border-transparent"
+                : "bg-white/80 backdrop-blur-xl border-b border-[#DADADD]/70 shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
+            }`
+          : `sticky top-0 ${
+              scrolled
+                ? "bg-white/80 backdrop-blur-xl border-b border-[#DADADD]/70 shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
+                : "bg-white border-b border-[#DADADD]/60"
+            }`
       }`}
     >
       <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-4 lg:gap-6">
         
         {/* Brand / Logo */}
         <Link href="/" className="shrink-0 flex items-center" onClick={() => setHoveredKey(null)}>
-          <Logo size={28} />
+          <Logo size={28} textColor={isDarkHero ? "text-white" : "text-[#2A2A2E]"} />
         </Link>
 
         {/* Desktop Navigation Links (Left Side with Mega Dropdowns) */}
@@ -259,10 +278,14 @@ export function Navbar() {
               >
                 <Link
                   href={item.href}
-                  className={`text-[13px] xl:text-[14px] tracking-[-0.01em] transition-all relative inline-flex items-center gap-1 ${
+                  className={`text-[13px] xl:text-[14px] tracking-[-0.01em] transition-all duration-300 relative inline-flex items-center gap-1 ${
                     active || isHovered
-                      ? "text-[#7057D9] font-medium"
-                      : "text-[#2A2A2E] opacity-70 hover:opacity-100 hover:text-black"
+                      ? isDarkHero
+                        ? "text-[#D8B4FE] font-medium"
+                        : "text-[#7057D9] font-medium"
+                      : isDarkHero
+                        ? "text-white/85 hover:text-white"
+                        : "text-[#2A2A2E] opacity-70 hover:opacity-100 hover:text-black"
                   }`}
                 >
                   <span className="relative pb-1 inline-block">
@@ -270,14 +293,18 @@ export function Navbar() {
                     {active && (
                       <motion.span
                         layoutId="activeNavbarIndicator"
-                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#7057D9] rounded-full"
+                        className={`absolute bottom-0 left-0 right-0 h-[2px] rounded-full ${
+                          isDarkHero ? "bg-[#D8B4FE]" : "bg-[#7057D9]"
+                        }`}
                         transition={{ type: "spring", stiffness: 400, damping: 32 }}
                       />
                     )}
                   </span>
                   <ChevronDown
                     className={`w-3.5 h-3.5 pb-0.5 transition-transform duration-200 ${
-                      isHovered ? "rotate-180 text-[#7057D9]" : "opacity-60"
+                      isHovered
+                        ? isDarkHero ? "rotate-180 text-[#D8B4FE]" : "rotate-180 text-[#7057D9]"
+                        : isDarkHero ? "text-white/60" : "opacity-60"
                     }`}
                   />
                 </Link>
@@ -290,10 +317,12 @@ export function Navbar() {
         <div className="hidden sm:flex items-center">
           <Link
             href="/contact"
-            className={`inline-flex items-center justify-center px-4 py-1.5 sm:py-2 text-[13px] font-normal tracking-[-0.01em] transition-all rounded-none border ${
+            className={`inline-flex items-center justify-center px-4 py-1.5 sm:py-2 text-[13px] font-normal tracking-[-0.01em] transition-all duration-300 ${
               pathname === "/contact"
                 ? "text-white bg-[#7057D9] border-[#7057D9]"
-                : "text-[#2A2A2E] bg-white hover:bg-[#FAF9F7] border-[#DADADD]"
+                : isDarkHero
+                  ? "text-white bg-white/[0.08] hover:bg-white/[0.18] border border-white/25 hover:border-white/50 backdrop-blur-md rounded-full shadow-[0_2px_12px_rgba(0,0,0,0.3)]"
+                  : "text-[#2A2A2E] bg-white hover:bg-[#FAF9F7] border border-[#DADADD] rounded-none shadow-none"
             }`}
           >
             <span>Contact Us</span>
@@ -303,7 +332,9 @@ export function Navbar() {
         {/* Mobile Hamburger Trigger */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-1.5 rounded text-[#2A2A2E] hover:bg-[#EDEDF0] transition-colors"
+          className={`lg:hidden p-1.5 rounded transition-colors ${
+            isDarkHero ? "text-white hover:bg-white/10" : "text-[#2A2A2E] hover:bg-[#EDEDF0]"
+          }`}
           aria-label="Toggle navigation menu"
         >
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -323,25 +354,33 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.16, ease: "easeOut" }}
-            className="hidden lg:block absolute top-full left-0 w-full bg-[#111114] border-b border-[#25252B] shadow-[0_30px_70px_rgba(0,0,0,0.6)] text-white z-50 overflow-hidden"
+            className={`hidden lg:block absolute top-full left-0 w-full text-white z-50 overflow-hidden transition-colors duration-200 ${
+              isDarkHero
+                ? "bg-[rgba(18,18,22,0.48)] backdrop-blur-2xl backdrop-saturate-180 border-b border-white/[0.12] shadow-[0_24px_60px_rgba(0,0,0,0.45),inset_0_1px_0_0_rgba(255,255,255,0.18)]"
+                : "bg-[#0C0C10]/95 backdrop-blur-3xl backdrop-saturate-150 border-b border-white/[0.10] shadow-[0_30px_90px_rgba(0,0,0,0.7),inset_0_1px_0_0_rgba(255,255,255,0.12)]"
+            }`}
             onMouseEnter={() => {
               if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
             }}
             onMouseLeave={handleMouseLeave}
           >
-            {/* Ambient subtle violet bloom in top right */}
-            <div className="absolute top-0 right-1/4 w-[500px] h-[300px] bg-[#7057D9]/10 rounded-full blur-[100px] pointer-events-none" />
+            {/* Real macOS glass specular top reflection sheen */}
+            <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/35 to-transparent pointer-events-none" />
+            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/[0.04] via-transparent to-transparent pointer-events-none" />
+            
+            {/* Subtle atmospheric violet glow */}
+            <div className="absolute top-0 right-1/4 w-[420px] h-[220px] bg-[#7057D9]/10 rounded-full blur-[90px] pointer-events-none" />
 
-            <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-14 relative z-10">
-              <div className="grid grid-cols-12 gap-8 lg:gap-16 items-start">
+            <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 lg:py-6.5 relative z-10">
+              <div className="grid grid-cols-12 gap-8 lg:gap-14 items-center">
                 
                 {/* Left Side: Information & Headline */}
-                <div className="col-span-5 flex flex-col justify-between pr-4 lg:pr-8">
+                <div className="col-span-5 flex flex-col justify-between pr-4 lg:pr-6">
                   <div>
-                    <h3 className="text-2xl sm:text-[28px] lg:text-[32px] font-normal tracking-[-0.03em] leading-[1.2] mb-4 bg-gradient-to-r from-white via-[#D8C7FF] to-[#8E79E8] bg-clip-text text-transparent">
+                    <h3 className="text-xl sm:text-[22px] lg:text-[24px] font-normal tracking-[-0.03em] leading-[1.2] mb-2 bg-gradient-to-r from-white via-[#EDE4FF] to-[#A78BFA] bg-clip-text text-transparent">
                       {NAVBAR_DROPDOWNS[hoveredKey].headline}
                     </h3>
-                    <p className="text-sm sm:text-[15px] font-light text-white/70 leading-relaxed max-w-[420px] mb-8">
+                    <p className="text-xs sm:text-[13px] font-light text-white/70 leading-relaxed max-w-[380px] mb-4">
                       {NAVBAR_DROPDOWNS[hoveredKey].narrative}
                     </p>
                   </div>
@@ -350,10 +389,10 @@ export function Navbar() {
                     <Link
                       href={NAVBAR_DROPDOWNS[hoveredKey].ctaHref}
                       onClick={() => setHoveredKey(null)}
-                      className="group/cta inline-flex items-center gap-2 text-sm sm:text-[15px] font-medium text-white hover:text-[#9D87F5] transition-all"
+                      className="group/cta inline-flex items-center gap-1.5 text-xs sm:text-[13px] font-medium text-white/85 hover:text-white transition-colors"
                     >
-                      <span>{NAVBAR_DROPDOWNS[hoveredKey].ctaText}</span>
-                      <ArrowRight className="w-4 h-4 text-white group-hover/cta:text-[#9D87F5] group-hover/cta:translate-x-1.5 transition-all duration-200" />
+                      <span className="underline-offset-4 group-hover/cta:underline">{NAVBAR_DROPDOWNS[hoveredKey].ctaText}</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-white/70 group-hover/cta:text-white group-hover/cta:translate-x-1 transition-all duration-200" />
                     </Link>
                   </div>
                 </div>
@@ -365,21 +404,14 @@ export function Navbar() {
                       key={item.title}
                       href={item.href}
                       onClick={() => setHoveredKey(null)}
-                      className={`group/item flex items-center justify-between py-3.5 sm:py-4 border-b border-[#25252B] hover:border-white/20 transition-all duration-200 px-3 hover:bg-white/[0.03] ${
-                        index === 0 ? "border-t border-[#25252B]" : ""
+                      className={`group/item flex items-center justify-between py-2 sm:py-2.5 border-b border-white/[0.06] hover:border-white/15 transition-all duration-150 px-3 rounded-lg hover:bg-white/[0.04] ${
+                        index === 0 ? "border-t border-white/[0.06]" : ""
                       }`}
                     >
-                      <div className="flex items-center gap-3">
-                        <span className="text-[15px] sm:text-[16px] lg:text-[17px] font-light tracking-[-0.01em] text-white/90 group-hover/item:text-white transition-colors">
-                          {item.title}
-                        </span>
-                        {item.tag && (
-                          <span className="text-[10px] sm:text-[11px] font-mono text-white/40 group-hover/item:text-[#9D87F5] transition-colors uppercase tracking-wider">
-                            {item.tag}
-                          </span>
-                        )}
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-white/40 group-hover/item:text-white group-hover/item:translate-x-1.5 transition-all duration-200 shrink-0 ml-4" />
+                      <span className="text-[14px] sm:text-[14.5px] font-light tracking-[-0.01em] text-white/85 group-hover/item:text-white transition-colors">
+                        {item.title}
+                      </span>
+                      <ChevronRight className="w-3.5 h-3.5 text-white/35 group-hover/item:text-white group-hover/item:translate-x-1 transition-all duration-150 shrink-0 ml-4" />
                     </Link>
                   ))}
                 </div>

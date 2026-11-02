@@ -50,8 +50,13 @@ export interface IndustryItem {
   id: string;
   name: string;
   description: string;
-  impactMetric: string;
+  impactMetric?: string;
   capabilities: string[];
+  subhead?: string;
+  image?: string;
+  category?: string;
+  architectureNotes?: string[];
+  clientSnippet?: string;
 }
 
 export interface InsightItem {

@@ -70,7 +70,7 @@ const MARQUEE_ITEMS = [...CLIENTS, ...CLIENTS, ...CLIENTS, ...CLIENTS];
 
 export function PartnerMarquee() {
   return (
-    <section className="relative z-0 overflow-hidden border-b border-[#DADADD]/70 bg-white py-6 sm:py-7">
+    <section id="partner-marquee" className="relative z-0 overflow-hidden border-b border-[#DADADD]/70 bg-white py-6 sm:py-7">
       <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-start justify-between gap-4 min-[936px]:flex-row min-[936px]:items-center lg:gap-14">
           

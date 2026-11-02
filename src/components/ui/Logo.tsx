@@ -5,6 +5,7 @@ interface LogoProps {
   showText?: boolean;
   showStudioPill?: boolean;
   className?: string;
+  textColor?: string;
 }
 
 export function Logo({
@@ -12,6 +13,7 @@ export function Logo({
   showText = true,
   showStudioPill = false,
   className = "",
+  textColor = "text-[#2A2A2E]",
 }: LogoProps) {
   return (
     <div className={`flex items-center gap-2.5 ${className}`}>
@@ -31,7 +33,7 @@ export function Logo({
 
       {showText && (
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-sm sm:text-base tracking-tight text-[#2A2A2E]">
+          <span className={`font-semibold text-sm sm:text-base tracking-tight transition-colors duration-300 ${textColor}`}>
             21Spheres
           </span>
           {showStudioPill && (

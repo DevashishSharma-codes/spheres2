@@ -113,44 +113,52 @@ const BASE_CARDS: AboutCardItem[] = [
   },
 ];
 
-// 9 replicated sets for a bulletproof, truly infinite loop that never runs out of cards
-const REPEAT_COUNT = 9;
-const CENTER_SET_INDEX = 4; // Center set index (0, 1, 2, 3, [4], 5, 6, 7, 8)
+// 25 replicated sets for a completely seamless, continuous infinite loop that never glitches or runs out of cards
+const REPEAT_COUNT = 25;
+const CENTER_SET_INDEX = 12; // Center set index (starts centered at set 12 of 25)
 const INFINITE_CARDS = Array.from({ length: REPEAT_COUNT }, () => BASE_CARDS).flat();
 
 export function AboutSection({ showStatistics = false }: { showStatistics?: boolean } = {}) {
   const baseCount = BASE_CARDS.length;
-  // Start centered in the middle set (set 4)
+  // Start centered in set 12
   const [currentIndex, setCurrentIndex] = useState(baseCount * CENTER_SET_INDEX);
   const [isHovered, setIsHovered] = useState(false);
   const [withTransition, setWithTransition] = useState(true);
   const [selectedCard, setSelectedCard] = useState<AboutCardItem | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const [trackTranslateX, setTrackTranslateX] = useState(0);
 
   const activeBaseIndex = ((currentIndex % baseCount) + baseCount) % baseCount;
 
+  // Next smoothly advances by 1 card in continuous motion
   const handleNext = useCallback(() => {
     setWithTransition(true);
-    setCurrentIndex((prev) => {
-      // If approaching upper boundary, seamlessly wrap back to center set
-      if (prev >= baseCount * (REPEAT_COUNT - 2)) {
-        return (prev % baseCount) + baseCount * CENTER_SET_INDEX + 1;
-      }
-      return prev + 1;
-    });
-  }, [baseCount]);
+    setCurrentIndex((prev) => prev + 1);
+  }, []);
 
+  // Prev smoothly steps back by 1 card in continuous motion
   const handlePrev = useCallback(() => {
     setWithTransition(true);
-    setCurrentIndex((prev) => {
-      // If approaching lower boundary, seamlessly wrap back to center set
-      if (prev <= baseCount * 2) {
-        return (prev % baseCount) + baseCount * CENTER_SET_INDEX - 1;
-      }
-      return prev - 1;
-    });
-  }, [baseCount]);
+    setCurrentIndex((prev) => prev - 1);
+  }, []);
+
+  // Shortest circular path for pagination dots:
+  // e.g. clicking dot 0 from dot 4 smoothly advances forward by 1 (+1) rather than rewinding across all 4 cards
+  const handleDotClick = useCallback((targetIndex: number) => {
+    const currentBase = ((currentIndex % baseCount) + baseCount) % baseCount;
+    if (targetIndex === currentBase) return;
+
+    let diff = targetIndex - currentBase;
+    if (diff > baseCount / 2) {
+      diff -= baseCount;
+    } else if (diff < -baseCount / 2) {
+      diff += baseCount;
+    }
+
+    setWithTransition(true);
+    setCurrentIndex((prev) => prev + diff);
+  }, [currentIndex, baseCount]);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -253,37 +261,6 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
     };
   }, [selectedCard, smoothDismissAndScroll]);
 
-  // Seamless infinite loop normalization: smoothly keeps the index centered
-  const handleTransitionEnd = useCallback(() => {
-    if (currentIndex >= baseCount * 6 || currentIndex < baseCount * 3) {
-      const normalizedIndex = ((currentIndex % baseCount) + baseCount) % baseCount + baseCount * CENTER_SET_INDEX;
-      setWithTransition(false);
-      setCurrentIndex(normalizedIndex);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setWithTransition(true);
-        });
-      });
-    }
-  }, [currentIndex, baseCount]);
-
-  // Fallback timer to guarantee normalization even if onTransitionEnd is skipped (e.g. background tab)
-  useEffect(() => {
-    if (currentIndex >= baseCount * 6 || currentIndex < baseCount * 3) {
-      const timer = setTimeout(() => {
-        const normalizedIndex = ((currentIndex % baseCount) + baseCount) % baseCount + baseCount * CENTER_SET_INDEX;
-        setWithTransition(false);
-        setCurrentIndex(normalizedIndex);
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            setWithTransition(true);
-          });
-        });
-      }, 650);
-      return () => clearTimeout(timer);
-    }
-  }, [currentIndex, baseCount]);
-
   // Auto-play timer (pauses on hover or when modal is open)
   useEffect(() => {
     if (isHovered || selectedCard !== null) return;
@@ -301,34 +278,44 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
       if (!hash) return;
       const foundIdx = BASE_CARDS.findIndex((c) => c.id === hash);
       if (foundIdx !== -1) {
-        setWithTransition(true);
-        setCurrentIndex(baseCount * CENTER_SET_INDEX + foundIdx);
+        handleDotClick(foundIdx);
       }
     };
 
     handleHash();
     window.addEventListener("hashchange", handleHash);
     return () => window.removeEventListener("hashchange", handleHash);
-  }, [baseCount]);
+  }, [handleDotClick]);
 
   // Calculate track position to center active card horizontally
   const updateTrackPosition = useCallback(() => {
     if (!containerRef.current) return;
-    const containerWidth = containerRef.current.offsetWidth;
-    const isMobile = containerWidth < 640;
-    const isTablet = containerWidth >= 640 && containerWidth < 1024;
+    const container = containerRef.current;
+    const containerWidth = container.offsetWidth;
 
-    const activeWidth = isMobile ? 260 : isTablet ? 280 : 295;
-    const inactiveWidth = isMobile ? 220 : isTablet ? 240 : 255;
-    const gap = isMobile ? 14 : 18;
+    // Use live DOM child measurement for sub-pixel centering precision
+    if (trackRef.current && trackRef.current.children[currentIndex]) {
+      const activeChild = trackRef.current.children[currentIndex] as HTMLElement;
+      const cardCenter = activeChild.offsetLeft + activeChild.offsetWidth / 2;
+      const containerCenter = containerWidth / 2;
+      setTrackTranslateX(cardCenter - containerCenter);
+    } else {
+      const isMobile = containerWidth < 640;
+      const isTablet = containerWidth >= 640 && containerWidth < 1024;
 
-    let leftOffset = 0;
-    for (let i = 0; i < currentIndex; i++) {
-      leftOffset += inactiveWidth + gap;
+      const activeWidth = isMobile ? 260 : isTablet ? 280 : 295;
+      const inactiveWidth = isMobile ? 220 : isTablet ? 240 : 255;
+      // sm:gap-5 is 20px (1.25rem), gap-3.5 is 14px (0.875rem)
+      const gap = isMobile ? 14 : 20;
+
+      let leftOffset = 0;
+      for (let i = 0; i < currentIndex; i++) {
+        leftOffset += inactiveWidth + gap;
+      }
+
+      const centeredOffset = leftOffset - (containerWidth / 2) + (activeWidth / 2);
+      setTrackTranslateX(centeredOffset);
     }
-
-    const centeredOffset = leftOffset - (containerWidth / 2) + (activeWidth / 2);
-    setTrackTranslateX(centeredOffset);
   }, [currentIndex]);
 
   useEffect(() => {
@@ -439,12 +426,12 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
             >
               {/* Horizontal Sliding Track: Aligned at bottom, active card stands taller without clipping */}
               <div 
-                className={`flex items-end gap-3.5 sm:gap-5 ${withTransition ? "transition-transform duration-600 ease-out" : ""}`}
+                ref={trackRef}
+                className={`relative flex items-end gap-3.5 sm:gap-5 ${withTransition ? "transition-transform duration-600 ease-out" : ""}`}
                 style={{
                   transform: `translateX(-${trackTranslateX}px)`,
                   transformStyle: "preserve-3d",
                 }}
-                onTransitionEnd={handleTransitionEnd}
               >
                 {INFINITE_CARDS.map((card, index) => {
                   const isActive = currentIndex === index;
@@ -591,10 +578,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
               {BASE_CARDS.map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => {
-                    setWithTransition(true);
-                    setCurrentIndex(baseCount * CENTER_SET_INDEX + i);
-                  }}
+                  onClick={() => handleDotClick(i)}
                   aria-label={`Go to slide ${i + 1}`}
                   className={`h-1.5 transition-all duration-300 rounded-full cursor-pointer ${
                     activeBaseIndex === i 

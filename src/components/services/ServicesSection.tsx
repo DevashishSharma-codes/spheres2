@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import { SERVICES_CONTENT } from "@/content/services";
@@ -43,6 +43,39 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
     setInitialPhoneServiceId(serviceId);
     setSimulatorOpen(true);
   };
+
+  // Step up/down through the 7 squads with smooth scroll sync
+  const handlePrevSquad = useCallback(() => {
+    setOffset((prev) => {
+      const next = Math.max(0, prev - 1);
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        const top = rect.top + window.scrollY;
+        const totalScrollable = sectionRef.current.offsetHeight - window.innerHeight;
+        if (totalScrollable > 0) {
+          const targetY = top + (next / 6) * totalScrollable;
+          window.scrollTo({ top: targetY, behavior: "smooth" });
+        }
+      }
+      return next;
+    });
+  }, []);
+
+  const handleNextSquad = useCallback(() => {
+    setOffset((prev) => {
+      const next = Math.min(6, prev + 1);
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        const top = rect.top + window.scrollY;
+        const totalScrollable = sectionRef.current.offsetHeight - window.innerHeight;
+        if (totalScrollable > 0) {
+          const targetY = top + (next / 6) * totalScrollable;
+          window.scrollTo({ top: targetY, behavior: "smooth" });
+        }
+      }
+      return next;
+    });
+  }, []);
 
   // Section background styles
   const backgroundStyle = showAllCatalog ? {
@@ -113,17 +146,17 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
           {/* =========================================================
               1. TOP ROW: REFINED "SERVICES" HEADER (MATCHES ABOUT US & HOW WE WORK)
               ========================================================= */}
-          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 pb-3 sm:pb-4 border-b border-white/15 mb-7 sm:mb-9 lg:mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 pb-3 sm:pb-3.5 border-b border-white/15 mb-5 sm:mb-7 lg:mb-8">
             <div className="flex flex-col items-start">
               <span className="text-[12px] sm:text-[13px] font-bold text-[#C084FC] tracking-[0.18em] uppercase mb-1">
                 OUR CAPABILITIES
               </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light tracking-[-0.04em] leading-none text-white select-none whitespace-nowrap">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-light tracking-[-0.04em] leading-none text-white select-none whitespace-nowrap">
                 Services
               </h2>
             </div>
 
-            <p className="text-xs sm:text-sm text-white/70 font-light leading-relaxed max-w-md sm:text-right pb-0.5">
+            <p className="text-xs sm:text-[13px] text-white/70 font-light leading-relaxed max-w-lg sm:text-right pb-0.5">
               Specialized engineering squads delivering high-frequency digital platforms.
             </p>
           </div>
@@ -131,40 +164,43 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
           {/* =================================================================
               HERO SECTION: 3D OPEN BOX WITH 4 POPPING CARDS + DYNAMIC CONTROLS
               ================================================================= */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
             
-            {/* LEFT: THE 3D BOX WITH GLASSMORPHIC CARDS POPPING OUT */}
+            {/* LEFT: THE 3D BOX WITH GLASSMORPHIC CARDS POPPING OUT & MINI ARROW BUTTONS */}
             <div className="lg:col-span-6 w-full flex justify-center lg:justify-start">
               <OpenBoxServicesVisual
                 services={services}
                 offset={offset}
                 onSelectService={(s) => setSelectedService(s)}
                 onOpenMobileSimulator={() => handleOpenSimulator("mobile-application-development")}
+                onPrevSquad={handlePrevSquad}
+                onNextSquad={handleNextSquad}
+                canPrevSquad={offset > 0}
+                canNextSquad={offset < 6}
               />
             </div>
 
-            {/* RIGHT: SERVICES HEADLINE, COPY & CTA TO EXPLORE ALL SERVICES */}
-            <div className="lg:col-span-6 flex flex-col justify-center text-left lg:pl-4">
+            {/* RIGHT: EVENLY DISTRIBUTED HEADLINE, NARRATIVE & CTA */}
+            <div className="lg:col-span-6 flex flex-col justify-center text-left lg:pl-6 max-w-xl">
               
               {/* Headline with application-wide font-light tracking-[-0.04em] */}
-              <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-light tracking-[-0.04em] leading-[1.12] text-white mb-3.5">
+              <h3 className="text-3xl sm:text-4xl md:text-[42px] lg:text-[46px] font-light tracking-[-0.04em] leading-[1.15] text-white mb-6 sm:mb-8">
                 Full-stack systems, <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D8B4FE] via-[#EDE9FE] to-white">autonomous AI</span>, and <br />
                 <span className="text-white/60">scalable architectures</span>
               </h3>
 
-              {/* Description clearly mentioning all 10 services */}
-              <p className="text-xs sm:text-sm text-white/75 font-light leading-relaxed mb-5 max-w-lg">
-                We provide 10 specialized engineering services spanning Mobile &amp; Web applications, Custom AI &amp; LLM integration, Chatbots, Workflow automation, Websites, SaaS, Enterprise software, and Custom software—engineered for high-velocity scale with zero technical debt.
-              </p>
-
-              {/* Interactive deployment hint */}
-              <div className="flex items-center gap-2 text-[11px] font-mono text-purple-300/80 mb-5 select-none">
-                <span className="inline-block animate-bounce text-purple-400 font-bold">↓</span>
-                <span>Scroll down to deploy subsequent squads out of the box</span>
+              {/* Distributed, breathable narrative copy */}
+              <div className="space-y-4 mb-8 sm:mb-10">
+                <p className="text-sm sm:text-[15px] lg:text-[15.5px] text-white/85 font-light leading-relaxed">
+                  We deploy 10 specialized engineering services spanning Mobile &amp; Web applications, Custom AI &amp; LLM integration, Chatbots, Workflow automation, Websites, SaaS, Enterprise software, and Custom software.
+                </p>
+                <p className="text-xs sm:text-[13px] lg:text-[13.5px] text-white/55 font-light leading-relaxed">
+                  Engineered for high-velocity scale with zero technical debt, sub-16ms responsiveness, and multi-tenant security.
+                </p>
               </div>
 
-              {/* CTA: EXPLORE ALL 10 SERVICES */}
+              {/* CTA: EXPLORE ALL SERVICES */}
               <div>
                 <Link 
                   href="/services#all-services"
@@ -188,7 +224,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
                   />
 
                   <span className="relative z-10 font-medium text-white text-[14px] sm:text-[15px] tracking-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
-                    Explore all 10 services
+                    Explore all services
                   </span>
                   
                   <ArrowRight 

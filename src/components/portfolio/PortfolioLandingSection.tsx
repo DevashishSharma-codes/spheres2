@@ -24,8 +24,8 @@ const FEATURED_3_PROJECTS: LandingProjectItem[] = [
     client: "Bimakart Technologies",
     title: "Bimakart Connect API Gateway",
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
-    description1: "Architected a real-time data streaming platform querying 100+ insurance carriers with automated underwriting reconciliation, low-latency API pipelines, and interactive executive dashboards.",
-    description2: "Reduced cross-carrier quote lookup times from 45 seconds to under 2.4 seconds, scaling to process over 2.5 million daily risk queries with enterprise-grade reliability.",
+    description1: "Real-time streaming platform querying 100+ carriers with automated underwriting reconciliation.",
+    description2: "Reduced quote lookup times to under 2.4s, scaling to 2.5M+ daily risk queries with enterprise reliability.",
   },
   {
     id: "on-demand-mobile",
@@ -34,8 +34,8 @@ const FEATURED_3_PROJECTS: LandingProjectItem[] = [
     client: "UrbanFlow Logistics",
     title: "On-Demand Logistics & Service App",
     image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1200&q=80",
-    description1: "Built a cross-platform mobile application connecting enterprise service providers and consumers with real-time geospatial dispatch, native 120 FPS animations, and offline-first data sync.",
-    description2: "Engineered ultra-low latency push notifications and sub-16ms touch responsiveness, powering over 450,000 monthly bookings across 14 metropolitan hubs.",
+    description1: "Cross-platform mobile application with real-time geospatial dispatch and offline-first data sync.",
+    description2: "Engineered sub-16ms touch responsiveness, powering 450,000+ monthly bookings across 14 metropolitan hubs.",
   },
   {
     id: "hahnnemen-ai",
@@ -44,8 +44,8 @@ const FEATURED_3_PROJECTS: LandingProjectItem[] = [
     client: "Clinical Therapeutics Group",
     title: "Hahnnemen Clinical & Support AI",
     image: "https://i.pinimg.com/1200x/66/ba/3e/66ba3e1d2797e5926917697d2432f77f.jpg",
-    description1: "Deployed an autonomous intelligence agent utilizing deterministic RAG and fine-tuned LLMs to resolve complex multi-tier customer queries and execute automated workflows.",
-    description2: "Eliminated hallucinations with 99.4% deterministic guardrails, achieving 68% end-to-end first-contact resolution while reducing average ticket turnaround by 4.8x.",
+    description1: "Autonomous intelligence agent utilizing deterministic RAG to resolve multi-tier customer workflows.",
+    description2: "Achieved 99.4% guardrail accuracy and 68% first-contact resolution, cutting ticket turnaround by 4.8x.",
   },
 ];
 
@@ -53,7 +53,7 @@ export function PortfolioLandingSection() {
   return (
     <section 
       id="portfolio" 
-      className="relative w-full min-h-[calc(100vh-64px)] lg:h-[calc(100vh-64px)] lg:max-h-[920px] flex flex-col justify-between text-[#1D1D1F] pt-4 pb-4 sm:pt-5 sm:pb-5 overflow-hidden border-b border-[#E5E5EA]"
+      className="relative w-full min-h-[calc(100vh-64px)] lg:min-h-[calc(100vh-64px)] flex flex-col justify-between text-[#1D1D1F] py-8 sm:py-10 lg:py-12 overflow-hidden border-b border-[#E5E5EA]"
       style={{
         background: `
           radial-gradient(ellipse 90% 50% at 50% 100%, rgba(124, 58, 237, 0.22) 0%, rgba(168, 85, 247, 0.08) 45%, transparent 75%),
@@ -73,7 +73,7 @@ export function PortfolioLandingSection() {
         {/* =========================================================
             1. SECTION HEADER (21SPHERES DNA: CLEAN SCALE & METRIC RHYTHM)
             ========================================================= */}
-        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 shrink-0 pb-3 border-b border-[#E5E5EA]/70 mb-3 sm:mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 shrink-0 pb-3.5 sm:pb-4 border-b border-[#E5E5EA]/70 mb-4 sm:mb-6 lg:mb-8">
           <div className="flex flex-col items-start">
             <span className="text-[12px] sm:text-[13px] font-bold text-[#7C3AED] tracking-[0.18em] uppercase mb-1">
               OUR WORK
@@ -97,11 +97,11 @@ export function PortfolioLandingSection() {
             2. TCS-STYLE BORDERLESS EDITORIAL 3-COLUMN SHOWCASE
             - Inspired directly by 21Spheres production products & metadata
             - Exactly 3 items side-by-side
-            - 2-paragraph authentic text
+            - Concise, impactful text with generous breathing room
             - Crisp subtle rounded corners (rounded-[10px])
             - Pinterest AI Customer Support image
             ========================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 items-stretch flex-1 min-h-0 my-auto py-1">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 items-stretch flex-1 min-h-0 my-auto py-2 sm:py-3">
           {FEATURED_3_PROJECTS.map((project) => (
             <Link
               key={project.id}
@@ -119,29 +119,23 @@ export function PortfolioLandingSection() {
                 />
               </div>
 
-              {/* 21Spheres Index & Category Sub-label */}
-              <div className="flex items-center justify-between text-[11px] font-mono text-[#8E8E93] mt-3 sm:mt-3.5 mb-1">
-                <span className="text-[#7C3AED] font-semibold">{project.index} // {project.category}</span>
-                <span>{project.client}</span>
-              </div>
-
               {/* Bold Title Directly Underneath Image */}
-              <h3 className="text-base sm:text-lg lg:text-[20px] font-semibold text-[#111114] tracking-tight group-hover:text-[#7C3AED] transition-colors mb-2 leading-snug">
+              <h3 className="text-base sm:text-lg lg:text-[19px] font-semibold text-[#111114] tracking-tight group-hover:text-[#7C3AED] transition-colors mt-4 sm:mt-5 mb-2.5 sm:mb-3 leading-snug">
                 {project.title}
               </h3>
 
               {/* 2 Paragraph Text: Architecture/Capability + Business Impact */}
-              <div className="space-y-1.5 mb-3 flex-1">
-                <p className="text-xs sm:text-[13px] lg:text-[13.5px] text-[#4A4A52] font-normal leading-relaxed">
+              <div className="space-y-2 sm:space-y-2.5 mb-4 sm:mb-5 flex-1">
+                <p className="text-xs sm:text-[13px] text-[#4A4A52] font-normal leading-relaxed">
                   {project.description1}
                 </p>
-                <p className="text-xs sm:text-[12.5px] lg:text-[13px] text-[#6E6E73] font-light leading-relaxed">
+                <p className="text-xs sm:text-[12.5px] text-[#6E6E73] font-light leading-relaxed">
                   {project.description2}
                 </p>
               </div>
 
               {/* View Case Study Action Link */}
-              <div className="pt-1 mt-auto flex items-center justify-start">
+              <div className="pt-1.5 sm:pt-2 mt-auto flex items-center justify-start">
                 <span className="inline-flex items-center gap-1.5 text-xs sm:text-[13px] font-medium text-[#7C3AED] group-hover:text-[#5B21B6] transition-colors">
                   <span>View case study</span>
                   <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -155,12 +149,12 @@ export function PortfolioLandingSection() {
             3. "SEE FULL PORTFOLIO" CTA BUTTON
             - Refined, clean pill button with comfortable breathing room
             ========================================================= */}
-        <div className="flex justify-center items-center shrink-0 pt-3 sm:pt-4 pb-1">
+        <div className="flex justify-center items-center shrink-0 pt-4 sm:pt-6 pb-1 sm:pb-2">
           <Link
             href="/portfolio"
             className="
               group inline-flex items-center justify-center gap-2
-              px-5 py-2 sm:px-6 sm:py-2.5 rounded-full
+              px-5 py-2.5 sm:px-6 sm:py-3 rounded-full
               bg-[#111114] text-white hover:bg-[#7C3AED]
               border border-[#111114] hover:border-[#7C3AED]
               text-xs sm:text-[13px] font-medium tracking-tight

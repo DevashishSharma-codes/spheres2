@@ -14,7 +14,9 @@ import {
   Rocket,
   Building2,
   Terminal,
-  ArrowUpRight
+  ArrowUpRight,
+  ChevronUp,
+  ChevronDown
 } from "lucide-react";
 import { ServiceItem } from "@/types";
 
@@ -23,6 +25,10 @@ interface OpenBoxServicesVisualProps {
   offset?: number;
   onSelectService: (service: ServiceItem) => void;
   onOpenMobileSimulator: () => void;
+  onPrevSquad?: () => void;
+  onNextSquad?: () => void;
+  canPrevSquad?: boolean;
+  canNextSquad?: boolean;
 }
 
 interface ServiceVisualData {
@@ -126,6 +132,10 @@ export function OpenBoxServicesVisual({
   offset = 0,
   onSelectService,
   onOpenMobileSimulator,
+  onPrevSquad,
+  onNextSquad,
+  canPrevSquad = false,
+  canNextSquad = true,
 }: OpenBoxServicesVisualProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [lightOn, setLightOn] = useState(false);
@@ -474,6 +484,31 @@ export function OpenBoxServicesVisual({
           }}
         />
       ))}
+
+      {/* Floating mini arrow buttons for the box scroll up and down animation */}
+      {(onPrevSquad || onNextSquad) && (
+        <div className="absolute right-1 sm:right-2 lg:-right-3 top-[18%] sm:top-[20%] z-40 flex flex-col items-center gap-1.5 p-1 rounded-full bg-white/[0.12] hover:bg-white/[0.18] border border-white/25 backdrop-blur-xl shadow-[0_8px_28px_rgba(0,0,0,0.45)] transition-all">
+          <button
+            onClick={onPrevSquad}
+            disabled={!canPrevSquad}
+            aria-label="Scroll box cards up"
+            title="Scroll cards up"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 active:scale-95 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer"
+          >
+            <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
+          <div className="w-2.5 h-[1px] bg-white/20" />
+          <button
+            onClick={onNextSquad}
+            disabled={!canNextSquad}
+            aria-label="Scroll box cards down"
+            title="Scroll cards down"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 active:scale-95 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer"
+          >
+            <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
+        </div>
+      )}
 
       {/* ========================================================
           1. UPPER GLASS CARDS (1, 2, 3) WITH VERTICAL ENERGY THREAD
