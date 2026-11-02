@@ -15,6 +15,8 @@ import {
   Building2,
   Terminal,
   ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
   ChevronDown
 } from "lucide-react";
@@ -487,7 +489,7 @@ export function OpenBoxServicesVisual({
 
       {/* Floating mini arrow buttons for the box scroll up and down animation */}
       {(onPrevSquad || onNextSquad) && (
-        <div className="absolute right-1 sm:right-2 lg:-right-3 top-[18%] sm:top-[20%] z-40 flex flex-col items-center gap-1.5 p-1 rounded-full bg-white/[0.12] hover:bg-white/[0.18] border border-white/25 backdrop-blur-xl shadow-[0_8px_28px_rgba(0,0,0,0.45)] transition-all">
+        <div className="hidden lg:flex absolute right-1 sm:right-2 lg:-right-3 top-[18%] sm:top-[20%] z-40 flex-col items-center gap-1.5 p-1 rounded-full bg-white/[0.12] hover:bg-white/[0.18] border border-white/25 backdrop-blur-xl shadow-[0_8px_28px_rgba(0,0,0,0.45)] transition-all">
           <button
             onClick={onPrevSquad}
             disabled={!canPrevSquad}
@@ -513,7 +515,7 @@ export function OpenBoxServicesVisual({
       {/* ========================================================
           1. UPPER GLASS CARDS (1, 2, 3) WITH VERTICAL ENERGY THREAD
           ======================================================== */}
-      <div className="relative z-20 w-full flex flex-col items-center min-h-[212px]">
+      <div className="relative z-20 w-full flex flex-col items-center min-h-[184px] sm:min-h-[212px]">
         <AnimatePresence mode="popLayout" initial={false}>
           {upperBatch.map((card, index) => {
             const Icon = card.icon;
@@ -561,10 +563,10 @@ export function OpenBoxServicesVisual({
                   onMouseLeave={() => setHoveredId(null)}
                   onClick={() => handleCardClick(card)}
                   className={`
-                    relative w-[92%] sm:w-[88%] max-w-[340px] rounded-2xl
+                    relative w-[86%] sm:w-[88%] max-w-[300px] sm:max-w-[340px] rounded-2xl
                     bg-gradient-to-br from-white/95 via-white/88 to-[#FAF8FF]/82
                     backdrop-blur-xl
-                    border transition-all duration-200 p-2.5 sm:p-3 px-3.5 sm:px-4
+                    border transition-all duration-200 p-2 px-3 sm:p-3 sm:px-4
                     flex items-center justify-between gap-3 cursor-pointer
                     overflow-hidden group
                     ${
@@ -579,21 +581,21 @@ export function OpenBoxServicesVisual({
 
                   <div className="relative z-10 flex items-center gap-3 truncate">
                     {/* Purple Glass Squircle Icon */}
-                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#F5F0FF] to-[#EDE4FF] border border-[#7C3AED]/20 text-[#7C3AED] shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:border-[#7C3AED]/50 transition-all">
-                      <Icon className="w-4.5 h-4.5 text-[#7C3AED]" />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#F5F0FF] to-[#EDE4FF] border border-[#7C3AED]/20 text-[#7C3AED] shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:border-[#7C3AED]/50 transition-all">
+                      <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#7C3AED]" />
                     </div>
 
                     {/* Service Title & Subtitle */}
                     <div className="flex flex-col text-left truncate">
-                      <span className="text-[13.5px] sm:text-[14px] font-semibold text-[#18181B] tracking-tight leading-snug truncate">
+                      <span className="text-[12px] sm:text-[14px] font-semibold text-[#18181B] tracking-tight leading-snug truncate">
                         {card.title}
                       </span>
                       {card.isMobile ? (
-                        <span className="text-[10.5px] sm:text-[11px] font-mono font-medium text-[#7C3AED] flex items-center gap-1 mt-0.5">
+                        <span className="text-[9px] sm:text-[11px] font-mono font-medium text-[#7C3AED] flex items-center gap-1 mt-0.5">
                           {card.actionText}
                         </span>
                       ) : (
-                        <span className="text-[10.5px] sm:text-[11px] text-[#71717A] font-light truncate mt-0.5">
+                        <span className="text-[9.5px] sm:text-[11px] text-[#71717A] font-light truncate mt-0.5">
                           {card.subtitle}
                         </span>
                       )}
@@ -602,12 +604,12 @@ export function OpenBoxServicesVisual({
 
                   {/* Right Interactive Arrow */}
                   <div className="relative z-10 shrink-0">
-                    <div className={`w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full flex items-center justify-center shrink-0 transition-all shadow-sm ${
+                    <div className={`w-6 h-6 sm:w-7.5 sm:h-7.5 rounded-full flex items-center justify-center shrink-0 transition-all shadow-sm ${
                       card.isMobile 
                         ? "bg-[#7C3AED] text-white shadow-[0_2px_8px_rgba(124,58,237,0.35)]" 
                         : "bg-[#EDE4FF] text-[#7C3AED] border border-[#7C3AED]/20 group-hover:bg-[#7C3AED] group-hover:text-white"
                     }`}>
-                      <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4" />
                     </div>
                   </div>
                 </motion.div>
@@ -620,18 +622,18 @@ export function OpenBoxServicesVisual({
                       animate={{ opacity: 1, scaleY: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.35, ease: "easeOut" }}
-                      className="relative flex flex-col items-center justify-center py-1.2 z-[25] pointer-events-none"
+                      className="relative flex flex-col items-center justify-center py-0.5 sm:py-1 z-[25] pointer-events-none"
                     >
-                      <div className="w-[1.5px] h-2 bg-gradient-to-b from-[#C084FC] to-white shadow-[0_0_6px_#A855F7]" />
+                      <div className="w-[1.5px] h-1.5 sm:h-2 bg-gradient-to-b from-[#C084FC] to-white shadow-[0_0_6px_#A855F7]" />
                       
                       {/* Radiant Energy Node with Optical Flare */}
                       <div className="relative flex items-center justify-center">
-                        <div className="w-4 h-4 rounded-full bg-[#A855F7]/40 blur-[2.5px] animate-pulse" />
-                        <div className="absolute w-2 h-2 rounded-full bg-white shadow-[0_0_6px_#FFFFFF,0_0_12px_#C084FC,0_0_18px_#7C3AED]" />
-                        <div className="absolute w-5 h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent" />
+                        <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#A855F7]/40 blur-[2.5px] animate-pulse" />
+                        <div className="absolute w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white shadow-[0_0_6px_#FFFFFF,0_0_12px_#C084FC,0_0_18px_#7C3AED]" />
+                        <div className="absolute w-4 sm:w-5 h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent" />
                       </div>
 
-                      <div className="w-[1.5px] h-2 bg-gradient-to-b from-white to-[#C084FC] shadow-[0_0_6px_#A855F7]" />
+                      <div className="w-[1.5px] h-1.5 sm:h-2 bg-gradient-to-b from-white to-[#C084FC] shadow-[0_0_6px_#A855F7]" />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -648,10 +650,10 @@ export function OpenBoxServicesVisual({
           - Layer 2 (z-20): Card 4 sitting in the opening (popping out)
           - Layer 3 (z-30): Box Front Lip overlapping lower edge of Card 4
           ======================================================== */}
-      <div className="relative w-full max-w-[475px] sm:max-w-[490px] aspect-[1024/657] -mt-[68px] sm:-mt-[74px] flex items-end justify-center select-none">
+      <div className="relative w-full max-w-[475px] sm:max-w-[490px] aspect-[1024/657] -mt-[52px] sm:-mt-[74px] flex items-end justify-center select-none">
         
         {/* Soft floor bounce under the box */}
-        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[390px] h-[36px] rounded-full bg-purple-600/18 blur-[26px] pointer-events-none z-0" />
+        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[300px] sm:w-[390px] h-[36px] rounded-full bg-purple-600/18 blur-[26px] pointer-events-none z-0" />
 
         {/* LAYER 1 (z-10): Box Base (Back flaps & interior cavity) */}
         <Image
@@ -670,20 +672,20 @@ export function OpenBoxServicesVisual({
             initial={{ scale: 1.35, opacity: 1 }}
             animate={{ scale: 1, opacity: 0.85 }}
             transition={{ duration: 0.55, ease: "easeOut" }}
-            className="w-[300px] sm:w-[350px] h-[70px] rounded-full bg-gradient-to-r from-purple-600/40 via-violet-400/85 to-purple-600/40 blur-[32px]"
+            className="w-[250px] sm:w-[350px] h-[58px] sm:h-[70px] rounded-full bg-gradient-to-r from-purple-600/40 via-violet-400/85 to-purple-600/40 blur-[32px]"
             style={{ mixBlendMode: "screen" }}
           />
           {/* Intense Neon Platform */}
           <div 
-            className="absolute w-[220px] sm:w-[260px] h-[32px] rounded-full bg-gradient-to-r from-violet-500 via-[#C084FC] to-violet-500 blur-[13px] shadow-[0_0_50px_#A855F7,0_0_80px_rgba(168,85,247,0.75)]"
+            className="absolute w-[180px] sm:w-[260px] h-[26px] sm:h-[32px] rounded-full bg-gradient-to-r from-violet-500 via-[#C084FC] to-violet-500 blur-[13px] shadow-[0_0_50px_#A855F7,0_0_80px_rgba(168,85,247,0.75)]"
             style={{ mixBlendMode: "screen" }}
           />
           {/* Hot White-Violet Incandescent Filament */}
-          <div className="absolute w-[140px] sm:w-[170px] h-[12px] rounded-full bg-gradient-to-r from-white/70 via-white to-white/70 blur-[3.5px] shadow-[0_0_16px_#FFFFFF,0_0_30px_#C084FC]" />
+          <div className="absolute w-[110px] sm:w-[170px] h-[10px] sm:h-[12px] rounded-full bg-gradient-to-r from-white/70 via-white to-white/70 blur-[3.5px] shadow-[0_0_16px_#FFFFFF,0_0_30px_#C084FC]" />
         </div>
 
         {/* LAYER 2 (z-20): CARD 4 (HALF INSIDE, HALF OUTSIDE - POPS OUT OF BOX) */}
-        <div className="absolute top-[26%] sm:top-[24%] left-1/2 -translate-x-1/2 z-20 w-[92%] sm:w-[88%] max-w-[340px] flex flex-col items-center">
+        <div className="absolute top-[26%] sm:top-[24%] left-1/2 -translate-x-1/2 z-20 w-[86%] sm:w-[88%] max-w-[300px] sm:max-w-[340px] flex flex-col items-center">
           <AnimatePresence mode="wait">
             {(isIntroComplete || introStage >= 4) && card4 && (
               <motion.div
@@ -724,7 +726,7 @@ export function OpenBoxServicesVisual({
                     relative w-full rounded-2xl
                     bg-gradient-to-br from-white/95 via-white/88 to-[#FAF8FF]/82
                     backdrop-blur-xl
-                    border transition-all duration-200 p-2.5 sm:p-3 px-3.5 sm:px-4
+                    border transition-all duration-200 p-2 px-3 sm:p-3 sm:px-4
                     flex items-center justify-between gap-3 cursor-pointer
                     overflow-hidden group
                     ${
@@ -739,16 +741,16 @@ export function OpenBoxServicesVisual({
 
                   <div className="relative z-10 flex items-center gap-3 truncate">
                     {/* Purple Glass Squircle Icon */}
-                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#F5F0FF] to-[#EDE4FF] border border-[#7C3AED]/20 text-[#7C3AED] shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:border-[#7C3AED]/50 transition-all">
-                      {React.createElement(card4.icon, { className: "w-4.5 h-4.5 text-[#7C3AED]" })}
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#F5F0FF] to-[#EDE4FF] border border-[#7C3AED]/20 text-[#7C3AED] shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:border-[#7C3AED]/50 transition-all">
+                      {React.createElement(card4.icon, { className: "w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#7C3AED]" })}
                     </div>
 
                     {/* Service Title & Subtitle */}
                     <div className="flex flex-col text-left truncate">
-                      <span className="text-[13.5px] sm:text-[14px] font-semibold text-[#18181B] tracking-tight leading-snug truncate">
+                      <span className="text-[12px] sm:text-[14px] font-semibold text-[#18181B] tracking-tight leading-snug truncate">
                         {card4.title}
                       </span>
-                      <span className="text-[10.5px] sm:text-[11px] text-[#71717A] font-light truncate mt-0.5">
+                      <span className="text-[9.5px] sm:text-[11px] text-[#71717A] font-light truncate mt-0.5">
                         {card4.subtitle}
                       </span>
                     </div>
@@ -756,8 +758,8 @@ export function OpenBoxServicesVisual({
 
                   {/* Right Interactive Arrow */}
                   <div className="relative z-10 shrink-0">
-                    <div className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-[#EDE4FF] text-[#7C3AED] border border-[#7C3AED]/20 group-hover:bg-[#7C3AED] group-hover:text-white flex items-center justify-center shrink-0 transition-all shadow-sm">
-                      <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <div className="w-6 h-6 sm:w-7.5 sm:h-7.5 rounded-full bg-[#EDE4FF] text-[#7C3AED] border border-[#7C3AED]/20 group-hover:bg-[#7C3AED] group-hover:text-white flex items-center justify-center shrink-0 transition-all shadow-sm">
+                      <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4" />
                     </div>
                   </div>
                 </motion.div>
@@ -797,6 +799,30 @@ export function OpenBoxServicesVisual({
         </div>
 
       </div>
+
+      {(onPrevSquad || onNextSquad) && (
+        <div className="mt-2 flex items-center justify-center gap-5 lg:hidden">
+          <button
+            onClick={onPrevSquad}
+            disabled={!canPrevSquad}
+            aria-label="Show previous services"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/[0.1] text-white/80 shadow-[0_6px_20px_rgba(0,0,0,0.24)] backdrop-blur-xl transition hover:bg-white/20 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <span className="min-w-[88px] text-center font-mono text-[10px] tracking-[0.12em] text-white/55">
+            SERVICES {String(safeOffset + 1).padStart(2, "0")}–{String(Math.min(safeOffset + 4, ALL_SERVICES_DATA.length)).padStart(2, "0")}
+          </span>
+          <button
+            onClick={onNextSquad}
+            disabled={!canNextSquad}
+            aria-label="Show next services"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/[0.1] text-white/80 shadow-[0_6px_20px_rgba(0,0,0,0.24)] backdrop-blur-xl transition hover:bg-white/20 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
     </div>
   );

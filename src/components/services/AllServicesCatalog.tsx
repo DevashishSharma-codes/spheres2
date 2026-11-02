@@ -16,7 +16,6 @@ import {
   Building2, 
   Terminal,
   ArrowUpRight,
-  SlidersHorizontal
 } from "lucide-react";
 
 interface AllServicesCatalogProps {
@@ -77,18 +76,18 @@ function GlassFolderTabServiceCard({
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
       className={`
-        group relative w-full h-[390px] sm:h-[410px] rounded-2xl overflow-hidden
+        group relative w-full h-[330px] sm:h-[350px] rounded-2xl overflow-hidden
         transition-all duration-300 ease-out p-[1.5px] select-none flex flex-col cursor-pointer
         ${
           isHovered
-            ? "shadow-[0_0_35px_rgba(168,85,247,0.35),0_20px_50px_rgba(0,0,0,0.55)]"
-            : "shadow-[0_12px_32px_rgba(0,0,0,0.35)]"
+            ? "shadow-[0_12px_34px_rgba(112,87,217,0.18),0_8px_22px_rgba(29,24,43,0.10)]"
+            : "shadow-[0_8px_24px_rgba(29,24,43,0.10)]"
         }
       `}
     >
       {/* 1. Static Border Outline (visible when not hovered) */}
       <div 
-        className={`absolute inset-0 rounded-2xl border border-white/20 transition-opacity duration-300 pointer-events-none ${
+        className={`absolute inset-0 rounded-2xl border border-white/70 transition-opacity duration-300 pointer-events-none ${
           isHovered ? "opacity-0" : "opacity-100"
         }`} 
       />
@@ -118,13 +117,13 @@ function GlassFolderTabServiceCard({
       />
 
       {/* 4. Card Body: Covers the center so only the 1.5px minimal moving light strip is visible */}
-      <div className="relative w-full h-full rounded-[14.5px] p-2 bg-[#0A0718] backdrop-blur-2xl flex flex-col justify-between overflow-hidden">
+      <div className="relative w-full h-full rounded-[14.5px] p-2 bg-[#E7E4F0] backdrop-blur-2xl flex flex-col justify-between overflow-hidden">
         {/* Inner Canvas */}
         <div className="relative w-full h-full rounded-xl overflow-hidden flex flex-col justify-between">
           
           {/* ── 1. Animated Mesh Aurora Gradient (Lilac & Purple Theme from About Us) ── */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-85 transition-opacity duration-300">
-            <div className="absolute inset-0 bg-[#090715]/40" />
+          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-65 transition-opacity duration-300">
+            <div className="absolute inset-0 bg-white/35" />
 
           {/* Continuous Swirling Mesh Container */}
           <motion.div
@@ -184,15 +183,15 @@ function GlassFolderTabServiceCard({
           </motion.div>
 
           {/* Vignette & specular reflection */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-white/10 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/45 via-transparent to-white/25 pointer-events-none" />
         </div>
 
         {/* ── 2. Top Bar: Glassy Number Badge at Top Left & Action Button (↗) at Top Right ── */}
         <div className="absolute z-20 top-3 left-3 sm:top-3.5 sm:left-3.5 flex items-center pointer-events-none">
-          <div className={`h-9 sm:h-10 px-3 rounded-xl backdrop-blur-md border text-white font-mono text-xs sm:text-[13px] font-semibold flex items-center justify-center tracking-wider shadow-sm transition-all duration-300 ${
+          <div className={`h-9 sm:h-10 px-3 rounded-xl backdrop-blur-md border font-mono text-xs sm:text-[13px] font-semibold flex items-center justify-center tracking-wider shadow-sm transition-all duration-300 ${
             isHovered
-              ? "bg-white/25 border-[#C084FC]/70 text-white shadow-[0_0_12px_rgba(168,85,247,0.35)]"
-              : "bg-white/15 border-white/25 text-white"
+              ? "bg-white/90 border-[#A991F2]/75 text-[#4F35A6] shadow-[0_0_12px_rgba(112,87,217,0.18)]"
+              : "bg-white/75 border-white/80 text-[#514A65]"
           }`}>
             <span>{service.number}</span>
           </div>
@@ -201,8 +200,8 @@ function GlassFolderTabServiceCard({
         <div className="absolute z-20 top-3 right-3 sm:top-3.5 sm:right-3.5">
           <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl backdrop-blur-md border transition-all shadow-sm flex items-center justify-center ${
             isHovered
-              ? "bg-[#7C3AED] border-white/60 text-white shadow-[0_0_16px_rgba(147,51,234,0.5)] scale-105"
-              : "bg-white/15 hover:bg-white/25 border-white/25 text-white"
+              ? "bg-[#7057D9] border-white/80 text-white shadow-[0_0_16px_rgba(112,87,217,0.28)] scale-105"
+              : "bg-white/75 hover:bg-white border-white/80 text-[#514A65]"
           }`}>
             <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </div>
@@ -210,7 +209,7 @@ function GlassFolderTabServiceCard({
 
         {/* ── 3. Asymmetrical Folder-Tab Cutout Sheet in REAL TRANSPARENT GLASS ── */}
         <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-end">
-          <div className="relative w-full h-[68%]">
+          <div className="relative w-full h-[76%]">
             {/* Real Glass SVG Cutout with Frosted Backdrop Gradient */}
             <svg
               viewBox="0 0 380 240"
@@ -219,9 +218,9 @@ function GlassFolderTabServiceCard({
             >
               <defs>
                 <linearGradient id={`glass-tab-${service.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(255, 255, 255, 0.20)" />
-                  <stop offset="35%" stopColor="rgba(255, 255, 255, 0.10)" />
-                  <stop offset="100%" stopColor="rgba(255, 255, 255, 0.04)" />
+                  <stop offset="0%" stopColor="rgba(255, 255, 255, 0.88)" />
+                  <stop offset="45%" stopColor="rgba(249, 248, 253, 0.82)" />
+                  <stop offset="100%" stopColor="rgba(236, 232, 247, 0.88)" />
                 </linearGradient>
               </defs>
 
@@ -252,7 +251,7 @@ function GlassFolderTabServiceCard({
                    A 15 11 0 0 1 0.75 228
                    Z"
                 fill="none"
-                stroke={isHovered ? "rgba(216, 180, 254, 0.95)" : "rgba(255, 255, 255, 0.38)"}
+                stroke={isHovered ? "rgba(112, 87, 217, 0.72)" : "rgba(255, 255, 255, 0.96)"}
                 strokeWidth={isHovered ? "1.6" : "1.2"}
                 vectorEffect="non-scaling-stroke"
                 strokeLinejoin="round"
@@ -268,8 +267,8 @@ function GlassFolderTabServiceCard({
               <div className="flex items-center h-8">
                 <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg border flex items-center justify-center shrink-0 shadow-xs transition-all ${
                   isHovered
-                    ? "bg-[#7C3AED]/40 border-[#C084FC]/60 text-white scale-105 shadow-[0_0_12px_rgba(168,85,247,0.35)]"
-                    : "bg-white/20 border-white/30 text-white"
+                    ? "bg-[#7057D9] border-[#7057D9] text-white scale-105 shadow-[0_0_12px_rgba(112,87,217,0.24)]"
+                    : "bg-white/90 border-white text-[#7057D9]"
                 }`}>
                   <Icon className="w-4 h-4" />
                 </div>
@@ -279,22 +278,22 @@ function GlassFolderTabServiceCard({
               <div className="flex-1 flex flex-col justify-between pt-2">
                 <div>
                   {/* Full Heading */}
-                  <h3 className={`font-semibold text-white text-[16px] sm:text-[17.5px] tracking-tight leading-snug mb-1.5 transition-colors ${
-                    isHovered ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" : "text-white"
+                  <h3 className={`font-semibold text-[#282431] text-[16px] sm:text-[17.5px] tracking-tight leading-snug mb-1.5 transition-colors ${
+                    isHovered ? "text-[#4F35A6]" : "text-[#282431]"
                   }`}>
                     {service.title}
                   </h3>
                   
                   {/* Narrative & Description */}
-                  <p className="text-[11.5px] sm:text-[12.5px] font-light text-white/80 leading-relaxed line-clamp-3">
+                  <p className="text-[11.5px] sm:text-[12.5px] font-light text-[#696574] leading-relaxed line-clamp-3">
                     {service.description || service.headline}
                   </p>
                 </div>
 
                 {/* Footer Action Row: SPECS or SIMULATOR and arrow for navigation */}
-                <div className="pt-2.5 border-t border-white/10 flex items-center justify-end text-[11px] font-mono">
+                <div className="pt-2.5 border-t border-[#D8D4E2] flex items-center justify-end text-[11px] font-mono">
                   <span className={`flex items-center gap-1.5 font-medium transition-colors ${
-                    isHovered ? "text-white" : "text-[#C4B5FD] group-hover:text-white"
+                    isHovered ? "text-[#5139B0]" : "text-[#7057D9] group-hover:text-[#5139B0]"
                   }`}>
                     <span>{isMobile ? "SIMULATOR" : "SPECS"}</span>
                     <span className="group-hover:translate-x-1 transition-transform">→</span>
@@ -316,25 +315,22 @@ export function AllServicesCatalog({
   onSelectService,
   onOpenMobileSimulator,
 }: AllServicesCatalogProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const categories = ["All", "AI & Intelligence", "Web & Platforms", "Mobile & Devices", "Enterprise & Cloud"];
-
   const filteredServices = selectedCategory === "All"
     ? services
-    : services.filter((s) => {
+    : services.filter((service) => {
         if (selectedCategory === "AI & Intelligence") {
-          return s.id.includes("ai") || s.id.includes("llm") || s.id.includes("chatbot");
+          return service.id.includes("ai") || service.id.includes("llm") || service.id.includes("chatbot");
         }
         if (selectedCategory === "Web & Platforms") {
-          return s.id.includes("web") || s.id.includes("website") || s.id.includes("saas");
+          return service.id.includes("web") || service.id.includes("website") || service.id.includes("saas");
         }
-        if (selectedCategory === "Mobile & Devices") {
-          return s.id.includes("mobile");
-        }
+        if (selectedCategory === "Mobile & Devices") return service.id.includes("mobile");
         if (selectedCategory === "Enterprise & Cloud") {
-          return s.id.includes("enterprise") || s.id.includes("workflow") || s.id.includes("custom-software");
+          return service.id.includes("enterprise") || service.id.includes("workflow") || service.id.includes("custom-software");
         }
         return true;
       });
@@ -342,53 +338,31 @@ export function AllServicesCatalog({
   return (
     <section 
       id="all-services" 
-      className="relative z-10 pt-4 pb-20 sm:pb-28 overflow-hidden bg-transparent text-white"
+      className="relative z-10 overflow-hidden bg-transparent pt-2 pb-12 text-[#24232A] sm:pb-16"
     >
       <Container>
-        {/* =========================================================
-            HEADER: 10 PRODUCTION SERVICES CATALOG
-            ========================================================= */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/15 mb-10">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#C4B5FD] text-[11px] font-mono tracking-wide mb-3 border border-white/15">
-              <span>01 &mdash; 10 PRODUCTION CATALOG</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-[-0.04em] text-white leading-tight">
-              All 10 Specialized Squads
-            </h2>
-          </div>
-
-          <p className="max-w-md text-sm sm:text-base font-light text-white/75 leading-relaxed">
-            Every squad operates with full-lifecycle accountability, dedicated architecture leads, and sub-second SLA compliance.
-          </p>
-        </div>
-
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mb-10 sm:mb-14">
-          <div className="flex items-center gap-1.5 text-xs font-mono text-white/50 mr-2">
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>FILTER:</span>
-          </div>
-          {categories.map((cat) => (
+        <nav aria-label="Filter services by category" className="mb-4 flex gap-6 overflow-x-auto border-b border-[#E7E5EB] sm:gap-8">
+          {categories.map((category) => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                selectedCategory === cat
-                  ? "bg-[#7057D9] text-white shadow-[0_0_16px_rgba(112,87,217,0.5)] border border-[#8E79E8]"
-                  : "bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10"
+              key={category}
+              type="button"
+              aria-pressed={selectedCategory === category}
+              onClick={() => setSelectedCategory(category)}
+              className={`relative shrink-0 py-2.5 text-[12px] font-medium transition-colors sm:text-[13px] ${
+                selectedCategory === category
+                  ? "text-[#6248CA]"
+                  : "text-[#777680] hover:text-[#302A43]"
               }`}
             >
-              {cat}
+              {category}
+              {selectedCategory === category && (
+                <span aria-hidden="true" className="absolute inset-x-0 bottom-[-1px] h-[2px] bg-[#7057D9]" />
+              )}
             </button>
           ))}
-        </div>
-
-        {/* =========================================================
-            GRID: ALL 10 SERVICE CARDS (NORMAL GLOWING OUTLINE HIGHLIGHT)
-            ========================================================= */}
+        </nav>
         <div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-6 items-stretch"
+          className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-5"
           onMouseLeave={() => setHoveredId(null)}
         >
           {filteredServices.map((service) => {

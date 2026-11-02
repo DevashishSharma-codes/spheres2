@@ -31,6 +31,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
   });
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (!window.matchMedia("(min-width: 1024px)").matches) return;
     const maxOffset = 6; // 10 services total, 4 visible at a time (0 to 6)
     const raw = latest * (maxOffset + 0.5);
     const step = Math.min(maxOffset, Math.max(0, Math.floor(raw)));
@@ -48,7 +49,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
   const handlePrevSquad = useCallback(() => {
     setOffset((prev) => {
       const next = Math.max(0, prev - 1);
-      if (sectionRef.current) {
+      if (sectionRef.current && window.matchMedia("(min-width: 1024px)").matches) {
         const rect = sectionRef.current.getBoundingClientRect();
         const top = rect.top + window.scrollY;
         const totalScrollable = sectionRef.current.offsetHeight - window.innerHeight;
@@ -64,7 +65,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
   const handleNextSquad = useCallback(() => {
     setOffset((prev) => {
       const next = Math.min(6, prev + 1);
-      if (sectionRef.current) {
+      if (sectionRef.current && window.matchMedia("(min-width: 1024px)").matches) {
         const rect = sectionRef.current.getBoundingClientRect();
         const top = rect.top + window.scrollY;
         const totalScrollable = sectionRef.current.offsetHeight - window.innerHeight;
@@ -80,8 +81,9 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
   // Section background styles
   const backgroundStyle = showAllCatalog ? {
     background: `
-      radial-gradient(ellipse 90% 50% at 50% 0%, rgba(124, 58, 237, 0.18) 0%, transparent 70%),
-      linear-gradient(180deg, #030208 0%, #060412 45%, #030208 100%)
+      radial-gradient(ellipse 34% 38% at 0% 18%, rgba(185, 207, 255, 0.38) 0%, transparent 100%),
+      radial-gradient(ellipse 32% 42% at 100% 48%, rgba(222, 204, 255, 0.34) 0%, transparent 100%),
+      linear-gradient(180deg, #FFFFFF 0%, #FCFCFE 58%, #FFFFFF 100%)
     `,
   } : {
     background: `
@@ -96,21 +98,21 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
     return (
       <section 
         id="services" 
-        className="relative z-0 overflow-hidden text-white border-b border-white/[0.08] pt-12 sm:pt-16 pb-8"
+        className="relative z-0 overflow-hidden border-b border-[#ECEBF0] pt-7 pb-2 text-[#24232A] sm:pt-10 sm:pb-3"
         style={backgroundStyle}
       >
         <div className="relative z-10 w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 pb-4 border-b border-white/15 mb-8 sm:mb-10">
+          <div className="mb-5 flex flex-col justify-between gap-3 border-b border-[#E7E5EB] pb-4 sm:mb-6 sm:flex-row sm:items-end">
             <div className="flex flex-col items-start">
-              <span className="text-[12px] sm:text-[13px] font-bold text-[#C084FC] tracking-[0.18em] uppercase mb-1">
+              <span className="mb-2 text-[10px] font-semibold uppercase tracking-[0.19em] text-[#7057D9] sm:text-[11px]">
                 OUR CAPABILITIES
               </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light tracking-[-0.04em] leading-none text-white select-none whitespace-nowrap">
+              <h2 className="select-none whitespace-nowrap text-4xl font-light leading-none tracking-[-0.045em] text-[#232129] sm:text-5xl lg:text-[58px]">
                 Services
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-white/70 font-light leading-relaxed max-w-md sm:text-right pb-0.5">
-              Specialized engineering squads delivering high-frequency digital platforms.
+            <p className="max-w-[470px] pb-0.5 text-sm font-light leading-relaxed text-[#777680] sm:text-right sm:text-[15px]">
+              Dedicated engineering teams for complex digital products. From mobile and web platforms to AI systems, we build secure software around your needs, designed to scale as your business grows.
             </p>
           </div>
           <AllServicesCatalog
@@ -134,12 +136,12 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
     );
   }
 
-  // Embedded homepage view with sticky scroll-driven card pop-out animation
+  // Desktop keeps the scroll-driven display; mobile scrolls normally and uses arrows.
   return (
-    <div ref={sectionRef} className="relative h-[250vh] lg:h-[280vh]">
+    <div ref={sectionRef} className="relative h-auto lg:h-[280vh]">
       <section 
         id="services" 
-        className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden text-white border-b border-white/[0.08] py-8 sm:py-10 lg:py-0"
+        className="relative top-0 min-h-[calc(100svh-4rem)] w-full flex flex-col justify-start overflow-hidden text-white border-b border-white/[0.08] py-7 sm:py-10 lg:sticky lg:h-screen lg:min-h-0 lg:justify-center lg:py-0"
         style={backgroundStyle}
       >
         <div className="relative z-10 w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -164,7 +166,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
           {/* =================================================================
               HERO SECTION: 3D OPEN BOX WITH 4 POPPING CARDS + DYNAMIC CONTROLS
               ================================================================= */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-14 items-center">
             
             {/* LEFT: THE 3D BOX WITH GLASSMORPHIC CARDS POPPING OUT & MINI ARROW BUTTONS */}
             <div className="lg:col-span-6 w-full flex justify-center lg:justify-start">

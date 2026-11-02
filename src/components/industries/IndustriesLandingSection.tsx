@@ -1,25 +1,18 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronUp,
   ChevronDown,
-  ArrowRight,
-  X,
   ExternalLink,
-  CheckCircle2,
-  Cpu,
-  ShieldCheck
 } from "lucide-react";
 import { INDUSTRIES_CONTENT } from "@/content/industries";
-import { IndustryItem } from "@/types";
 
 export function IndustriesLandingSection() {
   const industries = INDUSTRIES_CONTENT.items;
   const [activeIdx, setActiveIdx] = useState(0);
-  const [modalIndustry, setModalIndustry] = useState<IndustryItem | null>(null);
 
   const activeIndustry = industries[activeIdx] || industries[0];
 
@@ -45,29 +38,6 @@ export function IndustriesLandingSection() {
     [handlePrev, handleNext]
   );
 
-  // Close modal on Escape
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setModalIndustry(null);
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
-
-  // Lock body scroll during modal view
-  useEffect(() => {
-    if (modalIndustry) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [modalIndustry]);
-
   // Left & Section Background: deep cosmic dark purple
   const sectionBackground = {
     background: `
@@ -77,30 +47,35 @@ export function IndustriesLandingSection() {
     `,
   };
 
-  // Right Side Gradient: dark purple / violet gradient
-  const rightColumnGradient = {
-    background: `
-      radial-gradient(ellipse 90% 70% at 100% 40%, rgba(124, 58, 237, 0.24) 0%, rgba(79, 28, 145, 0.08) 50%, transparent 80%),
-      radial-gradient(ellipse 70% 50% at 20% 90%, rgba(168, 85, 247, 0.14) 0%, transparent 60%),
-      linear-gradient(140deg, #0E0822 0%, #090516 40%, #05030C 100%)
-    `,
-  };
-
   return (
     <section
       id="industries"
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      className="relative z-10 w-full h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] max-h-[calc(100dvh-3.5rem)] sm:max-h-[calc(100dvh-4rem)] scroll-mt-14 sm:scroll-mt-16 text-white select-none overflow-hidden outline-none border-t border-b border-white/10 m-0 p-0"
+      className="relative z-10 m-0 flex h-[calc(100vh-3.5rem)] w-full select-none flex-col overflow-hidden border-y border-white/10 p-0 text-white outline-none scroll-mt-14 sm:h-[calc(100vh-4rem)] sm:scroll-mt-16"
       style={sectionBackground}
     >
-      {/* FULL-SCREEN 12-COLUMN STAGE (PERFECT ONE SCREEN FIT BELOW NAVBAR) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 h-full w-full overflow-hidden m-0 p-0">
+      <header className="relative z-20 flex shrink-0 flex-col gap-2 border-b border-white/10 px-6 py-3.5 sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:px-8 sm:py-4 lg:px-10">
+        <div className="shrink-0">
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C8B4FF] sm:text-[11px]">
+            Our expertise
+          </p>
+          <h2 className="text-[clamp(1.9rem,4vw,3rem)] font-light leading-none tracking-[-0.05em] text-white">
+            Industries
+          </h2>
+        </div>
+        <p className="max-w-lg pb-0.5 text-xs leading-relaxed text-white/65 sm:text-right sm:text-[13px]">
+          Purpose-built systems for the sectors moving the world forward.
+        </p>
+      </header>
+
+      {/* FULL-WIDTH INDUSTRY SHOWCASE, UNDER THE SHARED HEADER */}
+      <div className="grid min-h-0 flex-1 grid-cols-1 overflow-hidden p-0 lg:grid-cols-12">
 
         {/* =========================================================
             LEFT COLUMN (58% / lg:col-span-7): FULL-HEIGHT SHOWCASE CARD
             ========================================================= */}
-        <div className="lg:col-span-7 h-full w-full bg-[#05030A] px-6 sm:px-8 lg:px-10 py-4 sm:py-5 lg:py-6 flex flex-col justify-between overflow-hidden relative border-b lg:border-b-0 lg:border-r border-white/10">
+        <div className="relative flex h-full w-full flex-col justify-between overflow-hidden border-b border-white/10 px-6 py-4 sm:px-8 sm:py-5 lg:col-span-7 lg:border-b-0 lg:border-r lg:px-10 lg:py-6">
 
           {/* Background Grayscale Image with Crossfade */}
           <AnimatePresence mode="popLayout">
@@ -145,9 +120,12 @@ export function IndustriesLandingSection() {
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
               >
-                <h2 className="text-2xl sm:text-3xl lg:text-[34px] xl:text-4xl font-light text-white leading-tight tracking-tight mb-2 drop-shadow-md">
+                <Link
+                  href={`/industries/${activeIndustry.id}`}
+                  className="mb-2 inline-block text-2xl font-light leading-tight tracking-tight text-white drop-shadow-md transition hover:text-[#D8B4FE] sm:text-3xl lg:text-[34px] xl:text-4xl"
+                >
                   {activeIndustry.name}
-                </h2>
+                </Link>
 
                 <p className="text-xs sm:text-[13px] font-light text-white/80 max-w-xl leading-relaxed">
                   {activeIndustry.description}
@@ -163,33 +141,22 @@ export function IndustriesLandingSection() {
             PERFECT SINGLE SCREEN FIT, ZERO INSIDE SCROLL, PROPORTIONAL SPACE
             ========================================================= */}
         <div
-          className="lg:col-span-5 h-full w-full px-5 sm:px-7 lg:px-8 py-4 sm:py-5 lg:py-6 flex flex-col justify-between overflow-hidden relative border-t lg:border-t-0"
-          style={rightColumnGradient}
+          className="relative flex h-full w-full flex-col justify-between overflow-hidden border-t border-white/10 px-5 py-4 sm:px-7 sm:py-5 lg:col-span-5 lg:border-t-0 lg:px-8 lg:py-6"
         >
           {/* Subtle ambient light overlay on right side */}
           <div className="absolute inset-0 bg-gradient-to-b from-purple-500/[0.04] via-transparent to-black/30 pointer-events-none" />
 
-          {/* Top Header */}
-          <div className="relative z-10 flex items-center justify-between pb-2 sm:pb-2.5 border-b border-white/15 shrink-0">
-            <span className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] font-medium text-white/70">
-              INDUSTRIES
-            </span>
-
-            <span className="font-mono text-[11px] sm:text-xs text-white/50">
-              0{activeIdx + 1} / 0{industries.length}
-            </span>
-          </div>
-
-          {/* List Menu (All 7 highlighted with high contrast, running light beam ONLY on selected industry) */}
+          {/* Industry list; the shared section title already labels this column. */}
           <div className="relative z-10 my-auto py-2 flex flex-col justify-center gap-1 sm:gap-1.5 overflow-hidden">
             {industries.map((ind, idx) => {
               const isActive = idx === activeIdx;
 
               return (
-                <div
+                <Link
                   key={ind.id}
-                  onClick={() => setActiveIdx(idx)}
-                  className="group relative cursor-pointer py-1 sm:py-1.5 opacity-100 transition-all duration-200"
+                  href={`/industries/${ind.id}`}
+                  aria-label={`Explore ${ind.name} industry`}
+                  className="group relative block cursor-pointer py-1 sm:py-1.5 opacity-100 transition-all duration-200"
                 >
                   {/* Meta Index */}
                   <div className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-wider mb-0.5 transition-colors ${isActive ? "text-[#D8B4FE]" : "text-white/70 group-hover:text-white"
@@ -221,16 +188,8 @@ export function IndustriesLandingSection() {
                           {ind.subhead || ind.description}
                         </p>
 
-                        <div className="flex items-center justify-end pt-0.5 text-[11px] font-mono">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setModalIndustry(ind);
-                            }}
-                            className="text-[#C084FC] hover:text-white font-medium inline-flex items-center gap-1 cursor-pointer transition-colors"
-                          >
-                            <span>View Details ↗</span>
-                          </button>
+                        <div className="flex items-center justify-end pt-0.5 text-[11px] font-mono text-[#C084FC] transition-colors group-hover:text-white">
+                          <span>View Details ↗</span>
                         </div>
                       </motion.div>
                     )}
@@ -265,7 +224,7 @@ export function IndustriesLandingSection() {
                       <div className="h-[1px] w-full bg-white/10 group-hover:bg-white/20 transition-colors" />
                     )}
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
@@ -291,148 +250,18 @@ export function IndustriesLandingSection() {
               </button>
             </div>
 
-            <button
-              onClick={() => setModalIndustry(activeIndustry)}
+            <Link
+              href={`/industries/${activeIndustry.id}`}
               className="inline-flex items-center gap-1 text-[#C084FC] hover:text-white font-semibold text-xs transition-colors cursor-pointer"
             >
               <span>View Full Specs</span>
               <ExternalLink className="w-3.5 h-3.5" />
-            </button>
+            </Link>
           </div>
 
         </div>
 
       </div>
-
-      {/* =========================================================
-          INTERACTIVE SPECIFICATION MODAL
-          ========================================================= */}
-      <AnimatePresence>
-        {modalIndustry && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 md:p-8 bg-black/85 backdrop-blur-2xl overflow-y-auto">
-            <div
-              className="absolute inset-0"
-              onClick={() => setModalIndustry(null)}
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 14 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 14 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              className="relative z-10 w-full max-w-3xl bg-[#0A0716] text-white rounded-3xl border border-white/15 shadow-2xl overflow-hidden my-auto"
-            >
-              {/* Modal Header */}
-              <div className="p-6 sm:p-7 border-b border-white/10 flex items-start justify-between gap-4 bg-gradient-to-b from-white/[0.04] to-transparent">
-                <div>
-                  <div className="text-[11px] font-mono uppercase tracking-widest text-[#D8B4FE] mb-1">
-                    0{industries.findIndex((i) => i.id === modalIndustry.id) + 1} • SPECIFICATIONS
-                  </div>
-                  <h3 className="text-2xl sm:text-3xl font-light text-white tracking-tight">
-                    {modalIndustry.name}
-                  </h3>
-                </div>
-
-                <button
-                  onClick={() => setModalIndustry(null)}
-                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-white/80 hover:text-white transition-all cursor-pointer shrink-0"
-                  aria-label="Close modal"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Modal Content */}
-              <div className="p-6 sm:p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-white/50 mb-2">
-                    EXECUTIVE OVERVIEW
-                  </div>
-                  <p className="text-sm sm:text-base font-light text-white/90 leading-relaxed">
-                    {modalIndustry.description}
-                  </p>
-                </div>
-
-                {modalIndustry.capabilities && modalIndustry.capabilities.length > 0 && (
-                  <div>
-                    <div className="text-xs font-mono uppercase tracking-wider text-white/50 mb-3 flex items-center gap-1.5">
-                      <Cpu className="w-3.5 h-3.5 text-[#C084FC]" />
-                      <span>KEY ARCHITECTURAL CAPABILITIES</span>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      {modalIndustry.capabilities.map((cap, i) => (
-                        <div
-                          key={i}
-                          className="p-3 rounded-xl bg-white/[0.03] border border-white/10 flex items-center gap-2.5"
-                        >
-                          <CheckCircle2 className="w-4 h-4 text-[#C084FC] shrink-0" />
-                          <span className="text-xs sm:text-[13px] text-white/90 font-light">
-                            {cap}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {modalIndustry.architectureNotes && modalIndustry.architectureNotes.length > 0 && (
-                  <div>
-                    <div className="text-xs font-mono uppercase tracking-wider text-white/50 mb-3 flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#C084FC]" />
-                      <span>SRS BLUEPRINT & COMPLIANCE</span>
-                    </div>
-                    <div className="space-y-2">
-                      {modalIndustry.architectureNotes.map((note, i) => (
-                        <div
-                          key={i}
-                          className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] text-xs sm:text-[13px] text-white/80 font-light leading-relaxed flex items-start gap-2.5"
-                        >
-                          <span className="text-[#C084FC] font-mono font-semibold pt-0.5">•</span>
-                          <span>{note}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {modalIndustry.clientSnippet && (
-                  <div className="p-4 rounded-xl bg-[#7057D9]/10 border border-[#7057D9]/30 text-xs sm:text-[13px] text-white/85 font-light leading-relaxed">
-                    <span className="font-mono text-[10px] uppercase text-[#D8B4FE] block mb-1 tracking-wider">
-                      PRODUCTION DEPLOYMENT
-                    </span>
-                    {modalIndustry.clientSnippet}
-                  </div>
-                )}
-              </div>
-
-              {/* Modal Footer */}
-              <div className="p-5 sm:p-6 border-t border-white/10 bg-white/[0.02] flex flex-col sm:flex-row items-center justify-between gap-4">
-                <span className="text-xs text-white/50 font-light text-center sm:text-left">
-                  Ready to deploy dedicated engineering squads in this sector?
-                </span>
-
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  <button
-                    onClick={() => setModalIndustry(null)}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-full border border-white/20 text-xs sm:text-[13px] text-white/80 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
-                  >
-                    Close Specs
-                  </button>
-                  <Link
-                    href="/contact"
-                    onClick={() => setModalIndustry(null)}
-                    className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#7057D9] hover:bg-[#8369ec] text-white text-xs sm:text-[13px] font-medium tracking-tight shadow-lg shadow-purple-900/30 flex items-center justify-center gap-1.5 transition-all cursor-pointer shrink-0"
-                  >
-                    <span>Discuss Architecture</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
     </section>
   );

@@ -1,30 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  CheckCircle2, 
-  Clock, 
-  ArrowRight, 
-  ShieldCheck, 
-  Layers, 
-  Cpu, 
-  FileCode, 
-  Sparkles, 
-  Terminal, 
-  Check, 
-  ExternalLink,
-  ChevronRight,
-  Zap,
-  Activity,
-  Lock,
-  Heart,
-  Plus,
-  PhoneCall,
-  FileText,
-  Users
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export interface StageDetailItem {
   id: string;
@@ -206,259 +185,7 @@ const STAGES: StageDetailItem[] = [
   }
 ];
 
-// =========================================================
-// ACETERNITY UI: THREE COLUMN FEATURES WITH IMAGE
-// Specific high-impact presentation for Stage 01: Discovery & SRS Design
-// =========================================================
-interface DiscoverySrsThreeColumnFeaturesProps {
-  onNextStage: () => void;
-}
-
-function DiscoverySrsThreeColumnFeatures({ onNextStage }: DiscoverySrsThreeColumnFeaturesProps) {
-  return (
-    <div className="w-full flex flex-col justify-between">
-      {/* Stage Title & Tagline */}
-      <div className="mb-7">
-        <h3 className="text-2xl sm:text-3xl font-light tracking-[-0.03em] text-[#111114] mb-1">
-          Discovery &amp; SRS Design
-        </h3>
-        <p className="text-xs sm:text-[13px] text-[#7C3AED] font-medium tracking-tight">
-          Deterministic Scope, Clear Architecture
-        </p>
-      </div>
-
-      {/* 3-Column Features Grid matching 21Spheres Design & Architecture */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-        
-        {/* =========================================================
-            COLUMN 1: DETERMINISTIC SCOPE MATRIX UI CARD
-        ========================================================= */}
-        <div className="flex flex-col">
-          {/* Top Card Container: Inspo Gradient (Soft Sky Blue to Warm Peach) */}
-          <div className="relative h-[340px] sm:h-[370px] rounded-[24px] bg-gradient-to-b from-[#C2DCFD] via-[#DEE7F4] to-[#F9ECD9] p-5 sm:p-6 flex items-center justify-center border border-[#BED7FA]/80 shadow-xs overflow-hidden group">
-            {/* Floating White Deterministic Scope Matrix Card */}
-            <div className="relative w-full max-w-[260px] bg-white rounded-2xl p-4 sm:p-5 shadow-[0_12px_32px_rgba(30,58,110,0.08)] border border-white/90">
-              <div className="text-[12.5px] font-semibold text-[#180E2E] tracking-tight mb-3 flex items-center justify-between">
-                <span>Deterministic Scope Matrix</span>
-                <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded-full bg-purple-50 text-[#7C3AED] border border-purple-200/60 font-semibold">
-                  SRS v1.0
-                </span>
-              </div>
-
-              {/* Stakeholder 1: Principal AI Architect */}
-              <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                <div className="flex items-center gap-2.5">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden bg-slate-200 border border-white shadow-xs shrink-0">
-                    <Image
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&h=120&q=80"
-                      alt="Alexander V."
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-[#111114] leading-tight">
-                      Alexander V.
-                    </span>
-                    <span className="text-[10px] text-[#64748B] font-light">
-                      21Spheres Principal Architect
-                    </span>
-                  </div>
-                </div>
-                <div className="w-6 h-6 rounded-md bg-purple-50/80 border border-purple-200/60 flex items-center justify-center text-[#7C3AED] shrink-0">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                </div>
-              </div>
-
-              {/* Stakeholder 2: Enterprise Partner */}
-              <div className="relative flex items-center justify-between pt-2">
-                <div className="flex items-center gap-2.5">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden bg-slate-200 border border-white shadow-xs shrink-0">
-                    <Image
-                      src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&h=120&q=80"
-                      alt="Sarah Chen"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-[#111114] leading-tight">
-                      Sarah Chen
-                    </span>
-                    <span className="text-[10px] text-[#64748B] font-light">
-                      VP Engineering &amp; Systems
-                    </span>
-                  </div>
-                </div>
-                <div className="w-6 h-6 rounded-md bg-purple-50/80 border border-purple-200/60 flex items-center justify-center text-[#7C3AED] shrink-0">
-                  <Lock className="w-3 h-3" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Narrative Text */}
-          <div className="pt-5 sm:pt-6">
-            <h4 className="text-lg sm:text-xl font-medium text-[#111114] tracking-tight leading-snug mb-2">
-              Stakeholder Alignment &amp; Scoping
-            </h4>
-            <p className="text-xs sm:text-[13px] text-[#6E6E73] font-light leading-relaxed">
-              Collaborative workshops distill business goals, map user journeys, and eliminate scope ambiguity before engineering commences.
-            </p>
-          </div>
-        </div>
-
-        {/* =========================================================
-            COLUMN 2: DISCOVERY LAB / USER JOURNEY SHOWCASE
-        ========================================================= */}
-        <div className="flex flex-col">
-          {/* Top Card Container: Discovery & Requirements Lab Visual */}
-          <div className="relative h-[340px] sm:h-[370px] rounded-[24px] overflow-hidden bg-slate-900 border border-[#E5E5EA] shadow-xs group">
-            <Image
-              src="/how-we-work/stage-1-discovery-srs.jpg"
-              alt="Discovery & Requirements Lab"
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 420px"
-              className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-            />
-            {/* Ambient Lighting Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent pointer-events-none" />
-
-            {/* Bottom Glassmorphic Persona & Edge-Case Tag */}
-            <div className="absolute inset-x-3 bottom-3 z-10 p-2.5 rounded-xl bg-white/95 backdrop-blur-md border border-white/80 shadow-xs flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#7C3AED]" />
-                <span className="text-[10px] font-mono font-medium text-[#111114]">
-                  Persona &amp; Edge-Case Stress Map
-                </span>
-              </div>
-              <span className="text-[9.5px] font-mono text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded font-semibold">
-                100% Defined
-              </span>
-            </div>
-          </div>
-
-          {/* Narrative Text */}
-          <div className="pt-5 sm:pt-6">
-            <h4 className="text-lg sm:text-xl font-medium text-[#111114] tracking-tight leading-snug mb-2">
-              User Journey &amp; Edge-Case Stress
-            </h4>
-            <p className="text-xs sm:text-[13px] text-[#6E6E73] font-light leading-relaxed">
-              Granular persona journey mapping, permission state modeling, and edge-case stress identification ensure bulletproof system behavior across every critical user path.
-            </p>
-          </div>
-        </div>
-
-        {/* =========================================================
-            COLUMN 3: 5-DAY DISCOVERY SPRINT TIMELINE
-        ========================================================= */}
-        <div className="flex flex-col">
-          {/* Top Card Container: Inspo Gradient (Warm Peach to Soft Sky Blue) */}
-          <div className="relative h-[340px] sm:h-[370px] rounded-[24px] bg-gradient-to-b from-[#FDD8AE] via-[#EBE2DC] to-[#C6DBF8] p-5 sm:p-6 flex flex-col justify-center items-center border border-[#F4CDA0]/80 shadow-xs overflow-hidden">
-            {/* Connected Vertical Timeline Line */}
-            <div className="absolute top-10 bottom-12 left-1/2 -translate-x-1/2 w-[1px] bg-[#B8987C]/35 z-0" />
-
-            <div className="relative z-10 w-full max-w-[245px] flex flex-col items-center gap-2.5">
-              
-              {/* Timeline Node 1: Stakeholder Discovery Workshop */}
-              <div className="w-full bg-white rounded-xl py-2 px-3 shadow-xs border border-white/90 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-md bg-purple-50 text-[#7C3AED] flex items-center justify-center shrink-0">
-                    <Users className="w-3 h-3" />
-                  </div>
-                  <span className="text-[11px] font-medium text-[#1E293B]">
-                    Stakeholder Workshop
-                  </span>
-                </div>
-                <span className="text-[9.5px] font-mono text-[#86868B] shrink-0">
-                  Day 01
-                </span>
-              </div>
-
-              {/* Timeline Node 2: User Journeys & API Schema Mapped */}
-              <div className="w-full bg-white rounded-xl py-2 px-3 shadow-xs border border-white/90 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-md bg-indigo-50 text-[#6366F1] flex items-center justify-center shrink-0">
-                    <FileCode className="w-3 h-3" />
-                  </div>
-                  <span className="text-[11px] font-medium text-[#1E293B]">
-                    User Journey &amp; Schemas
-                  </span>
-                </div>
-                <span className="text-[9.5px] font-mono text-[#86868B] shrink-0">
-                  Day 03
-                </span>
-              </div>
-
-              {/* Timeline Node 3: Deterministic SRS Sign-Off with Sub-Pills */}
-              <div className="w-full bg-white rounded-xl p-3 shadow-xs border border-white/90 flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-md bg-purple-50 text-[#7C3AED] flex items-center justify-center shrink-0">
-                      <ShieldCheck className="w-3 h-3" />
-                    </div>
-                    <span className="text-[11px] font-medium text-[#1E293B]">
-                      Deterministic SRS Sign-Off
-                    </span>
-                  </div>
-                  <span className="text-[9.5px] font-mono text-[#86868B] shrink-0">
-                    Day 05
-                  </span>
-                </div>
-
-                <div className="flex flex-col gap-1 pt-1 border-t border-gray-100">
-                  <div className="inline-flex items-center text-[9.5px] font-mono text-[#475569] bg-[#F8FAFC] px-2 py-0.5 rounded-md border border-gray-200/50">
-                    Acceptance Criteria &rarr; 100% Codified
-                  </div>
-                  <div className="inline-flex items-center text-[9.5px] font-mono text-[#475569] bg-[#F8FAFC] px-2 py-0.5 rounded-md border border-gray-200/50">
-                    Scope Ambiguity &rarr; Zero Tolerance
-                  </div>
-                  <div className="inline-flex items-center text-[9.5px] font-mono text-[#475569] bg-[#F8FAFC] px-2 py-0.5 rounded-md border border-gray-200/50">
-                    Sprint Roadmap &rarr; Milestone Ready
-                  </div>
-                </div>
-              </div>
-
-              {/* Node 4: Plus Circle Button */}
-              <div className="w-6 h-6 rounded-full bg-[#180E2E] text-white flex items-center justify-center shadow-xs">
-                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-              </div>
-
-            </div>
-          </div>
-
-          {/* Narrative Text */}
-          <div className="pt-5 sm:pt-6">
-            <h4 className="text-lg sm:text-xl font-medium text-[#111114] tracking-tight leading-snug mb-2">
-              Audited SRS &amp; Deterministic Roadmap
-            </h4>
-            <p className="text-xs sm:text-[13px] text-[#6E6E73] font-light leading-relaxed">
-              Every discovery session produces audited specifications, verifiable acceptance contracts, and an RFC-approved blueprint so engineering commences with zero ambiguity.
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Progression & Next Stage Link */}
-      <div className="flex items-center justify-between mt-8 pt-4 border-t border-[#E5E5EA]">
-        <span className="text-xs text-[#86868B] font-light">
-          Progression: 01 / 06
-        </span>
-        
-        <button
-          type="button"
-          onClick={onNextStage}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#7C3AED] hover:text-black transition-colors cursor-pointer group"
-        >
-          <span>Next Stage</span>
-          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-        </button>
-      </div>
-    </div>
-  );
-}
+const STAGE_NAV_LABELS = ["Discovery", "Architecture", "Design", "Development", "QA & Security", "Launch & Support"];
 
 export function SprintStagesSection() {
   const [activeStageIndex, setActiveStageIndex] = useState(0);
@@ -491,209 +218,95 @@ export function SprintStagesSection() {
   }, []);
 
   return (
-    <section 
-      id="sprint-stages" 
-      className="py-16 sm:py-24 bg-[#FCFCFA] border-b border-[#E5E5EA] scroll-mt-20"
-    >
-      <div className="w-full max-w-[1400px] mx-auto px-5 sm:px-8 lg:px-12">
-        
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-14">
-          <div className="max-w-3xl">
-            <h2 
-              id="deterministic-milestones"
-              className="text-3xl sm:text-4xl md:text-5xl font-light tracking-[-0.035em] text-[#111114] leading-tight scroll-mt-24"
-            >
-              Deterministic milestones from architecture to global edge.
-            </h2>
+    <section id="sprint-stages" className="scroll-mt-20 bg-white pb-12 text-[#17151B] sm:pb-16">
+      <div className="mx-auto w-full max-w-[1440px] px-5 pt-7 sm:px-8 sm:pt-9 lg:px-12 lg:pt-10">
+        <header className="grid gap-4 border-b border-[#E7E4EC] pb-5 sm:pb-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <div>
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.23em] text-[#7653D6] sm:text-xs">Our process / six stages</p>
+            <h2 id="deterministic-milestones" className="max-w-5xl text-[clamp(3.2rem,6.8vw,6.2rem)] font-light leading-[0.92] tracking-[-0.06em] text-[#15131A] scroll-mt-24">From first brief to launch.</h2>
           </div>
-          <div className="max-w-md">
-            <p className="text-xs sm:text-sm text-[#515154] font-light leading-relaxed">
-              We eliminate black-box consulting. Every phase produces audited artifacts, executable code, and verifiable telemetry reports with full transparency.
-            </p>
+          <div className="lg:justify-self-end lg:max-w-md">
+            <p className="text-xs leading-relaxed text-[#625D69] sm:text-sm">One accountable team takes your product from discovery through engineering and launch, with visible work at every stage.</p>
+            <div className="mt-2 flex items-center gap-3 text-[9px] font-mono uppercase tracking-[0.16em] text-[#7B7483]"><span className="h-px w-7 bg-[#7653D6]" />Stage {activeStage.step} of 06 <span className="text-[#C0BBC8]">·</span> {activeStage.duration}</div>
           </div>
-        </div>
+        </header>
 
-        {/* Stage Selector Tabs (6 Columns, Minimalist & Aesthetic) */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-2.5 mb-8">
-          {STAGES.map((stage, idx) => {
-            const isActive = activeStageIndex === idx;
-            return (
-              <button
-                key={stage.id}
-                onClick={() => setActiveStageIndex(idx)}
-                className={`text-left p-3.5 sm:p-4 rounded-xl border transition-all cursor-pointer relative overflow-hidden ${
-                  isActive 
-                    ? "bg-white border-[#7C3AED] shadow-[0_4px_20px_rgba(124,58,237,0.12)] ring-1 ring-[#7C3AED]" 
-                    : "bg-white/80 border-[#E5E5EA] hover:bg-white hover:border-[#7C3AED]/40 hover:shadow-xs"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className={`text-[11px] font-mono font-semibold tracking-wider ${isActive ? "text-[#7C3AED]" : "text-[#86868B]"}`}>
-                    0{idx + 1}
-                  </span>
-                  <span className={`inline-flex items-center gap-1 text-[9.5px] font-mono px-1.5 py-0.5 rounded-full ${
-                    isActive ? "bg-[#7C3AED]/10 text-[#7C3AED]" : "bg-[#F5F5F7] text-[#86868B]"
-                  }`}>
-                    <Clock className="w-2.5 h-2.5" />
-                    {stage.duration}
-                  </span>
-                </div>
+        <nav aria-label="Process stages" className="relative my-4 overflow-x-auto px-0 py-2 text-[#1B1920] sm:my-5 sm:px-1 sm:py-2.5 [scrollbar-width:thin] [scrollbar-color:#A8A4B0_transparent]">
+          <div className="relative min-w-[840px] sm:min-w-0">
+            <div aria-hidden="true" className="absolute left-[8.33%] right-[8.33%] top-[76px] h-[8px] bg-[repeating-linear-gradient(90deg,rgba(67,65,77,.42)_0_3px,transparent_3px_8px)]" />
+            <div aria-hidden="true" className="absolute left-[8.33%] top-[76px] h-[8px] bg-[repeating-linear-gradient(90deg,#57BCE8_0_3px,transparent_3px_8px)] transition-[width] duration-500" style={{ width: `${(activeStageIndex / (STAGES.length - 1)) * 83.34}%` }} />
+            <div className="relative grid grid-cols-6">
+              {STAGES.map((stage, idx) => {
+                const isActive = activeStageIndex === idx;
+                return <button key={stage.id} type="button" onClick={() => setActiveStageIndex(idx)} aria-current={isActive ? "step" : undefined} className="group relative flex h-[106px] min-w-0 flex-col items-center text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#378AB8]">
+                  <span className={`z-10 inline-flex h-[36px] w-[132px] shrink-0 items-center justify-center rounded-full border px-2 text-[10px] leading-tight backdrop-blur-xl transition ${isActive ? "border-white/35 bg-[rgba(32,33,40,0.84)] text-white shadow-[0_4px_16px_rgba(20,21,29,.22)]" : "border-[#777681]/35 bg-[rgba(48,48,57,0.72)] text-white/85 shadow-[inset_0_1px_0_rgba(255,255,255,.16)] group-hover:bg-[rgba(60,60,70,0.84)]"}`}>{STAGE_NAV_LABELS[idx]}</span>
+                  <span aria-hidden="true" className={`h-[45px] w-px ${idx <= activeStageIndex ? "bg-gradient-to-b from-[#8B8792] to-[#56BFEA]" : "bg-[#8A8691]/60"}`} />
+                  <span aria-hidden="true" className={`absolute top-[67px] z-10 flex h-[19px] w-[19px] items-center justify-center rounded-full border border-white/75 bg-[radial-gradient(circle_at_35%_35%,#FFFFFF_0%,#A8DCEF_22%,#46505F_58%,#20212A_90%)] shadow-[0_0_10px_rgba(60,152,192,.48)] transition-transform group-hover:scale-125 ${isActive ? "ring-2 ring-[#55BDE9]/35" : ""}`}><span className={`h-[5px] w-[5px] rounded-full ${idx <= activeStageIndex ? "bg-white shadow-[0_0_6px_#fff]" : "bg-white/85"}`} /></span>
+                </button>;
+              })}
+            </div>
+          </div>
+        </nav>
 
-                <div className={`text-xs sm:text-[12.5px] font-medium leading-snug line-clamp-2 ${isActive ? "text-[#111114] font-semibold" : "text-[#4A4A50]"}`}>
-                  {stage.name}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Active Stage Deep-Dive Card (Split Layout: Relevant Info & Deliverables on Left + Beautiful Image Showcase on Right) */}
         <AnimatePresence mode="wait">
-          <motion.div
-            key={activeStage.id}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-            className="bg-white border border-[#E5E5EA] rounded-[26px] p-6 sm:p-9 lg:p-11 shadow-[0_8px_30px_rgba(0,0,0,0.04)]"
-          >
-            {activeStage.id === "discovery-srs" ? (
-              <DiscoverySrsThreeColumnFeatures 
-                onNextStage={() => setActiveStageIndex((prev) => (prev + 1) % STAGES.length)}
-              />
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-                
-                {/* Left Column: Stage Detail, Deliverables & Methodology (7 cols) */}
-                <div className="lg:col-span-7 flex flex-col justify-between">
-                  <div>
-                    {/* Title & Tagline */}
-                    <h3 className="text-2xl sm:text-3xl font-light tracking-[-0.03em] text-[#111114] mb-1">
-                      {activeStage.name}
-                    </h3>
-                    <p className="text-xs sm:text-[13px] text-[#7C3AED] font-medium tracking-tight mb-4">
-                      {activeStage.tagline}
-                    </p>
-
-                    {/* Summary Lead */}
-                    <p className="text-xs sm:text-[13.5px] text-[#515154] font-light leading-relaxed mb-6">
-                      {activeStage.summary}
-                    </p>
-
-                    {/* Verifiable Deliverables Grid (2x2) */}
-                    <div className="mb-6">
-                      <div className="text-[11px] font-mono uppercase tracking-wider text-[#86868B] mb-2.5 flex items-center gap-1.5">
-                        <ShieldCheck className="w-3.5 h-3.5 text-[#7C3AED]" />
-                        <span>VERIFIABLE DELIVERABLES &amp; ARTIFACTS</span>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        {activeStage.deliverables.map((deliv, dIdx) => (
-                          <div 
-                            key={dIdx} 
-                            className="p-3 sm:p-3.5 border border-[#E5E5EA] bg-[#FCFCFA] rounded-xl hover:border-[#7C3AED]/40 hover:bg-white transition-all duration-200"
-                          >
-                            <div className="flex items-center gap-2 mb-1">
-                              <div className="w-4 h-4 rounded-full bg-[#7C3AED]/10 text-[#7C3AED] flex items-center justify-center shrink-0">
-                                <Check className="w-2.5 h-2.5 stroke-[2.5]" />
-                              </div>
-                              <span className="text-xs sm:text-[12.5px] font-medium text-[#111114] tracking-tight">
-                                {deliv.title}
-                              </span>
-                            </div>
-                            <p className="text-[11px] sm:text-[11.5px] text-[#6E6E73] font-light leading-relaxed pl-6">
-                              {deliv.desc}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Engineering Sprint Execution Protocol */}
-                    <div>
-                      <div className="text-[11px] font-mono uppercase tracking-wider text-[#86868B] mb-2.5 flex items-center gap-1.5">
-                        <Terminal className="w-3.5 h-3.5 text-[#7C3AED]" />
-                        <span>SPRINT EXECUTION PROTOCOL</span>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        {activeStage.execution.map((item, eIdx) => (
-                          <div key={eIdx} className="flex items-start gap-2.5 text-xs text-[#515154] leading-relaxed">
-                            <span className="font-mono text-[10.5px] font-semibold text-[#7C3AED] mt-0.5">
-                              0{eIdx + 1}.
-                            </span>
-                            <span>{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                  </div>
+          <motion.div key={activeStage.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.28, ease: "easeOut" }} className="grid border-b border-[#E7E4EC] lg:grid-cols-12">
+            <div className="py-8 sm:py-10 lg:col-span-7 lg:py-12 lg:pr-12">
+              <div className="mb-7 flex items-start justify-between gap-4">
+                <div>
+                  <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#7653D6]">Stage {activeStage.step} / {activeStage.room}</p>
+                  <h3 className="max-w-3xl text-3xl font-light leading-[1.03] tracking-[-0.045em] sm:text-5xl">{activeStage.name}</h3>
+                  <p className="mt-3 text-sm font-medium text-[#7653D6]">{activeStage.tagline}</p>
                 </div>
-
-                {/* Right Column: Curated Pinterest-Grade High-Resolution Image & Metric Showcase (5 cols) */}
-                <div className="lg:col-span-5 flex flex-col justify-between">
-                  
-                  {/* Image Showcase Card */}
-                  <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] lg:aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100 border border-[#E5E5EA] shadow-md group">
-                    <Image
-                      src={activeStage.image}
-                      alt={activeStage.name}
-                      fill
-                      priority
-                      sizes="(max-width: 1024px) 100vw, 550px"
-                      className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-
-                    {/* Bottom Glassmorphic Metric Card */}
-                    <div className="absolute inset-x-3 bottom-3 z-10 p-3 sm:p-3.5 rounded-xl bg-white/95 backdrop-blur-md border border-white/70 shadow-md">
-                      <div className="text-[10px] font-mono uppercase tracking-wider text-[#7C3AED] font-semibold mb-2 flex items-center justify-between">
-                        <span>AUDITED PHASE CRITERIA</span>
-                        <span className="flex items-center gap-1 text-emerald-600 font-semibold">
-                          <CheckCircle2 className="w-3 h-3" /> VERIFIED
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-2 pt-1 border-t border-gray-100">
-                        {activeStage.metrics.map((m, mIdx) => (
-                          <div key={mIdx} className="flex flex-col">
-                            <span className="text-xs sm:text-[13px] font-semibold text-[#111114] tracking-tight">
-                              {m.value}
-                            </span>
-                            <span className="text-[9.5px] text-[#86868B] font-light leading-snug">
-                              {m.label}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                  </div>
-
-                  {/* Next Stage Navigation Link */}
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#E5E5EA]">
-                    <span className="text-xs text-[#86868B] font-light">
-                      Progression: {activeStage.step} / 06
-                    </span>
-                    
-                    <button
-                      type="button"
-                      onClick={() => setActiveStageIndex((prev) => (prev + 1) % STAGES.length)}
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-[#7C3AED] hover:text-black transition-colors cursor-pointer group"
-                    >
-                      <span>Next Stage</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                    </button>
-                  </div>
-
-                </div>
-
+                <span className="hidden shrink-0 border border-[#DCD6E8] px-3 py-2 font-mono text-[10px] text-[#625D69] sm:block">{activeStage.duration}</span>
               </div>
-            )}
+
+              <div className="grid gap-5 border-t border-[#E7E4EC] pt-5 sm:grid-cols-2 sm:gap-8">
+                <div>
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8A8491]">The focus</p>
+                  <p className="text-sm leading-[1.8] text-[#514C57]">{activeStage.summary}</p>
+                </div>
+                <div>
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8A8491]">How we move it forward</p>
+                  <ul className="space-y-2.5">
+                    {activeStage.execution.map((item, index) => <li key={item} className="flex gap-3 text-sm leading-relaxed text-[#514C57]"><span className="pt-0.5 font-mono text-[10px] text-[#7653D6]">0{index + 1}</span>{item}</li>)}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-8 border-t border-[#E7E4EC] pt-5">
+                <div className="mb-4 flex items-center justify-between gap-3"><p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8A8491]">What you can review</p><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#A09AA6]">Stage outputs</span></div>
+                <div className="grid border-l border-t border-[#E7E4EC] sm:grid-cols-2">
+                  {activeStage.deliverables.map((deliverable, index) => {
+                    const tones = ["bg-[#F1F6FF]", "bg-[#F4F0FC]", "bg-[#FFF4EA]", "bg-[#EFF8F4]"];
+                    const markers = ["text-[#4477C4]", "text-[#7653D6]", "text-[#C46C2C]", "text-[#31866B]"];
+                    return <article key={deliverable.title} className={`min-h-[105px] border-b border-r border-[#E7E4EC] p-4 sm:p-5 ${tones[index % tones.length]}`}><p className={`mb-3 font-mono text-[9px] tracking-[0.14em] ${markers[index % markers.length]}`}>0{index + 1}</p><h4 className="text-sm font-medium text-[#24212A]">{deliverable.title}</h4><p className="mt-2 text-xs leading-relaxed text-[#625D69]">{deliverable.desc}</p></article>;
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <aside className="border-t border-[#E7E4EC] py-7 sm:py-9 lg:col-span-5 lg:border-l lg:border-t-0 lg:py-12 lg:pl-8">
+              <div className="mb-4 flex items-center justify-between"><p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8A8491]">Inside this stage</p><span className="font-mono text-[9px] text-[#A09AA6]">FIG. 0{activeStage.step}</span></div>
+              <div className="relative aspect-[1.2/1] overflow-hidden border border-[#D9D5E0] bg-gradient-to-br from-[#E6F4FF] via-[#F4EFFC] to-[#FFF0E4]">
+                <Image src={activeStage.image} alt={`${activeStage.name} visual`} fill priority sizes="(max-width: 1024px) 100vw, 520px" className="object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#17121F]/75 via-transparent to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-4 text-white sm:p-5"><p className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/70">{activeStage.room}</p><p className="mt-1 text-lg font-light tracking-tight sm:text-xl">{activeStage.name}</p></div>
+              </div>
+              <div className="mt-4 grid grid-cols-3 border-l border-t border-[#E7E4EC]">
+                {activeStage.metrics.map((metric, index) => {
+                  const metricTones = ["bg-[#F1F6FF]", "bg-[#F4F0FC]", "bg-[#FFF4EA]"];
+                  return <div key={metric.label} className={`min-h-[74px] border-b border-r border-[#E7E4EC] p-3 ${metricTones[index % metricTones.length]}`}><span className="block text-sm font-medium text-[#25212C]">{metric.value}</span><span className="mt-1 block text-[10px] leading-snug text-[#625D69]">{metric.label}</span></div>;
+                })}
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">{activeStage.techStack.map((tech) => <span key={tech} className="border border-[#E7E4EC] bg-white px-2.5 py-1.5 text-[10px] text-[#625D69]">{tech}</span>)}</div>
+            </aside>
           </motion.div>
         </AnimatePresence>
 
+        <div className="flex items-center justify-between py-5">
+          <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#8A8491]">{activeStage.step} / 06 <span className="mx-2 text-[#C8C3CE]">·</span> {activeStage.duration}</span>
+          <button type="button" onClick={() => setActiveStageIndex((prev) => (prev + 1) % STAGES.length)} className="group inline-flex items-center gap-2 text-xs font-medium text-[#7653D6] hover:text-[#241934]">Next stage <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></button>
+        </div>
       </div>
     </section>
   );

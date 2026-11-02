@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function ServicesPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#03020A]">
+    <div className="flex min-h-screen flex-col bg-white">
       <ServicesSection showAllCatalog />
     </div>
   );

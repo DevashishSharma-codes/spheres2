@@ -4,34 +4,21 @@
 import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Bike,
   Check,
-  GraduationCap,
-  Home,
   Leaf,
   Link2,
   MapPin,
-  PackageCheck,
-  Plus,
   ShieldCheck,
   Sparkles,
-  Umbrella,
   WifiOff,
   X,
   Zap,
-  Bell,
   ArrowRight,
 } from "lucide-react";
-
-/* -------------------------------------------------------------------------
-   Typography Hierarchy:
-   Apple SF Pro / SF Pro Display prioritized with seamless fallback to
-   21Spheres Geist Sans, Inter, and system native type.
-   ------------------------------------------------------------------------- */
-const SF =
-  '"SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, var(--font-geist-sans), var(--font-inter), "Inter", "Helvetica Neue", sans-serif';
 
 const photo = (id: string, px = 160) =>
   `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${px}&h=${px}&q=80`;
@@ -81,29 +68,17 @@ function Dots() {
 
 function Phone({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`rounded-[38px] bg-[#111114] p-[7px] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.06)] ${className}`}>
-      <div className="relative h-full w-full overflow-hidden rounded-[31px] bg-white">
+    <div className={`relative rounded-[42px] bg-[linear-gradient(145deg,#f8f7fb_0%,#585661_5%,#121216_13%,#050506_78%,#77737e_94%,#17171a_100%)] p-[3px] shadow-[0_32px_70px_-20px_rgba(13,10,22,0.44),0_12px_28px_-12px_rgba(112,87,217,0.35)] transition-transform duration-500 [transform:perspective(1100px)_rotateY(-7deg)_rotateX(2deg)] group-hover/visual:[transform:perspective(1100px)_rotateY(-3deg)_rotateX(0deg)_translateY(-4px)] ${className}`}>
+      <div className="h-full w-full rounded-[39px] bg-[linear-gradient(135deg,#151519,#050506_22%,#28272d_80%,#080809)] p-[4px]">
+      <div className="relative h-full w-full overflow-hidden rounded-[35px] bg-white">
         <div className="absolute left-1/2 top-2 z-20 h-[22px] w-[74px] -translate-x-1/2 rounded-full bg-black" />
         <div className="flex items-center justify-between px-5 pt-[11px] text-[10px] font-semibold text-[#111114]">
           <span>9:41</span>
           <span className="h-2 w-4 rounded-[3px] bg-[#111114]" />
         </div>
-        {children}
+        <div className="relative h-[128%] w-[128%] origin-top-left scale-[0.78]">{children}</div>
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 rounded-[35px] bg-[linear-gradient(115deg,rgba(255,255,255,0.17)_0%,transparent_18%,transparent_72%,rgba(255,255,255,0.08)_100%)]" />
       </div>
-    </div>
-  );
-}
-
-function Toast({ icon, title, body, time = "now" }: { icon: React.ReactNode; title: string; body: string; time?: string }) {
-  return (
-    <div className="flex items-start gap-2.5 rounded-[12px] bg-white/90 p-3 shadow-[0_10px_30px_rgba(0,0,0,0.08),0_1px_2px_rgba(112,87,217,0.06)] ring-1 ring-black/5 backdrop-blur-xl">
-      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[8px] bg-gradient-to-br from-[#7057D9] to-[#573EBF] text-white shadow-xs">{icon}</span>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline justify-between gap-2">
-          <p className="text-[12px] font-semibold text-[#111114]">{title}</p>
-          <span className="text-[11px] font-mono text-[#8E8E93]">{time}</span>
-        </div>
-        <p className="text-[12px] leading-snug text-[#3C3C43]/80">{body}</p>
       </div>
     </div>
   );
@@ -120,14 +95,6 @@ function Cursor({ label, color = "#7057D9", className = "" }: { label: string; c
         {label}
       </span>
     </div>
-  );
-}
-
-function Switch({ on }: { on: boolean }) {
-  return (
-    <span className={`relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors ${on ? "bg-[#7057D9]" : "bg-[#E5E5EA]"}`}>
-      <span className={`absolute top-0.5 h-[18px] w-[18px] rounded-full bg-white shadow-xs transition-all ${on ? "left-[18px]" : "left-0.5"}`} />
-    </span>
   );
 }
 
@@ -157,17 +124,24 @@ function BimakartVisual() {
   ];
   return (
     <>
-      <Dots />
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#EDE7FD] via-[#F4F0FD]/60 to-transparent" />
-      <Phone className="absolute left-1/2 top-7 h-[26rem] w-[13rem] -translate-x-1/2">
-        <div className="px-4 pt-4">
-          <p className="text-[17px] font-semibold tracking-tight text-[#111114]">Compare plans</p>
-          <p className="text-[11px] text-[#8E8E93]">Family floater · ₹10 L cover</p>
-          <div className="mt-3 space-y-2">
-            {rows.map((r) => (
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,#D9EBF2_0%,#F2DCCF_48%,#E3D9F2_100%)]" />
+      <div aria-hidden="true" className="absolute left-1/2 top-[42%] h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#bca8f2]/30 blur-[70px]" />
+      <Phone className="absolute left-1/2 top-1/2 h-[17rem] w-[9rem] -translate-x-1/2 -translate-y-1/2">
+        <div className="px-4 pt-5">
+          <div className="mb-4 flex items-center justify-between">
+            <div><p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#8E8E93]">Bimakart</p><p className="mt-0.5 text-[16px] font-semibold tracking-tight text-[#111114]">Choose a plan</p></div>
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-[#F2EEFC] text-[#7057D9]"><ShieldCheck className="h-4 w-4" /></span>
+          </div>
+          <div className="rounded-[14px] bg-[#F5F3F8] p-3">
+            <p className="text-[9px] font-medium uppercase tracking-[0.11em] text-[#8E8E93]">Family health cover</p>
+            <div className="mt-2 flex items-end justify-between"><p className="text-[20px] font-semibold tracking-tight text-[#17151B]">₹10 lakh</p><span className="text-[9px] text-[#746D7D]">4 members</span></div>
+          </div>
+          <div className="mt-3 flex items-center justify-between"><p className="text-[10px] font-semibold text-[#24212A]">Best matches</p><span className="text-[9px] font-mono text-[#7057D9]">14 LIVE QUOTES</span></div>
+          <div className="mt-2 space-y-1.5">
+            {rows.slice(0, 2).map((r) => (
               <div
                 key={r.n}
-                className={`flex items-center gap-2 rounded-xl p-2 transition-all ${
+                className={`flex items-center gap-2 rounded-xl p-2 ${
                   r.sel
                     ? "bg-[#111114] text-white ring-1 ring-[#7057D9]/40 shadow-xs"
                     : "bg-[#F5F5F7] text-[#111114]"
@@ -184,27 +158,11 @@ function BimakartVisual() {
               </div>
             ))}
           </div>
-          <div className="mt-3 rounded-full bg-[#7057D9] py-2 text-center text-[12px] font-semibold text-white shadow-[0_4px_14px_rgba(112,87,217,0.35)] hover:bg-[#573EBF] transition-colors cursor-pointer">
-            Continue
+          <div className="mt-3 flex items-center justify-between rounded-full bg-[#7057D9] px-3.5 py-2.5 text-[10px] font-semibold text-white shadow-[0_4px_14px_rgba(112,87,217,0.35)]">
+            <span>Continue to proposal</span><ArrowRight className="h-3.5 w-3.5" />
           </div>
         </div>
       </Phone>
-      <Cursor label="Riya" color="#7057D9" className="left-[calc(50%+3.2rem)] top-[11.2rem]" />
-      <div className="absolute left-3 sm:left-6 md:left-8 top-8 hidden sm:block max-w-[13.5rem] z-20">
-        <Toast icon={<ShieldCheck className="h-4 w-4" />} title="Bimakart Gateway" body="14 insurers replied in 2.4 seconds" />
-      </div>
-      <div className="absolute left-6 sm:left-10 md:left-14 top-[6.8rem] hidden sm:block max-w-[13.5rem] z-20">
-        <Toast icon={<Check className="h-4 w-4" />} title="Policy issued" body="Sent to Ravi on WhatsApp" time="1m" />
-      </div>
-      <div className="absolute right-3 sm:right-6 md:right-8 top-10 hidden sm:block max-w-[12.5rem] rounded-[12px] bg-white p-3 shadow-[0_10px_30px_rgba(0,0,0,0.08)] ring-1 ring-black/5 z-20">
-        <div className="flex -space-x-2">
-          {[FACES.a, FACES.d, FACES.f, FACES.e].map((f, i) => (
-            <Avatar key={i} id={f} name="Broker" size={28} />
-          ))}
-        </div>
-        <p className="mt-2 text-[12px] font-semibold text-[#111114]">Broker network</p>
-        <p className="text-[11px] font-mono text-[#7057D9] font-medium">Quoting live, right now</p>
-      </div>
     </>
   );
 }
@@ -212,40 +170,21 @@ function BimakartVisual() {
 function ClinicalAiVisual() {
   return (
     <>
-      <div className="absolute inset-0 bg-gradient-to-b from-[#FAF9FE] to-[#EFEAFB]" />
-      <div className="absolute inset-0 flex flex-col justify-center gap-3 p-4">
-        <div className="ml-auto max-w-[88%] rounded-[18px] rounded-br-md bg-gradient-to-r from-[#7057D9] to-[#573EBF] px-3.5 py-2 text-[12.5px] leading-snug text-white shadow-[0_4px_16px_rgba(112,87,217,0.22)]">
-          Throbbing headache, worse in sunlight. Patient is restless.
-        </div>
-        <div className="flex items-end gap-2">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#111114] text-white shadow-xs">
-            <Sparkles className="h-3.5 w-3.5 text-[#A78BFA]" />
-          </span>
-          <div className="w-full rounded-[18px] rounded-bl-md bg-white p-3 shadow-[0_6px_20px_rgba(0,0,0,0.06)] ring-1 ring-black/5">
-            <div className="flex items-center justify-between">
-              <p className="text-[12px] font-semibold text-[#111114]">Closest matches</p>
-              <span className="text-[10px] font-mono text-[#7057D9] font-semibold">99.4% CITATION</span>
-            </div>
-            <div className="mt-2 space-y-1.5">
-              {[
-                { n: "Belladonna", t: "Strong match", cls: "bg-[#34C759]/15 text-[#248A3D]" },
-                { n: "Glonoinum", t: "Possible", cls: "bg-[#F2F2F7] text-[#6E6E73]" },
-              ].map((r) => (
-                <div key={r.n} className="flex items-center justify-between rounded-xl bg-[#F5F5F7] px-2.5 py-1.5">
-                  <span className="text-[12px] font-medium text-[#111114]">{r.n}</span>
-                  <span className={`rounded-full px-2 py-0.5 text-[10.5px] font-medium ${r.cls}`}>{r.t}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-2.5 flex gap-1.5">
-              {["Organon §153", "Materia medica"].map((c) => (
-                <span key={c} className="inline-flex items-center gap-1 rounded-full bg-[#7057D9]/10 px-2 py-0.5 text-[10.5px] font-medium text-[#7057D9]">
-                  <Link2 className="h-3 w-3" />
-                  {c}
-                </span>
-              ))}
-            </div>
+      <div className="absolute inset-0 bg-[linear-gradient(125deg,#D7EBF1_0%,#F3DCCD_52%,#E5DDF7_100%)]" />
+      <div aria-hidden="true" className="absolute -right-10 -top-16 h-48 w-48 rounded-full bg-white/50 blur-3xl" />
+      <div className="absolute inset-3 flex items-center sm:inset-4">
+        <div className="w-full rounded-[14px] border border-white/80 bg-white/90 p-3 shadow-[0_14px_34px_rgba(52,45,63,0.12)] backdrop-blur-xl sm:rounded-[17px] sm:p-4">
+          <div className="flex items-center justify-between gap-2 border-b border-[#EEEAF0] pb-2">
+            <div className="flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded-lg bg-[#7456D7] text-white"><Sparkles className="h-3.5 w-3.5" /></span><p className="text-[10px] font-semibold text-[#29252F] sm:text-xs">Clinical Assist</p></div>
+            <span className="inline-flex items-center gap-1 text-[8px] font-medium text-[#438661] sm:text-[9px]"><Check className="h-3 w-3" /> Source verified</span>
           </div>
+          <p className="mt-2 rounded-lg bg-[#F5F3F7] px-2.5 py-2 text-[8px] leading-snug text-[#716B76] sm:text-[10px]">“Headache with light sensitivity and restlessness.”</p>
+          <div className="mt-2 flex items-center justify-between"><p className="text-[9px] font-semibold text-[#302B35] sm:text-[10px]">Closest matches</p><span className="font-mono text-[8px] text-[#7057D9] sm:text-[9px]">99.4% CITED</span></div>
+          <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+            <div className="rounded-lg border border-[#E9E5EF] bg-white px-2 py-1.5"><p className="text-[9px] font-medium text-[#2D2931] sm:text-[10px]">Belladonna</p><p className="mt-0.5 text-[7px] text-[#57906C] sm:text-[8px]">Strong match</p></div>
+            <div className="rounded-lg border border-[#E9E5EF] bg-white px-2 py-1.5"><p className="text-[9px] font-medium text-[#2D2931] sm:text-[10px]">Glonoinum</p><p className="mt-0.5 text-[7px] text-[#8B8590] sm:text-[8px]">Possible</p></div>
+          </div>
+          <div className="mt-2 flex items-center gap-1 text-[7px] text-[#756A8D] sm:text-[8px]"><Link2 className="h-2.5 w-2.5" /> Organon §153 <span className="text-[#C4BEC9]">·</span> Materia medica</div>
         </div>
       </div>
     </>
@@ -255,87 +194,50 @@ function ClinicalAiVisual() {
 function MobileVisual() {
   return (
     <>
-      <div className="absolute inset-0 bg-gradient-to-b from-[#F5F2FE] via-[#F8F6FD] to-[#F5F5F7]" />
-      <div className="absolute inset-x-0 top-5 mx-auto flex w-[17.5rem] max-w-[90%] items-center gap-3 rounded-[14px] bg-black px-3 py-2.5 shadow-[0_14px_30px_rgba(0,0,0,0.25)]">
-        <Avatar id={FACES.b} name="Arjun" size={34} />
-        <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-semibold text-white">Arjun is 6 min away</p>
-          <p className="text-[11px] text-white/55">Order picked up · ProMotion</p>
-        </div>
-        <span className="grid h-8 w-8 place-items-center rounded-full bg-[#7057D9] text-white shadow-xs">
-          <Bike className="h-4 w-4" />
-        </span>
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,#F4D9C8_0%,#E8E5F1_48%,#CFE7EC_100%)]" />
+      <div aria-hidden="true" className="absolute -right-10 -top-12 h-44 w-44 rounded-full bg-white/50 blur-3xl" />
+      <div className="absolute inset-x-3 top-3 flex items-center justify-between sm:inset-x-4 sm:top-4">
+        <div><p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-[#8E8798]">UrbanFlow</p><p className="mt-0.5 text-[13px] font-semibold tracking-tight text-[#211D28]">Live delivery</p></div>
+        <span className="rounded-full bg-white px-2.5 py-1 text-[9px] font-medium text-[#4B9C6C] shadow-sm">On schedule</span>
       </div>
-      <div className="absolute inset-x-4 top-[6.6rem] overflow-hidden rounded-[12px] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-black/5">
-        {[
-          { i: MapPin, t: "Share live location", c: "#7057D9", on: true },
-          { i: PackageCheck, t: "Contactless drop-off", c: "#34C759", on: true },
-          { i: Bell, t: "Notify me at the door", c: "#FF9F0A", on: false },
-        ].map((r, idx) => (
-          <div key={r.t} className={`flex items-center gap-3 px-3 py-2.5 ${idx ? "border-t border-black/5" : ""}`}>
-            <span className="grid h-7 w-7 place-items-center rounded-[6px] text-white" style={{ background: r.c }}>
-              <r.i className="h-4 w-4" />
-            </span>
-            <span className="flex-1 text-[13px] text-[#111114] font-medium">{r.t}</span>
-            <Switch on={r.on} />
-          </div>
-        ))}
+      <div className="absolute inset-x-3 bottom-[4.25rem] top-[3.75rem] overflow-hidden rounded-[12px] border border-white/90 bg-[#F5F3F5] sm:inset-x-4 sm:bottom-[4.5rem]">
+        <div aria-hidden="true" className="absolute inset-0 opacity-40 [background-image:linear-gradient(90deg,transparent_49%,#D9D4DE_50%,transparent_51%),linear-gradient(0deg,transparent_49%,#D9D4DE_50%,transparent_51%)] [background-size:48px_48px]" />
+        <div className="absolute left-[22%] top-[58%] h-0.5 w-[58%] rotate-[-19deg] rounded-full bg-[#7057D9] shadow-[0_0_8px_rgba(112,87,217,0.32)]" />
+        <span className="absolute left-[18%] top-[56%] grid h-5 w-5 place-items-center rounded-full bg-white text-[#7057D9] shadow-md ring-2 ring-[#7057D9]/20"><MapPin className="h-3 w-3" /></span>
+        <span className="absolute right-[17%] top-[24%] grid h-7 w-7 place-items-center rounded-full bg-[#7057D9] text-white shadow-lg ring-4 ring-white/80"><Bike className="h-3.5 w-3.5" /></span>
+        <span className="absolute bottom-2 left-2 rounded-md bg-white/90 px-2 py-1 text-[8px] font-medium text-[#706A78]">Courier nearby</span>
+      </div>
+      <div className="absolute inset-x-3 bottom-3 flex items-center gap-2.5 rounded-[12px] bg-white p-2 shadow-[0_8px_20px_rgba(40,30,56,0.10)] ring-1 ring-black/[0.04] sm:inset-x-4 sm:bottom-4">
+        <Avatar id={FACES.b} name="Arjun" size={32} />
+        <div className="min-w-0 flex-1"><p className="text-[10px] font-semibold text-[#211D28]">Arjun is 6 min away</p><p className="text-[9px] text-[#88828F]">Order picked up · 1.8 km</p></div>
+        <ArrowRight className="h-3.5 w-3.5 text-[#7057D9]" />
       </div>
     </>
   );
 }
 
 function WealthVisual() {
-  const tone: Record<string, string> = {
-    purple: "bg-[#7057D9]/15 text-[#7057D9]",
-    orange: "bg-[#FF9F0A]/15 text-[#B25E00]",
-    blue: "bg-[#0A84FF]/12 text-[#0A63C9]",
-  };
-  const goals = [
-    { i: Umbrella, t: "Retirement", s: "Age 58 · Balanced", tag: "On track", tn: "purple", bg: "#F4F0FD", fg: "#7057D9" },
-    { i: GraduationCap, t: "Child’s education", s: "By 2038", tag: "Review", tn: "orange", bg: "#FFF1DD", fg: "#FF9F0A" },
-    { i: Home, t: "Dream home", s: "By 2031", tag: "Ahead", tn: "blue", bg: "#E6F8EB", fg: "#34C759" },
-  ];
-  const orbit = [
-    { f: FACES.c, n: "Neha", l: "8%", t: "8%" },
-    { f: FACES.d, n: "Kabir", l: "46%", t: "30%" },
-    { f: FACES.f, n: "Isha", l: "14%", t: "60%" },
-    { f: FACES.e, n: "Dev", l: "52%", t: "74%" },
-  ];
   return (
     <>
-      <div className="absolute inset-0 hidden md:block">
-        <div className="absolute right-0 top-0 h-full w-[48%]">
-          <div className="absolute left-1/2 top-1/2 h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#7057D9]/10" />
-          <div className="absolute left-1/2 top-1/2 h-[13rem] w-[13rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#7057D9]/15 bg-white/40" />
-          {orbit.map((o) => (
-            <div key={o.n} className="absolute flex items-center gap-2" style={{ left: o.l, top: o.t }}>
-              <Avatar id={o.f} name={o.n} size={38} />
-              <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-[#111114] shadow-sm ring-1 ring-black/5">Share plan</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="absolute left-4 top-6 w-[15rem] md:left-8 md:w-[17rem]">
-        {goals.map((g, idx) => (
-          <div
-            key={g.t}
-            className="relative mb-2.5 flex items-center gap-3 rounded-[12px] bg-white p-3 shadow-[0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-black/5"
-            style={{ marginLeft: idx * 14, zIndex: 3 - idx }}
-          >
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[8px]" style={{ background: g.bg, color: g.fg }}>
-              <g.i className="h-5 w-5" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-[13px] font-semibold text-[#111114]">{g.t}</p>
-              <p className="truncate text-[11px] text-[#8E8E93]">{g.s}</p>
-            </div>
-            <span className={`rounded-full px-2 py-0.5 text-[10.5px] font-medium ${tone[g.tn]}`}>{g.tag}</span>
+      <div className="absolute inset-0 bg-[linear-gradient(125deg,#F0D8C7_0%,#DFEAF0_50%,#E9DDF5_100%)]" />
+      <div aria-hidden="true" className="absolute -right-10 -top-16 h-56 w-56 rounded-full bg-white/45 blur-3xl" />
+      <div className="absolute inset-3 flex items-center sm:inset-4">
+        <div className="grid w-full grid-cols-[1.35fr_0.8fr] gap-3 rounded-[16px] border border-white/80 bg-white/85 p-3 shadow-[0_16px_40px_rgba(47,40,61,0.12)] backdrop-blur-xl sm:gap-5 sm:p-5">
+          <div className="min-w-0">
+            <div className="flex items-start justify-between gap-3"><div><p className="text-[8px] font-medium uppercase tracking-[0.14em] text-[#89828E]">Portfolio outlook</p><p className="mt-1 text-xl font-medium tracking-[-0.04em] text-[#26222A] sm:text-3xl">$1.4B</p></div><span className="rounded-full bg-[#E5F3E9] px-2 py-1 text-[8px] font-medium text-[#398554]">+12.8%</span></div>
+            <svg className="mt-2 h-16 w-full sm:h-24" viewBox="0 0 520 100" preserveAspectRatio="none" aria-label="Portfolio growth chart">
+              <defs><linearGradient id="wealthArea" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#8064D8" stopOpacity=".26"/><stop offset="1" stopColor="#8064D8" stopOpacity="0"/></linearGradient></defs>
+              <path d="M0 78 C35 74 50 61 82 67 S132 52 162 60 S217 49 244 54 S294 39 325 46 S370 26 404 36 S468 18 520 12 L520 100 L0 100Z" fill="url(#wealthArea)" />
+              <path d="M0 78 C35 74 50 61 82 67 S132 52 162 60 S217 49 244 54 S294 39 325 46 S370 26 404 36 S468 18 520 12" fill="none" stroke="#7558CB" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+            </svg>
+            <div className="flex justify-between text-[7px] text-[#99929D] sm:text-[9px]"><span>JAN</span><span>MAR</span><span>JUN</span><span>SEP</span><span>DEC</span></div>
           </div>
-        ))}
-        <span className="ml-3 inline-flex items-center gap-1 rounded-[6px] bg-[#111114] hover:bg-[#7057D9] transition-colors px-3 py-1.5 text-[11px] font-medium text-white cursor-pointer">
-          Add goal <Plus className="h-3 w-3" />
-        </span>
+          <div className="flex flex-col justify-between border-l border-[#ECE8EF] pl-3 sm:pl-5">
+            <div><p className="text-[8px] text-[#89828E]">Risk profile</p><p className="mt-1 text-[11px] font-medium text-[#28242D] sm:text-sm">Balanced growth</p></div>
+            <div><p className="text-[8px] text-[#89828E]">Annual return</p><p className="mt-1 text-sm font-medium text-[#28242D] sm:text-lg">8.42%</p></div>
+            <div><p className="text-[8px] text-[#89828E]">Next review</p><p className="mt-1 text-[9px] font-medium text-[#28242D] sm:text-xs">12 Dec 2025</p></div>
+          </div>
+        </div>
       </div>
     </>
   );
@@ -497,9 +399,12 @@ interface Project {
   client: string;
   description: string;
   year?: string;
-  wide?: boolean;
+  layout?: "tall" | "half" | "wide" | "standard";
   metrics?: { label: string; value: string }[];
   tags: string[];
+  cover: { src: string; alt: string; position?: string };
+  cardVisual: "photo" | "illustration" | "logo";
+  logoSrc?: string;
   details: { overview: string; architecture: string; deliverables: string[] };
   visual: React.ReactNode;
 }
@@ -512,13 +417,16 @@ const PROJECTS: Project[] = [
     client: "Bimakart Technologies",
     description: "One gateway that quotes 100+ insurers at once and issues the policy, in under 2.4 seconds.",
     year: "2024–2026",
-    wide: true,
+    // Tall lead tile keeps the real handset photo prominent in the bento.
+    layout: "tall",
     metrics: [
       { label: "Query latency", value: "< 2.4s" },
       { label: "Carriers", value: "100+" },
       { label: "Daily queries", value: "2.5M+" },
     ],
     tags: ["FastAPI", "Redis", "AWS EKS", "GraphQL", "Next.js"],
+    cover: { src: "/portfolio/photos/delivery-app.jpg", alt: "A close-up photograph of a hand using a smartphone", position: "center 38%" },
+    cardVisual: "photo",
     details: {
       overview: "Standardized fragmented XML insurer endpoints into a unified high-throughput JSON API gateway supporting tens of thousands of active POSP brokers.",
       architecture: "Distributed cache orchestrator using Redis cluster sharding and asynchronous Python workers to aggregate insurance quotes concurrently in under 2.4s.",
@@ -543,6 +451,9 @@ const PROJECTS: Project[] = [
       { label: "First-contact fix", value: "68%" },
     ],
     tags: ["LangGraph", "Qdrant", "FastAPI", "Whisper", "TypeScript"],
+    cover: { src: "/portfolio/photos/4k/clinical-ai.png", alt: "A clinician working between a laptop and smartphone", position: "center 43%" },
+    layout: "half",
+    cardVisual: "illustration",
     details: {
       overview: "Deploys fine-tuned reasoning agents that ingest enterprise policy corpora and clinical documents to resolve customer queries autonomously.",
       architecture: "An orchestrator routes each intent to a specialized sub-agent. Deterministic citation guardrails block any claim without a source.",
@@ -567,6 +478,9 @@ const PROJECTS: Project[] = [
       { label: "Monthly orders", value: "450k+" },
     ],
     tags: ["React Native", "SwiftUI", "WatermelonDB", "Expo", "WebSockets"],
+    cover: { src: "/portfolio/photos/delivery-app.jpg", alt: "A smartphone displaying a modern mobile service app", position: "center 38%" },
+    layout: "half",
+    cardVisual: "illustration",
     details: {
       overview: "Synchronizes real-time courier telemetry with sub-second geospatial routing and background location updates for urban service dispatch.",
       architecture: "Offline-first SQLite layer with optimistic UI. Haptics are driven natively through CoreHaptics and SwiftUI.",
@@ -585,13 +499,15 @@ const PROJECTS: Project[] = [
     client: "Wealth Wisdom Global",
     description: "Goal-based planning that advisors can stress-test and share with clients.",
     year: "2024–2025",
-    wide: true,
+    layout: "wide",
     metrics: [
       { label: "AUM monitored", value: "$1.4B+" },
       { label: "Stress test", value: "100k runs" },
       { label: "Tax alpha", value: "+$18.4k" },
     ],
     tags: ["React 19", "TypeScript", "PostgreSQL", "Recharts", "Tailwind"],
+    cover: { src: "/portfolio/photos/4k/analytics.png", alt: "A laptop displaying a business analytics dashboard", position: "center 53%" },
+    cardVisual: "illustration",
     details: {
       overview: "Advisory platform that lets wealth managers run portfolio stress tests, tax-loss harvesting and client rebalancing in real time.",
       architecture: "A calculation engine runs 100,000-iteration Monte Carlo projections across debt and equity baskets, rendered with interactive SVG.",
@@ -616,6 +532,8 @@ const PROJECTS: Project[] = [
       { label: "False positive", value: "< 0.08%" },
     ],
     tags: ["PyTorch", "Vision Transformer", "Rust", "FastAPI"],
+    cover: { src: "/portfolio/photos/developer.jpg", alt: "A software engineer reviewing code on a laptop", position: "center 48%" },
+    cardVisual: "illustration",
     details: {
       overview: "Inspects scanned policy endorsements, identity cards and financial statements for micro-alterations.",
       architecture: "Combines frequency-domain Fourier analysis with spatial vision transformers to catch clone stamps, spliced typography and compression artifacts.",
@@ -640,6 +558,8 @@ const PROJECTS: Project[] = [
       { label: "Uptime", value: "100%" },
     ],
     tags: ["Rust", "WebAssembly", "Typesense", "TypeScript"],
+    cover: { src: "/portfolio/photos/medical-scan.jpg", alt: "A clinician reviewing diagnostic information on a tablet", position: "center 48%" },
+    cardVisual: "illustration",
     details: {
       overview: "Lets clinicians query multi-volume medical repertories instantly, with no internet connection or server lookup.",
       architecture: "A compact inverted index compiled to WebAssembly and held in client memory, using bitset intersection for symptom matching.",
@@ -664,6 +584,8 @@ const PROJECTS: Project[] = [
       { label: "Placement lift", value: "+42%" },
     ],
     tags: ["Neo4j", "Next.js", "Python", "Cypher", "Vector DB"],
+    cover: { src: "/portfolio/photos/4k/team.png", alt: "A team collaborating around a table with laptops", position: "center 48%" },
+    cardVisual: "photo",
     details: {
       overview: "Parses live technology job postings daily and restructures learning nodes to match market skill demand.",
       architecture: "A Neo4j graph paired with semantic vector embeddings to calculate learning pathways and skill-gap maps.",
@@ -682,6 +604,9 @@ const PROJECTS: Project[] = [
     client: "Jetaa",
     description: "Product engineering and platform delivery.",
     tags: ["Web platform"],
+    cover: { src: "/portfolio/photos/developer.jpg", alt: "A software engineer building a digital platform", position: "center 35%" },
+    cardVisual: "logo",
+    logoSrc: "/clients/jetaa.png",
     details: {
       overview: "Product engineering and platform delivery for Jetaa.",
       architecture: "High-performance enterprise web architecture and distributed systems.",
@@ -696,6 +621,9 @@ const PROJECTS: Project[] = [
     client: "Enspire",
     description: "Product engineering and platform delivery.",
     tags: ["Web platform"],
+    cover: { src: "/portfolio/photos/team.jpg", alt: "A product team collaborating on a web platform", position: "center 44%" },
+    cardVisual: "logo",
+    logoSrc: "/clients/enspire.png",
     details: {
       overview: "Product engineering and platform delivery for Enspire.",
       architecture: "Multi-tenant digital experience and enterprise workflows.",
@@ -710,6 +638,9 @@ const PROJECTS: Project[] = [
     client: "WTMF",
     description: "Product engineering and platform delivery.",
     tags: ["Web platform"],
+    cover: { src: "/portfolio/photos/analytics.jpg", alt: "An analytics dashboard on a laptop screen", position: "center 58%" },
+    cardVisual: "logo",
+    logoSrc: "/clients/wtmf.png",
     details: {
       overview: "Product engineering and platform delivery for WTMF.",
       architecture: "High-throughput operational platform and analytics infrastructure.",
@@ -738,7 +669,7 @@ export function BentoPortfolioGrid() {
   const list = filter === "All" ? PROJECTS : PROJECTS.filter((p) => p.category === filter);
 
   return (
-    <div className="w-full text-[#111114] antialiased" style={{ fontFamily: SF }}>
+    <div className="w-full text-[#111114] antialiased">
       {/* Category Filter Pills (Apple Segmented Bar with 21Spheres Precision) */}
       <div className="mb-8 flex overflow-x-auto pb-1 [scrollbar-width:none]">
         <div role="tablist" className="mx-auto flex gap-1 rounded-full bg-[#EAEAEF] p-1 shadow-inner">
@@ -761,38 +692,81 @@ export function BentoPortfolioGrid() {
       </div>
 
       {/* Bento Grid */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-6 lg:gap-4.5">
-        {list.map((p) => {
-          const span = filter !== "All" ? "md:col-span-3" : p.wide ? "md:col-span-6 lg:col-span-4" : "md:col-span-3 lg:col-span-2";
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-6 lg:auto-rows-[430px] lg:grid-cols-12 lg:gap-4.5">
+        {list.map((p, projectIndex) => {
+          const span = filter !== "All"
+            ? "md:col-span-3 lg:col-span-6 lg:row-span-1"
+            : p.layout === "wide"
+              ? "md:col-span-6 lg:col-span-8 lg:row-span-1"
+              : p.layout === "tall"
+                ? "md:col-span-3 lg:col-span-4 lg:row-span-2"
+                : "md:col-span-3 lg:col-span-4 lg:row-span-1";
+          const cardTones = ["bg-[#D8D8DE]/55", "bg-[#E3E3E8]/60", "bg-[#D8D8DE]/55", "bg-[#E3E3E8]/60", "bg-[#D8D8DE]/55", "bg-[#E3E3E8]/60"];
           return (
             <article
               key={p.id}
-              className={`group relative flex flex-col justify-between rounded-[14px] bg-white p-5 sm:p-6 border border-[#E5E5EA] shadow-[0_1px_3px_rgba(0,0,0,0.02),0_8px_20px_-8px_rgba(0,0,0,0.04)] hover:border-[#7057D9]/40 hover:shadow-[0_20px_45px_-12px_rgba(112,87,217,0.14)] transition-all duration-300 h-[460px] sm:h-[480px] overflow-hidden ${span}`}
+              className={`group relative flex h-[430px] flex-col overflow-hidden rounded-[18px] border border-white/80 p-4 shadow-[0_10px_30px_-18px_rgba(23,20,32,0.2)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_38px_-20px_rgba(47,39,66,0.24)] sm:h-[450px] sm:p-5 lg:h-full ${cardTones[projectIndex % cardTones.length]} ${span}`}
             >
-              <div className="shrink-0">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-[12px] font-mono text-[#8E8E93] tracking-wide">{p.client}</p>
-                  {p.year && <span className="text-[11px] font-mono text-[#7057D9] font-semibold">{p.year}</span>}
+              <div className="relative z-10 shrink-0 px-1 pb-1">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <span className="inline-flex max-w-[72%] truncate rounded-full border border-black/[0.06] bg-white/70 px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.11em] text-[#625D69]">{p.category}</span>
+                  {p.year && <span className="shrink-0 text-[10px] text-[#817B85]">{p.year}</span>}
                 </div>
-                <h3 className="text-[20px] sm:text-[22px] font-semibold leading-snug tracking-[-0.025em] text-[#111114] line-clamp-1">
+                <h3 className="line-clamp-2 min-h-[48px] text-[19px] font-medium leading-[1.2] tracking-[-0.035em] text-[#393640] transition-colors group-hover:text-[#5842B5] sm:text-[21px]">
                   {p.name}
                 </h3>
-                <p className="mt-1 text-[13.5px] leading-[1.4] text-[#6E6E73] line-clamp-2">{p.description}</p>
-              </div>
-              
-              <div className="relative mt-4 flex-1 w-full overflow-hidden rounded-[10px] bg-[#FAF9FD] border border-black/[0.04]">
-                {p.visual}
+                <p className="mt-1 line-clamp-2 text-[12px] leading-[1.5] text-[#6E6972] sm:text-[12.5px]">{p.description}</p>
               </div>
 
-              {/* Hover Plus Button with 21Spheres Purple Glow */}
-              <span className="pointer-events-none absolute bottom-8 right-8 z-40 grid h-9 w-9 place-items-center rounded-full bg-[#111114]/90 text-white backdrop-blur shadow-sm group-hover:bg-[#7057D9] group-hover:shadow-[0_4px_16px_rgba(112,87,217,0.4)] group-hover:scale-105 transition-all duration-300">
-                <Plus className="h-4 w-4" />
+              <div className={`group/visual relative mt-3 min-h-0 w-full flex-1 overflow-hidden rounded-[14px] border border-white/65 ${p.cardVisual === "photo" ? "bg-[#E8E6EA]" : "bg-white/60"}`}>
+                {p.cardVisual === "illustration" ? (
+                  <div className="absolute inset-0 overflow-hidden">
+                    <div className={p.id === "bimakart" ? "absolute inset-0" : "absolute left-0 top-0 h-[122%] w-[122%] origin-top-left scale-[0.82]"}>{p.visual}</div>
+                  </div>
+                ) : p.cardVisual === "logo" ? (
+                  <div className="absolute inset-0 grid place-items-center bg-[linear-gradient(135deg,#F2F1F3,#FFFFFF_58%,#F0EEF4)] p-5 sm:p-8">
+                    {p.logoSrc && <Image src={p.logoSrc} alt={`${p.client} logo`} width={p.id === "wtmf" ? 240 : 420} height={p.id === "wtmf" ? 240 : 180} className="block h-auto max-h-[82%] max-w-[84%] object-contain" />}
+                  </div>
+                ) : (
+                  <>
+                    <Image
+                      src={p.cover.src}
+                      alt={p.cover.alt}
+                      fill
+                      sizes={p.layout === "wide" ? "(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 66vw" : "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 34vw"}
+                      className={`object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035] ${p.id === "bimakart" ? "object-[center_38%]" : ""}`}
+                      style={{ objectPosition: p.cover.position ?? "center" }}
+                    />
+                    <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#101016]/45 via-transparent to-white/5" />
+                    {p.id === "bimakart" && (
+                      <div className="absolute right-3 top-3 w-[min(56%,290px)] rounded-[15px] border border-white/55 bg-[#777780]/35 p-3 text-white shadow-[0_16px_38px_rgba(19,18,26,0.2)] backdrop-blur-2xl sm:right-4 sm:top-4 sm:p-3.5">
+                        <div className="flex items-center justify-between gap-2"><span className="text-[8px] font-medium uppercase tracking-[0.14em] text-white/75">Family health cover</span><ShieldCheck className="h-3.5 w-3.5 text-white/90" /></div>
+                        <p className="mt-1 text-lg font-medium tracking-[-0.04em] sm:text-xl">₹10 lakh</p>
+                        <div className="mt-2 space-y-1 border-t border-white/30 pt-2">
+                          <div className="flex items-center justify-between gap-2 text-[8px] sm:text-[9px]"><span className="text-white/80">HDFC Ergo</span><span className="font-medium">₹13,940 / yr</span></div>
+                          <div className="flex items-center justify-between gap-2 text-[8px] sm:text-[9px]"><span className="text-white/80">Star Health</span><span className="font-medium">₹14,280 / yr</span></div>
+                        </div>
+                        <div className="mt-2 flex items-center justify-between border-t border-white/30 pt-2 text-[7px] uppercase tracking-[0.1em] text-white/80"><span>14 insurers</span><span>Quotes in 2.4s</span></div>
+                      </div>
+                    )}
+                    <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-3 sm:inset-x-4 sm:bottom-4">
+                      <div className="min-w-0">
+                        <p className="truncate text-[10px] font-medium uppercase tracking-[0.14em] text-white/75">{p.client}</p>
+                        {p.metrics?.[0] && <p className="mt-1 text-sm font-medium tracking-[-0.02em] text-white sm:text-base">{p.metrics[0].value}<span className="ml-1.5 text-[11px] font-normal tracking-normal text-white/75">{p.metrics[0].label}</span></p>}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <span className="pointer-events-none absolute bottom-7 right-7 z-40 grid h-8 w-8 place-items-center rounded-full border border-white/70 bg-white/90 text-[#24212B] shadow-[0_3px_12px_rgba(28,23,38,0.12)] transition-all duration-300 group-hover:bg-[#7057D9] group-hover:text-white">
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </span>
 
               <button
                 onClick={() => setOpen(p)}
                 aria-label={`Open ${p.name} details`}
-                className="absolute inset-0 z-30 rounded-[14px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7057D9]"
+                className="absolute inset-0 z-30 rounded-[20px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7057D9]"
               />
             </article>
           );
@@ -829,7 +803,6 @@ function Sheet({ project: p, onClose }: { project: Project; onClose: () => void 
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 md:p-8"
-      style={{ fontFamily: SF }}
     >
       {/* Dark Translucent Backdrop */}
       <motion.div
@@ -849,7 +822,7 @@ function Sheet({ project: p, onClose }: { project: Project; onClose: () => void 
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.98 }}
         transition={{ type: "spring", damping: 30, stiffness: 340 }}
-        className="relative w-full max-w-4xl max-h-[84vh] flex flex-col overflow-hidden rounded-[16px] bg-white shadow-2xl ring-1 ring-black/10 z-10 my-auto"
+        className="relative z-10 my-auto flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-[20px] bg-[#F7F7F6] shadow-2xl ring-1 ring-black/10"
       >
         {/* Pinned Modal Header */}
         <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[#E5E5EA] bg-white px-5 py-3.5 sm:px-8 sm:py-4 shrink-0">
@@ -872,90 +845,67 @@ function Sheet({ project: p, onClose }: { project: Project; onClose: () => void 
         </div>
 
         {/* Scrollable Content Container */}
-        <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8 space-y-7 [scrollbar-width:thin] [scrollbar-color:rgba(0,0,0,0.2)_transparent]">
-          {/* Top Visual Showcase Banner */}
-          <div className="relative w-full h-[250px] sm:h-[310px] overflow-hidden rounded-[12px] bg-[#FAF9FD] border border-black/[0.05] shadow-xs shrink-0">
-            {p.visual}
+        <div className="flex-1 space-y-6 overflow-y-auto px-4 py-6 sm:space-y-8 sm:px-8 sm:py-8 [scrollbar-width:thin] [scrollbar-color:rgba(0,0,0,0.2)_transparent]">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="inline-flex rounded-full bg-[#EAE8E6] px-4 py-1.5 text-[9px] font-medium uppercase tracking-[0.16em] text-[#6A6670]">{p.category} <span className="mx-2 text-[#B3AEB8]">/</span> Case study</span>
+            <h2 className="mt-4 text-[30px] font-medium leading-[1.04] tracking-[-0.045em] text-[#15141A] sm:text-[42px]">{p.name}</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[#66616C] sm:text-base">{p.description}</p>
           </div>
 
-          {/* Title & Overview */}
-          <div>
-            <h2 className="text-[26px] sm:text-[32px] font-semibold leading-[1.12] tracking-[-0.03em] text-[#111114]">
-              {p.name}
-            </h2>
-            <p className="mt-3 text-[15.5px] sm:text-[16.5px] leading-relaxed text-[#3C3C43]">
-              {p.details.overview}
-            </p>
+          <div className="grid gap-3 md:grid-cols-3 md:grid-rows-[220px_210px]">
+            <article className="overflow-hidden rounded-[18px] bg-[#E9E7E5] md:row-span-2">
+              <div className="relative h-[210px] overflow-hidden bg-white sm:h-[250px] md:h-[54%]">{p.visual}</div>
+              <div className="p-5 sm:p-6">
+                <p className="mb-2 text-[9px] font-medium uppercase tracking-[0.15em] text-[#817B85]">The project</p>
+                <h3 className="text-lg font-medium leading-snug tracking-[-0.02em] text-[#19171D] sm:text-xl">{p.name}</h3>
+                <p className="mt-2 text-xs leading-relaxed text-[#68636D]">{p.details.overview}</p>
+                <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#17171A] py-2 pl-4 pr-2 text-[11px] text-white">{p.client}<span className="grid h-6 w-6 place-items-center rounded-full bg-white text-[#17171A]"><ArrowRight className="h-3.5 w-3.5" /></span></span>
+              </div>
+            </article>
+
+            <article className="flex flex-col justify-between rounded-[18px] bg-[#E8F0F5] p-5 sm:p-6">
+              <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-[#71808B]">Built for the real workflow</p>
+              <div>
+                <p className="text-lg font-medium leading-snug tracking-[-0.025em] text-[#20262B] sm:text-xl">{p.client}</p>
+                <p className="mt-2 text-xs leading-relaxed text-[#68737B]">{p.details.architecture}</p>
+              </div>
+            </article>
+
+            <article className="relative flex min-h-[190px] items-end overflow-hidden rounded-[18px] bg-[#F5EDE4] p-5 sm:p-6">
+              <div aria-hidden="true" className="absolute -right-8 -top-10 h-44 w-44 rounded-full border-[24px] border-[#D9A16A]/20" />
+              <div aria-hidden="true" className="absolute right-8 top-8 h-24 w-24 rounded-full border border-[#C88B55]/30" />
+              <div className="relative">
+                <p className="text-[42px] font-medium leading-none tracking-[-0.055em] text-[#222024] sm:text-[50px]">{p.metrics?.[0]?.value ?? "01"}</p>
+                <p className="mt-2 max-w-[180px] text-[11px] leading-relaxed text-[#766B62]">{p.metrics?.[0]?.label ?? "Project outcome"}</p>
+              </div>
+            </article>
+
+            <article className="relative flex flex-col justify-between overflow-hidden rounded-[18px] bg-[#E9E5F1] p-5 sm:p-6 md:col-span-2 md:flex-row md:items-end md:gap-6">
+              <div className="relative z-10 max-w-lg">
+                <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-[#7C6A9A]">System design</p>
+                <h3 className="mt-3 text-lg font-medium leading-snug tracking-[-0.025em] text-[#211C29] sm:text-xl">A connected platform, designed around performance.</h3>
+                <p className="mt-2 text-xs leading-relaxed text-[#6B6474]">{p.details.architecture}</p>
+              </div>
+              <div className="relative mt-5 flex min-w-[190px] items-center justify-between gap-2 md:mb-1 md:mt-0">
+                <span className="absolute left-4 right-4 top-1/2 h-px bg-[#9B8CAF]/50" />
+                {[p.tags[0], p.tags[1], p.tags[2]].filter(Boolean).map((tag, index) => <span key={tag} className={`relative grid h-12 w-12 place-items-center rounded-full border border-white/80 text-[8px] font-medium text-[#51465E] shadow-sm ${["bg-[#DCEAF3]", "bg-white", "bg-[#F6DFCA]"][index]}`}>{tag.split(/[ /]/)[0]}</span>)}
+              </div>
+            </article>
           </div>
 
-          {/* Empirical Benchmarks */}
-          {p.metrics && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-[12px] bg-[#FAF9FD] border border-[#EBE8F5]">
-              {p.metrics.map((m) => (
-                <div key={m.label} className="text-center sm:text-left py-1 px-2">
-                  <p className="text-[26px] sm:text-[30px] font-semibold tracking-[-0.03em] text-[#111114]">{m.value}</p>
-                  <p className="text-[12px] text-[#8E8E93] font-mono font-medium">{m.label}</p>
-                </div>
-              ))}
-            </div>
-          )}
+          {p.metrics && p.metrics.length > 1 && <section aria-label="Project outcomes">
+            <div className="mb-3 flex items-end justify-between gap-4"><div><p className="text-[9px] font-medium uppercase tracking-[0.15em] text-[#817B85]">Measured outcomes</p><h3 className="mt-1 text-xl font-medium tracking-[-0.025em] text-[#201D24]">Built to make an impact.</h3></div><span className="hidden text-[10px] text-[#8A8490] sm:block">{p.year ?? "21Spheres project"}</span></div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">{p.metrics.map((metric, index) => <div key={metric.label} className={`rounded-[14px] p-4 sm:p-5 ${["bg-[#E9E7E5]", "bg-[#E7EEF1]", "bg-[#EEE9F5]"][index % 3]}`}><p className="text-2xl font-medium tracking-[-0.04em] text-[#211F23] sm:text-3xl">{metric.value}</p><p className="mt-1 text-[10px] leading-snug text-[#726D76]">{metric.label}</p></div>)}</div>
+          </section>}
 
-          {/* Side-by-Side Grid: Architecture & Deliverables */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-black/[0.06] pt-6">
-            {/* Architecture */}
-            <div>
-              <h4 className="text-[12px] font-mono font-bold tracking-wider text-[#7057D9] uppercase mb-2">
-                Architecture & Engineering
-              </h4>
-              <p className="text-[14.5px] leading-relaxed text-[#4A4A52]">
-                {p.details.architecture}
-              </p>
-            </div>
+          <section className="grid gap-5 border-t border-[#E2DFE3] pt-6 md:grid-cols-[0.8fr_1.2fr] md:gap-10">
+            <div><p className="text-[9px] font-medium uppercase tracking-[0.15em] text-[#7653D6]">Engineering notes</p><h3 className="mt-2 text-xl font-medium tracking-[-0.025em] text-[#201D24]">What we delivered</h3><p className="mt-2 text-xs leading-relaxed text-[#706A74]">A practical foundation, shaped for the way this product is used.</p></div>
+            <ul className="grid gap-2 sm:grid-cols-2">{p.details.deliverables.map((deliverable, index) => <li key={deliverable} className="flex gap-3 rounded-[12px] bg-white p-3.5 text-xs leading-relaxed text-[#47434B]"><span className="font-mono text-[9px] text-[#7653D6]">0{index + 1}</span>{deliverable}</li>)}</ul>
+          </section>
 
-            {/* Verified Deliverables */}
-            <div>
-              <h4 className="text-[12px] font-mono font-bold tracking-wider text-[#7057D9] uppercase mb-2.5">
-                Verified Deliverables
-              </h4>
-              <ul className="space-y-2.5">
-                {p.details.deliverables.map((d) => (
-                  <li key={d} className="flex items-start gap-2.5 text-[14px] leading-snug text-[#3C3C43]">
-                    <span className="mt-0.5 grid h-4.5 w-4.5 shrink-0 place-items-center rounded-full bg-[#7057D9] text-white shadow-xs">
-                      <Check className="h-3 w-3" />
-                    </span>
-                    <span>{d}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Technologies */}
-          <div className="border-t border-black/[0.06] pt-6">
-            <h4 className="text-[12px] font-mono font-bold tracking-wider text-[#7057D9] uppercase mb-2.5">
-              Technologies
-            </h4>
-            <div className="flex flex-wrap gap-1.5">
-              {p.tags.map((t) => (
-                <span key={t} className="rounded-full bg-[#FAF9FD] border border-[#E9E5F5] px-3 py-1 text-[12px] font-mono text-[#52525B]">
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Footer Action Area */}
-          <div className="border-t border-black/[0.06] pt-6 pb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span className="text-[12px] font-mono text-[#8E8E93]">
-              Delivered by 21Spheres Studio
-            </span>
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 rounded-full bg-[#111114] hover:bg-[#7057D9] px-6 py-3 text-[14px] font-medium text-white shadow-md hover:shadow-[0_6px_20px_rgba(112,87,217,0.35)] transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7057D9]"
-            >
-              <span>Start a similar project</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+          <div className="flex flex-col gap-4 border-t border-[#E2DFE3] pt-5 sm:flex-row sm:items-center sm:justify-between">
+            <div><p className="text-[9px] font-medium uppercase tracking-[0.15em] text-[#817B85]">Technology</p><div className="mt-2 flex flex-wrap gap-1.5">{p.tags.map((tag) => <span key={tag} className="rounded-full border border-[#DDD9E1] bg-white px-2.5 py-1 text-[10px] text-[#625D69]">{tag}</span>)}</div></div>
+            <Link href="/contact" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#17171A] px-5 py-3 text-xs font-medium text-white transition-colors hover:bg-[#7057D9]">Start a similar project <ArrowRight className="h-3.5 w-3.5" /></Link>
           </div>
         </div>
       </motion.div>
@@ -969,18 +919,15 @@ function Sheet({ project: p, onClose }: { project: Project; onClose: () => void 
 
 export function PortfolioPage() {
   return (
-    <main className="relative min-h-screen bg-[#F5F5F7] text-[#111114] antialiased overflow-hidden" style={{ fontFamily: SF }}>
-      {/* 21Spheres Signature Ambient Luminous Glow */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[980px] h-[380px] rounded-full blur-[140px] bg-[#7057D9]/14" />
-      </div>
+    <main className="relative min-h-screen overflow-hidden bg-white text-[#111114] antialiased">
 
       {/* Header Section */}
-      <section className="relative z-10 mx-auto max-w-[1380px] px-4 pb-8 pt-8 sm:px-6 sm:pt-12 lg:px-8 text-center">
-        <h1 className="text-[44px] font-semibold leading-[1.03] tracking-[-0.045em] sm:text-[64px] lg:text-[76px] text-[#111114]">
+      <section className="relative z-10 mx-auto max-w-[1380px] px-4 pb-8 pt-8 text-center sm:px-6 sm:pb-10 sm:pt-12 lg:px-8">
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#7057D9]">Selected work / 21Spheres</p>
+        <h1 className="text-[42px] font-light leading-[1.02] tracking-[-0.055em] text-[#111114] sm:text-[60px] lg:text-[72px]">
           Software we’ve shipped.
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-[17px] leading-[1.45] text-[#6E6E73] sm:text-[20px] font-normal">
+        <p className="mx-auto mt-4 max-w-2xl text-[15px] leading-[1.55] text-[#6E6E73] sm:text-[18px]">
           AI agents, high-frequency insurance gateways, and mobile platforms engineered for high-conviction scale.
         </p>
       </section>

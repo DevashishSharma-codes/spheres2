@@ -219,7 +219,7 @@ export function Navbar() {
     { label: "How We Work", href: "/how-we-work", key: "how-we-work" },
     { label: "Services", href: "/services", key: "services" },
     { label: "Portfolio", href: "/portfolio", key: "portfolio" },
-    { label: "Industries", href: "/industries", key: "industries" },
+    { label: "Industries", href: "/industries/healthcare", key: "industries" },
     { label: "Insights", href: "/insights", key: "insights" },
     { label: "Testimonials", href: "/testimonials", key: "testimonials" },
   ];
@@ -234,7 +234,7 @@ export function Navbar() {
     if (cleanPath === "/" && activeSection === "how-we-work" && cleanHref === "/how-we-work") return true;
     if (cleanPath === "/" && activeSection === "services" && cleanHref === "/services") return true;
     if (cleanPath === "/" && activeSection === "portfolio" && cleanHref === "/portfolio") return true;
-    if (cleanPath === "/" && activeSection === "industries" && cleanHref === "/industries") return true;
+    if (cleanPath === "/" && activeSection === "industries" && cleanHref.startsWith("/industries")) return true;
     return false;
   };
 
@@ -273,8 +273,15 @@ export function Navbar() {
               <div
                 key={item.label}
                 className="relative py-1 flex items-center"
-                onMouseEnter={() => handleMouseEnter(item.key)}
-                onMouseLeave={handleMouseLeave}
+                onMouseEnter={() => {
+                  if (item.key === "industries") {
+                    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+                    setHoveredKey(null);
+                  } else {
+                    handleMouseEnter(item.key);
+                  }
+                }}
+                onMouseLeave={() => item.key !== "industries" && handleMouseLeave()}
               >
                 <Link
                   href={item.href}
@@ -300,13 +307,15 @@ export function Navbar() {
                       />
                     )}
                   </span>
-                  <ChevronDown
-                    className={`w-3.5 h-3.5 pb-0.5 transition-transform duration-200 ${
-                      isHovered
-                        ? isDarkHero ? "rotate-180 text-[#D8B4FE]" : "rotate-180 text-[#7057D9]"
-                        : isDarkHero ? "text-white/60" : "opacity-60"
-                    }`}
-                  />
+                  {item.key !== "industries" && (
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 pb-0.5 transition-transform duration-200 ${
+                        isHovered
+                          ? isDarkHero ? "rotate-180 text-[#D8B4FE]" : "rotate-180 text-[#7057D9]"
+                          : isDarkHero ? "text-white/60" : "opacity-60"
+                      }`}
+                    />
+                  )}
                 </Link>
               </div>
             );

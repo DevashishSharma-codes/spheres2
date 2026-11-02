@@ -1,0 +1,18 @@
+Portfolio photography sources
+
+fintech-phone.jpg — https://unsplash.com/photos/a-phone-is-used-for-contactless-payment-JSk0OT2Klac
+mobile-banking.jpg — https://unsplash.com/photos/a-woman-holding-a-cell-phone-in-her-hand-9XrefmwkHCs
+delivery-app.jpg — https://unsplash.com/photos/hands-holding-a-smartphone-with-a-delivery-app-open-2tG1_No-ClE
+developer.jpg — https://unsplash.com/photos/woman-working-on-a-laptop-with-code-on-screen-Zi0GmYPm88M
+analytics.jpg — https://unsplash.com/photos/a-laptop-screen-displays-data-analytics-charts-and-statistics-fDisDvdiqrQ
+clinical-ai.jpg — https://unsplash.com/photos/doctor-on-phone-working-on-laptop-in-office-egCFrNJ6Djw
+team.jpg — https://unsplash.com/photos/six-colleagues-collaborating-around-a-conference-table-with-laptops-RdEFWm0N84o
+medical-scan.jpg — https://unsplash.com/photos/doctor-shows-patient-medical-scan-on-tablet-EXOkTjoKkoU
+
+Images were downloaded from Unsplash and are used under the Unsplash License.
+
+4K PNG portfolio versions (3840 × 2560), generated from the original Unsplash photo CDN:
+4k/fintech-phone.png — https://unsplash.com/photos/a-phone-is-used-for-contactless-payment-JSk0OT2Klac
+4k/clinical-ai.png — https://unsplash.com/photos/doctor-on-phone-working-on-laptop-in-office-egCFrNJ6Djw
+4k/analytics.png — https://unsplash.com/photos/a-laptop-screen-displays-data-analytics-charts-and-statistics-fDisDvdiqrQ
+4k/team.png — https://unsplash.com/photos/six-colleagues-collaborating-around-a-conference-table-with-laptops-RdEFWm0N84o
