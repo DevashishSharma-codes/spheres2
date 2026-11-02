@@ -176,6 +176,7 @@ export function Navbar() {
           { id: "services", key: "services" },
           { id: "portfolio", key: "portfolio" },
           { id: "industries", key: "industries" },
+          { id: "testimonials", key: "testimonials" },
         ];
 
         let current = "";
@@ -235,6 +236,7 @@ export function Navbar() {
     if (cleanPath === "/" && activeSection === "services" && cleanHref === "/services") return true;
     if (cleanPath === "/" && activeSection === "portfolio" && cleanHref === "/portfolio") return true;
     if (cleanPath === "/" && activeSection === "industries" && cleanHref.startsWith("/industries")) return true;
+    if (cleanPath === "/" && activeSection === "testimonials" && cleanHref.startsWith("/testimonials")) return true;
     return false;
   };
 

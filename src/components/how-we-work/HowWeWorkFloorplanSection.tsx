@@ -32,27 +32,32 @@ const STAGE_SUMMARIES = [
 ];
 const STAGE_ICONS = [CalendarDays, UsersRound, FolderOpen, Presentation, Layers, Rocket];
 
+// Module-level in-memory flag:
+// Resets only when the browser page is reloaded (F5 / Cmd+R).
+// Persists across client-side page routing and in-page scrolling.
+let hasCompletedFirstPassOnce = false;
+
 export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorplanSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [hasEntered, setHasEntered] = useState(false);
+  const [hasEntered, setHasEntered] = useState(hasCompletedFirstPassOnce);
   const [isInView, setIsInView] = useState(false);
-  const [stemCount, setStemCount] = useState(0);
-  const [markerCount, setMarkerCount] = useState(0);
-  const [completedCount, setCompletedCount] = useState(0);
-  const [pillCount, setPillCount] = useState(0);
-  const [copyCount, setCopyCount] = useState(0);
+  const [stemCount, setStemCount] = useState(hasCompletedFirstPassOnce ? WORK_FLOORPLAN_STEPS.length : 0);
+  const [markerCount, setMarkerCount] = useState(hasCompletedFirstPassOnce ? WORK_FLOORPLAN_STEPS.length : 0);
+  const [completedCount, setCompletedCount] = useState(hasCompletedFirstPassOnce ? 1 : 0);
+  const [pillCount, setPillCount] = useState(hasCompletedFirstPassOnce ? WORK_FLOORPLAN_STEPS.length : 0);
+  const [copyCount, setCopyCount] = useState(hasCompletedFirstPassOnce ? WORK_FLOORPLAN_STEPS.length : 0);
   const [cursorIndex, setCursorIndex] = useState(0);
-  const [firstPassComplete, setFirstPassComplete] = useState(false);
+  const [firstPassComplete, setFirstPassComplete] = useState(hasCompletedFirstPassOnce);
   const sectionRef = useRef<HTMLElement | null>(null);
   const stepCursor = useRef(0);
   const prefersReducedMotion = useReducedMotion();
-  const allSteps = prefersReducedMotion ? WORK_FLOORPLAN_STEPS.length : 0;
+  const allSteps = prefersReducedMotion || hasCompletedFirstPassOnce ? WORK_FLOORPLAN_STEPS.length : 0;
   const visibleStemCount = Math.max(stemCount, allSteps);
   const visibleMarkerCount = Math.max(markerCount, allSteps);
   const visibleCompletedCount = Math.max(completedCount, allSteps);
   const visiblePillCount = Math.max(pillCount, allSteps);
   const visibleCopyCount = Math.max(copyCount, allSteps);
-  const sequenceComplete = firstPassComplete || (hasEntered && Boolean(prefersReducedMotion));
+  const sequenceComplete = firstPassComplete || hasCompletedFirstPassOnce || (hasEntered && Boolean(prefersReducedMotion));
   const cursorProgress = (prefersReducedMotion ? activeIndex : cursorIndex) / (WORK_FLOORPLAN_STEPS.length - 1);
 
   useEffect(() => {
@@ -78,7 +83,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
   }, [activeIndex, hasEntered, prefersReducedMotion]);
 
   useEffect(() => {
-    if (!hasEntered || firstPassComplete || prefersReducedMotion) return;
+    if (hasCompletedFirstPassOnce || !hasEntered || firstPassComplete || prefersReducedMotion) return;
 
     let stageIndex = 0;
     const timers: number[] = [];
@@ -106,7 +111,12 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                 if (stageIndex < WORK_FLOORPLAN_STEPS.length) {
                   revealNextStage();
                 } else {
+                  hasCompletedFirstPassOnce = true;
                   setFirstPassComplete(true);
+                  setMarkerCount(WORK_FLOORPLAN_STEPS.length);
+                  setStemCount(WORK_FLOORPLAN_STEPS.length);
+                  setPillCount(WORK_FLOORPLAN_STEPS.length);
+                  setCopyCount(WORK_FLOORPLAN_STEPS.length);
                   stepCursor.current = 0;
                   setActiveIndex(0);
                   setCompletedCount(0);

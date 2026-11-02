@@ -478,9 +478,9 @@ const PROJECTS: Project[] = [
       { label: "Monthly orders", value: "450k+" },
     ],
     tags: ["React Native", "SwiftUI", "WatermelonDB", "Expo", "WebSockets"],
-    cover: { src: "/portfolio/photos/delivery-app.jpg", alt: "A smartphone displaying a modern mobile service app", position: "center 38%" },
+    cover: { src: "/portfolio/photos/on-demand-delivery.png", alt: "On the way delivery progress screen with an estimated delivery time", position: "center" },
     layout: "half",
-    cardVisual: "illustration",
+    cardVisual: "photo",
     details: {
       overview: "Synchronizes real-time courier telemetry with sub-second geospatial routing and background location updates for urban service dispatch.",
       architecture: "Offline-first SQLite layer with optimistic UI. Haptics are driven natively through CoreHaptics and SwiftUI.",
@@ -506,8 +506,8 @@ const PROJECTS: Project[] = [
       { label: "Tax alpha", value: "+$18.4k" },
     ],
     tags: ["React 19", "TypeScript", "PostgreSQL", "Recharts", "Tailwind"],
-    cover: { src: "/portfolio/photos/4k/analytics.png", alt: "A laptop displaying a business analytics dashboard", position: "center 53%" },
-    cardVisual: "illustration",
+    cover: { src: "/portfolio/photos/wealth-wisdom-roadmap.png", alt: "Wealth Wisdom financial planning application with a personalized wealth roadmap", position: "center" },
+    cardVisual: "photo",
     details: {
       overview: "Advisory platform that lets wealth managers run portfolio stress tests, tax-loss harvesting and client rebalancing in real time.",
       architecture: "A calculation engine runs 100,000-iteration Monte Carlo projections across debt and equity baskets, rendered with interactive SVG.",
@@ -517,7 +517,7 @@ const PROJECTS: Project[] = [
         "White-label PDF plan generation",
       ],
     },
-    visual: <WealthVisual />,
+    visual: <Image src="/portfolio/photos/wealth-wisdom-roadmap.png" alt="Wealth Wisdom personalized wealth roadmap application" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />,
   },
   {
     id: "document-fraud",
@@ -734,10 +734,12 @@ export function BentoPortfolioGrid() {
                       alt={p.cover.alt}
                       fill
                       sizes={p.layout === "wide" ? "(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 66vw" : "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 34vw"}
-                      className={`object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035] ${p.id === "bimakart" ? "object-[center_38%]" : ""}`}
+                      className={`${p.id === "on-demand-mobile" ? "object-contain bg-[#EEEEEE]" : "object-cover"} transition-transform duration-700 ease-out group-hover:scale-[1.035] ${p.id === "bimakart" ? "object-[center_38%]" : ""}`}
                       style={{ objectPosition: p.cover.position ?? "center" }}
                     />
-                    <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#101016]/45 via-transparent to-white/5" />
+                    {p.id !== "on-demand-mobile" && p.id !== "wealth-wisdom" && (
+                      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#101016]/45 via-transparent to-white/5" />
+                    )}
                     {p.id === "bimakart" && (
                       <div className="absolute right-3 top-3 w-[min(56%,290px)] rounded-[15px] border border-white/55 bg-[#777780]/35 p-3 text-white shadow-[0_16px_38px_rgba(19,18,26,0.2)] backdrop-blur-2xl sm:right-4 sm:top-4 sm:p-3.5">
                         <div className="flex items-center justify-between gap-2"><span className="text-[8px] font-medium uppercase tracking-[0.14em] text-white/75">Family health cover</span><ShieldCheck className="h-3.5 w-3.5 text-white/90" /></div>
@@ -749,12 +751,14 @@ export function BentoPortfolioGrid() {
                         <div className="mt-2 flex items-center justify-between border-t border-white/30 pt-2 text-[7px] uppercase tracking-[0.1em] text-white/80"><span>14 insurers</span><span>Quotes in 2.4s</span></div>
                       </div>
                     )}
-                    <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-3 sm:inset-x-4 sm:bottom-4">
-                      <div className="min-w-0">
-                        <p className="truncate text-[10px] font-medium uppercase tracking-[0.14em] text-white/75">{p.client}</p>
-                        {p.metrics?.[0] && <p className="mt-1 text-sm font-medium tracking-[-0.02em] text-white sm:text-base">{p.metrics[0].value}<span className="ml-1.5 text-[11px] font-normal tracking-normal text-white/75">{p.metrics[0].label}</span></p>}
+                    {p.id !== "on-demand-mobile" && p.id !== "wealth-wisdom" && (
+                      <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-3 sm:inset-x-4 sm:bottom-4">
+                        <div className="min-w-0">
+                          <p className="truncate text-[10px] font-medium uppercase tracking-[0.14em] text-white/75">{p.client}</p>
+                          {p.metrics?.[0] && <p className="mt-1 text-sm font-medium tracking-[-0.02em] text-white sm:text-base">{p.metrics[0].value}<span className="ml-1.5 text-[11px] font-normal tracking-normal text-white/75">{p.metrics[0].label}</span></p>}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </>
                 )}
               </div>

@@ -218,7 +218,7 @@ export function SprintStagesSection() {
   }, []);
 
   return (
-    <section id="sprint-stages" className="scroll-mt-20 bg-white pb-12 text-[#17151B] sm:pb-16">
+    <section id="sprint-stages" className="scroll-mt-20 bg-white pb-0 text-[#17151B]">
       <div className="mx-auto w-full max-w-[1440px] px-5 pt-7 sm:px-8 sm:pt-9 lg:px-12 lg:pt-10">
         <header className="grid gap-4 border-b border-[#E7E4EC] pb-5 sm:pb-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
           <div>

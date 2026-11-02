@@ -5,6 +5,7 @@ import { HowWeWorkFloorplanSection } from "@/components/how-we-work/HowWeWorkFlo
 import { ServicesSection } from "@/components/services/ServicesSection";
 import { PortfolioLandingSection } from "@/components/portfolio/PortfolioLandingSection";
 import { IndustriesLandingSection } from "@/components/industries/IndustriesLandingSection";
+import { TestimonialsLandingSection } from "@/components/testimonials/TestimonialsLandingSection";
 
 export default function HomePage() {
   return (
@@ -29,6 +30,9 @@ export default function HomePage() {
 
       {/* Fifth Section: Industries & Vertical Domains (Split Showcase with arrow stepper & modal) */}
       <IndustriesLandingSection />
+
+      {/* Sixth Section: Testimonials & Wall of Love (Exact 21Spheres DNA in Purple/White/Grayish/Black) */}
+      <TestimonialsLandingSection />
     </div>
   );
 }

@@ -74,7 +74,7 @@ const CADENCE_ITEMS: CadenceItem[] = [
 
 export function CollaborationCadenceSection() {
   return (
-    <section className="py-20 sm:py-28 bg-white border-b border-[#DADADD]/70">
+    <section className="pt-8 pb-20 sm:pt-10 sm:pb-28 bg-white border-b border-[#DADADD]/70">
       <div className="w-full max-w-[1480px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-16">
         
         {/* Section Header */}
