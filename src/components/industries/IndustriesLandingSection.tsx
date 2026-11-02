@@ -38,12 +38,11 @@ export function IndustriesLandingSection() {
     [handlePrev, handleNext]
   );
 
-  // Left & Section Background: deep cosmic dark purple
+  // One shared, black-dominant field behind the heading and showcase.
   const sectionBackground = {
     background: `
-      radial-gradient(ellipse 85% 55% at 50% 65%, rgba(124, 58, 237, 0.20) 0%, rgba(79, 28, 145, 0.08) 45%, transparent 78%),
-      radial-gradient(ellipse 65% 35% at 50% 20%, rgba(99, 40, 190, 0.10) 0%, transparent 70%),
-      linear-gradient(180deg, #040308 0%, #060511 25%, #0A0718 60%, #060410 85%, #030207 100%)
+      radial-gradient(ellipse 112% 115% at 78% 44%, rgba(91, 64, 132, 0.24) 0%, rgba(61, 43, 89, 0.14) 48%, transparent 82%),
+      linear-gradient(112deg, #030306 0%, #08070d 44%, #100b19 74%, #07060b 100%)
     `,
   };
 
@@ -55,7 +54,7 @@ export function IndustriesLandingSection() {
       className="relative z-10 m-0 flex h-[calc(100vh-3.5rem)] w-full select-none flex-col overflow-hidden border-y border-white/10 p-0 text-white outline-none scroll-mt-14 sm:h-[calc(100vh-4rem)] sm:scroll-mt-16"
       style={sectionBackground}
     >
-      <header className="relative z-20 flex shrink-0 flex-col gap-2 border-b border-white/10 px-6 py-3.5 sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:px-8 sm:py-4 lg:px-10">
+      <header className="relative z-20 flex shrink-0 flex-col gap-2 border-b border-white/10 bg-transparent px-6 py-3.5 sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:px-8 sm:py-4 lg:px-10">
         <div className="shrink-0">
           <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C8B4FF] sm:text-[11px]">
             Our expertise
@@ -92,8 +91,8 @@ export function IndustriesLandingSection() {
                 alt={activeIndustry.name}
                 className="h-full w-full object-cover grayscale brightness-90 contrast-125"
               />
-              {/* Dark vignette gradients */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-black/40 z-10 pointer-events-none" />
+              {/* Keep the image legible while letting the shared purple wash show through. */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#10091b]/80 via-black/42 to-black/48 z-10 pointer-events-none" />
               {/* Micro dot matrix texture */}
               <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.18)_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none z-10 opacity-50 mix-blend-overlay" />
             </motion.div>
@@ -141,11 +140,8 @@ export function IndustriesLandingSection() {
             PERFECT SINGLE SCREEN FIT, ZERO INSIDE SCROLL, PROPORTIONAL SPACE
             ========================================================= */}
         <div
-          className="relative flex h-full w-full flex-col justify-between overflow-hidden border-t border-white/10 px-5 py-4 sm:px-7 sm:py-5 lg:col-span-5 lg:border-t-0 lg:px-8 lg:py-6"
+          className="relative flex h-full w-full flex-col justify-between overflow-hidden border-t border-white/10 bg-transparent px-5 py-4 sm:px-7 sm:py-5 lg:col-span-5 lg:border-t-0 lg:px-8 lg:py-6"
         >
-          {/* Subtle ambient light overlay on right side */}
-          <div className="absolute inset-0 bg-gradient-to-b from-purple-500/[0.04] via-transparent to-black/30 pointer-events-none" />
-
           {/* Industry list; the shared section title already labels this column. */}
           <div className="relative z-10 my-auto py-2 flex flex-col justify-center gap-1 sm:gap-1.5 overflow-hidden">
             {industries.map((ind, idx) => {

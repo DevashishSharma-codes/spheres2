@@ -56,18 +56,12 @@ export function PortfolioLandingSection() {
       className="relative w-full min-h-[calc(100vh-64px)] lg:min-h-[calc(100vh-64px)] flex flex-col justify-between text-[#1D1D1F] py-8 sm:py-10 lg:py-12 overflow-hidden border-b border-[#E5E5EA]"
       style={{
         background: `
-          radial-gradient(ellipse 90% 50% at 50% 100%, rgba(124, 58, 237, 0.22) 0%, rgba(168, 85, 247, 0.08) 45%, transparent 75%),
-          radial-gradient(ellipse 50% 40% at 100% 100%, rgba(124, 58, 237, 0.14) 0%, transparent 60%),
-          radial-gradient(ellipse 50% 40% at 0% 100%, rgba(147, 51, 234, 0.12) 0%, transparent 60%),
-          linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 38%, #FAF6FF 60%, #F2E7FE 85%, #EADBFE 100%)
+          radial-gradient(ellipse 78% 82% at 88% 8%, rgba(180, 148, 255, 0.40) 0%, rgba(218, 204, 255, 0.24) 40%, transparent 78%),
+          radial-gradient(ellipse 60% 74% at 4% 96%, rgba(198, 176, 255, 0.34) 0%, rgba(228, 219, 255, 0.16) 48%, transparent 76%),
+          linear-gradient(118deg, #FFFFFF 0%, #FCFAFF 42%, #F2ECFF 100%)
         `,
       }}
     >
-      {/* Bottom purple ambient glow matching How We Work section */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -bottom-28 left-1/2 -translate-x-1/2 w-[900px] h-[380px] rounded-full blur-[140px] bg-[#7C3AED]/16" />
-      </div>
-
       <div className="relative z-10 w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between flex-1 min-h-0">
         
         {/* =========================================================
