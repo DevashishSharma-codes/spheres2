@@ -1,19 +1,16 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
-  ArrowUpRight,
   CalendarDays,
   Check,
-  Clock3,
   FolderOpen,
   Layers,
   Presentation,
   Rocket,
   UsersRound,
+  X,
 } from "lucide-react";
 import { HOW_WE_WORK_CONTENT, WORK_FLOORPLAN_STEPS } from "@/content/howWeWork";
 
@@ -21,143 +18,530 @@ interface HowWeWorkFloorplanSectionProps {
   embedded?: boolean;
 }
 
-const STAGE_TOPS = [180, 145, 110, 75, 40, 5];
 const STAGE_SUMMARIES = [
-  "Goals, user journeys, and a clear project scope.",
-  "System blueprint, data, APIs, and technology choices.",
-  "Design systems and interactive prototypes.",
-  "Focused sprints, integrations, and regular demos.",
-  "Quality, performance, and security checks.",
-  "Launch, monitoring, and ongoing support.",
+  "Goals, user journeys, and a clear scope. Workshops with your team become a signed-off SRS.",
+  "System blueprint, data, APIs, and tech choices, weighed for scale, cost, and security.",
+  "Design systems and interactive prototypes you can click through before any code is written.",
+  "Focused sprints, integrations, and regular demos, so you see working software every cycle.",
+  "Automated and manual testing, load runs, and security scans before anything ships.",
+  "Launch with a rollback plan, live monitoring, and support that continues after go-live.",
 ];
+
+const STAGE_DELIVERABLES = [
+  ["Scope document", "User journeys", "SRS"],
+  ["Architecture diagram", "Tech stack", "API plan"],
+  ["Design system", "Wireframes", "Clickable prototype"],
+  ["Sprint demos", "Integrations", "Release builds"],
+  ["Test reports", "Performance audit", "Security review"],
+  ["Production launch", "Monitoring", "Support plan"],
+];
+
 const STAGE_ICONS = [CalendarDays, UsersRound, FolderOpen, Presentation, Layers, Rocket];
 
-// Module-level in-memory flag:
-// Resets only when the browser page is reloaded (F5 / Cmd+R).
-// Persists across client-side page routing and in-page scrolling.
-let hasCompletedFirstPassOnce = false;
+/* ------------------------------------------------------------------ *
+ * Desktop geometry. The track fills all the space under the title.
+ * Pills sit on one baseline at the bottom; beam heights climb stage by
+ * stage and are scaled to the measured track height.
+ *
+ * Every card is centred on its own beam, so the stem always meets the
+ * middle of the card (first and last stage included). The card width is
+ * limited by the room that really exists around the track (so the outer
+ * cards never leave the screen), and the card height is measured from
+ * the real content (so text is never clipped, whatever the width).
+ * ------------------------------------------------------------------ */
+const PILL_BOTTOM = 28;
+const PILL_H = 40;
+const TOTAL = WORK_FLOORPLAN_STEPS.length;
+const STEM_BOTTOM = PILL_BOTTOM + PILL_H - 2;
+const MIN_BODY_H = 150; // fallback body height before measuring
+const STUB_H = 24; // short connector between the beam tip and the card
+const CARD_R = 20; // card corner radius
+const CARD_MAX_W = 380;
+const CARD_MIN_W = 240;
+const EDGE_GAP = 12; // breathing room kept between a card and the screen edge
+const LABEL_W = 140; // width of the stage title label above each beam
+const LABEL_GAP = 12; // clear space kept between an open card and the neighbouring labels
+const CHECK_SIZE = 20;
+const TRACK_MIN_H = 520;
+
+const stemHeight = (index: number, trackH: number, cardH: number) => {
+  const maxH = Math.max(150, trackH - STEM_BOTTOM - cardH - 16);
+  const base = Math.max(60, maxH * 0.38);
+  return base + ((maxH - base) * index) / (TOTAL - 1);
+};
+
+const EASE_OUT = [0.16, 1, 0.3, 1] as const;
+
+function TypewriterText({
+  text,
+  className = "",
+  speed = 24,
+  delay = 0,
+}: {
+  text: string;
+  className?: string;
+  speed?: number;
+  delay?: number;
+}) {
+  const [visible, setVisible] = useState(0);
+
+  useEffect(() => {
+    setVisible(0);
+    let interval: number | undefined;
+    const start = window.setTimeout(() => {
+      let count = 0;
+      interval = window.setInterval(() => {
+        count += 1;
+        setVisible(count);
+        if (count >= text.length) window.clearInterval(interval);
+      }, speed);
+    }, delay);
+    return () => {
+      window.clearTimeout(start);
+      if (interval !== undefined) window.clearInterval(interval);
+    };
+  }, [delay, speed, text]);
+
+  return (
+    <span className={className} aria-label={text}>
+      <span aria-hidden="true">{text.slice(0, visible)}</span>
+      {visible > 0 && visible < text.length && (
+        <span
+          aria-hidden="true"
+          className="ml-0.5 inline-block h-[1em] w-px translate-y-0.5 animate-pulse bg-[#C8B4FF]"
+        />
+      )}
+    </span>
+  );
+}
+
+/* The card is *drawn* by the beam. The beam reaches its tip, extends a
+ * short stub, then splits in two. Each half races around the rounded
+ * outline (with a bright comet head) and they meet at the top. A liquid
+ * fill spreads out from the junction right behind the lines, then the
+ * text is typed. Closing plays it all in reverse: text, fill, then the
+ * outline retracts back down into the beam.
+ *
+ * The stem always sits at the horizontal middle of the card, so both
+ * halves are perfectly symmetric. */
+function StageCard({
+  index,
+  cardW,
+  cardH,
+  reduced,
+  onClose,
+}: {
+  index: number;
+  cardW: number;
+  cardH: number;
+  reduced: boolean;
+  onClose?: () => void;
+}) {
+  const step = WORK_FLOORPLAN_STEPS[index];
+  const summary = STAGE_SUMMARIES[index];
+  const chips = STAGE_DELIVERABLES[index];
+  const Icon = STAGE_ICONS[index];
+
+  const W = cardW;
+  const H = cardH;
+  const B = cardH - STUB_H; // bottom edge of the body
+  const R = CARD_R;
+  const mid = W / 2;
+  const tipX = mid; // stem is always centred on the card
+
+  const arc = (Math.PI * R) / 2;
+  const side = B - 2 * R;
+  const half = tipX - R + arc + side + arc + (mid - R) + 2;
+  const lenL = half;
+  const lenR = half;
+  const dL = `M ${tipX} ${B} L ${R} ${B} A ${R} ${R} 0 0 1 0 ${B - R} L 0 ${R} A ${R} ${R} 0 0 1 ${R} 0 L ${mid} 0`;
+  const dR = `M ${tipX} ${B} L ${W - R} ${B} A ${R} ${R} 0 0 0 ${W} ${B - R} L ${W} ${R} A ${R} ${R} 0 0 0 ${W - R} 0 L ${mid} 0`;
+
+  const stubT = reduced ? 0 : 0.18;
+  const drawDelay = stubT;
+  const drawDur = reduced ? 0 : 0.85;
+  const fillDelay = reduced ? 0 : drawDelay + 0.2;
+  const fillDur = reduced ? 0 : 0.9;
+  const contentDelay = reduced ? 0 : drawDelay + 0.55;
+  const ease = [0.5, 0.05, 0.25, 1] as const;
+  const COMET = 34;
+  const reach = Math.hypot(W, B) + 24;
+
+  const titleDelay = (contentDelay + 0.25) * 1000;
+  const summaryDelay = titleDelay + step.title.length * 28 + 100;
+  const chipsDelay = (summaryDelay + summary.length * 16 + 60) / 1000;
+
+  const outline = (d: string, len: number, key: string) => (
+    <React.Fragment key={key}>
+      {/* the outline itself */}
+      <motion.path
+        d={d}
+        fill="none"
+        stroke="#B79CFF"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeDasharray={len}
+        initial={{ strokeDashoffset: len }}
+        animate={{ strokeDashoffset: 0 }}
+        exit={{ strokeDashoffset: len, transition: { duration: reduced ? 0 : 0.6, delay: reduced ? 0 : 0.12, ease } }}
+        transition={{ duration: drawDur, delay: drawDelay, ease }}
+      />
+      {/* bright comet head riding the leading edge */}
+      <motion.path
+        d={d}
+        fill="none"
+        stroke="#FFFFFF"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeDasharray={`${COMET} ${len * 2}`}
+        style={{ filter: "drop-shadow(0 0 6px #C8B4FF) drop-shadow(0 0 12px #8D66FF)" }}
+        initial={{ strokeDashoffset: COMET, opacity: reduced ? 0 : 1 }}
+        animate={{ strokeDashoffset: COMET - len, opacity: reduced ? 0 : [1, 1, 0] }}
+        exit={{ opacity: 0, transition: { duration: 0 } }}
+        transition={{
+          strokeDashoffset: { duration: drawDur, delay: drawDelay, ease },
+          opacity: { duration: drawDur, delay: drawDelay, times: [0, 0.9, 1] },
+        }}
+      />
+    </React.Fragment>
+  );
+
+  return (
+    <div className="absolute z-40" style={{ left: 0, bottom: 0, width: cardW, height: cardH }}>
+      {/* soft halo, appears once the card is formed */}
+      <motion.div
+        aria-hidden="true"
+        className="absolute left-0 top-0"
+        style={{ width: W, height: B, borderRadius: R }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0, transition: { duration: 0.2 } }}
+        transition={{ duration: reduced ? 0 : 0.7, delay: reduced ? 0 : drawDelay + drawDur }}
+      >
+        <div
+          className="h-full w-full"
+          style={{ borderRadius: R, boxShadow: "0 0 44px rgba(128,87,232,.38), 0 18px 40px rgba(60,30,120,.35)" }}
+        />
+      </motion.div>
+
+      {/* liquid fill, spreading from the junction of stub and card */}
+      <motion.article
+        aria-label={`Stage ${step.step}: ${step.title}`}
+        className="absolute left-0 top-0 overflow-hidden text-left"
+        style={{
+          width: W,
+          height: B,
+          borderRadius: R,
+          background:
+            "radial-gradient(ellipse 70% 90% at 100% 0%, rgba(128,87,232,.42) 0%, transparent 70%), radial-gradient(ellipse 60% 70% at 0% 100%, rgba(95,60,180,.28) 0%, transparent 70%), linear-gradient(135deg, #261848 0%, #150E26 65%)",
+        }}
+        initial={{ clipPath: `circle(0px at ${tipX}px ${B}px)` }}
+        animate={{ clipPath: `circle(${reach}px at ${tipX}px ${B}px)` }}
+        exit={{ clipPath: `circle(0px at ${tipX}px ${B}px)`, transition: { duration: reduced ? 0 : 0.5, ease } }}
+        transition={{ duration: fillDur, delay: fillDelay, ease: EASE_OUT }}
+      >
+        <Icon
+          aria-hidden="true"
+          className="absolute -right-3 -top-3 h-28 w-28 text-[#B79CFF]/15"
+          strokeWidth={1}
+        />
+        <motion.div
+          className="relative z-10 flex h-full flex-col px-5 pb-3.5 pt-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.15 } }}
+          transition={{ duration: reduced ? 0 : 0.35, delay: contentDelay }}
+        >
+          <div className="mb-2 flex items-center gap-2">
+            <span className="font-mono text-[10px] tracking-[0.18em] text-[#C8B4FF]">{step.step} / 06</span>
+            <span className="h-px flex-1 bg-white/15" />
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close stage card"
+                className="-mr-1 flex h-6 w-6 items-center justify-center rounded-full text-white/60 transition hover:bg-white/10 hover:text-white"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+          <h3 id={step.id} className="text-[17px] font-semibold leading-snug tracking-[-0.02em] text-white">
+            {reduced ? step.title : <TypewriterText text={step.title} speed={28} delay={titleDelay} />}
+          </h3>
+          <p className="mt-1 text-xs leading-relaxed text-white/75">
+            {reduced ? summary : <TypewriterText text={summary} speed={16} delay={summaryDelay} />}
+          </p>
+          <motion.div
+            initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: reduced ? 0 : chipsDelay }}
+            className="mt-auto flex flex-wrap gap-1.5 pt-2.5"
+          >
+            {chips.map((chip) => (
+              <span
+                key={chip}
+                className="rounded-full border border-[#C8B4FF]/30 bg-white/[0.07] px-2.5 py-0.5 text-[10px] font-medium text-[#E4D9FF]"
+              >
+                {chip}
+              </span>
+            ))}
+          </motion.div>
+        </motion.div>
+      </motion.article>
+
+      {/* beam outline: stub + two halves racing around the card */}
+      <svg
+        aria-hidden="true"
+        width={W}
+        height={H}
+        className="pointer-events-none absolute left-0 top-0 z-20 overflow-visible"
+        style={{ filter: "drop-shadow(0 0 4px rgba(169,138,255,.65))" }}
+      >
+        <motion.line
+          x1={tipX}
+          y1={H}
+          x2={tipX}
+          y2={B}
+          stroke="#D9C9FF"
+          strokeWidth={2}
+          strokeDasharray={STUB_H + 1}
+          initial={{ strokeDashoffset: STUB_H + 1 }}
+          animate={{ strokeDashoffset: 0 }}
+          exit={{ strokeDashoffset: STUB_H + 1, transition: { duration: reduced ? 0 : 0.15, delay: reduced ? 0 : 0.62 } }}
+          transition={{ duration: stubT }}
+        />
+        {outline(dL, lenL, "l")}
+        {outline(dR, lenR, "r")}
+      </svg>
+    </div>
+  );
+}
 
 export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorplanSectionProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [hasEntered, setHasEntered] = useState(hasCompletedFirstPassOnce);
-  const [isInView, setIsInView] = useState(false);
-  const [stemCount, setStemCount] = useState(hasCompletedFirstPassOnce ? WORK_FLOORPLAN_STEPS.length : 0);
-  const [markerCount, setMarkerCount] = useState(hasCompletedFirstPassOnce ? WORK_FLOORPLAN_STEPS.length : 0);
-  const [completedCount, setCompletedCount] = useState(hasCompletedFirstPassOnce ? 1 : 0);
-  const [pillCount, setPillCount] = useState(hasCompletedFirstPassOnce ? WORK_FLOORPLAN_STEPS.length : 0);
-  const [copyCount, setCopyCount] = useState(hasCompletedFirstPassOnce ? WORK_FLOORPLAN_STEPS.length : 0);
-  const [cursorIndex, setCursorIndex] = useState(0);
-  const [firstPassComplete, setFirstPassComplete] = useState(hasCompletedFirstPassOnce);
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const stepCursor = useRef(0);
   const prefersReducedMotion = useReducedMotion();
-  const allSteps = prefersReducedMotion || hasCompletedFirstPassOnce ? WORK_FLOORPLAN_STEPS.length : 0;
-  const visibleStemCount = Math.max(stemCount, allSteps);
-  const visibleMarkerCount = Math.max(markerCount, allSteps);
-  const visibleCompletedCount = Math.max(completedCount, allSteps);
-  const visiblePillCount = Math.max(pillCount, allSteps);
-  const visibleCopyCount = Math.max(copyCount, allSteps);
-  const sequenceComplete = firstPassComplete || hasCompletedFirstPassOnce || (hasEntered && Boolean(prefersReducedMotion));
-  const cursorProgress = (prefersReducedMotion ? activeIndex : cursorIndex) / (WORK_FLOORPLAN_STEPS.length - 1);
+  const reduced = !!prefersReducedMotion;
 
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [hasEntered, setHasEntered] = useState(false);
+  const [finished, setFinished] = useState(false);
+
+  // Progress counters: stage i has reached a step when its counter is > i.
+  const [linkCount, setLinkCount] = useState(0);
+  const [pillCount, setPillCount] = useState(0);
+  const [stemCount, setStemCount] = useState(0);
+  const [titleCount, setTitleCount] = useState(0);
+  const [completedCount, setCompletedCount] = useState(0);
+
+  const [trackW, setTrackW] = useState(0);
+  const [trackH, setTrackH] = useState(TRACK_MIN_H);
+  const [edgeRoom, setEdgeRoom] = useState(0); // free space between the track and the screen edge
+  const [bodyH, setBodyH] = useState(MIN_BODY_H); // measured height of the tallest card body
+
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const measureRef = useRef<HTMLDivElement | null>(null);
+  const skipIntro = useRef(false);
+  const manualCloseTimer = useRef<number | null>(null);
+
+  /* ---------- manual open / close (only once the intro has played) ---------- */
+  const clearManualTimer = () => {
+    if (manualCloseTimer.current !== null) window.clearTimeout(manualCloseTimer.current);
+    manualCloseTimer.current = null;
+  };
+
+  const closeStageCard = useCallback(() => {
+    clearManualTimer();
+    setExpandedIndex(null);
+  }, []);
+
+  const showStageCard = useCallback((index: number) => {
+    clearManualTimer();
+    setActiveIndex(index);
+    setExpandedIndex(index);
+    manualCloseTimer.current = window.setTimeout(() => {
+      manualCloseTimer.current = null;
+      setExpandedIndex(null);
+    }, 8000);
+  }, []);
+
+  const togglePill = useCallback(
+    (index: number) => {
+      if (expandedIndex === index) closeStageCard();
+      else showStageCard(index);
+    },
+    [closeStageCard, expandedIndex, showStageCard]
+  );
+
+  useEffect(() => () => clearManualTimer(), []);
+
+  /* ---------- deep link (#stage-id): skip the intro and open that card ---------- */
+  useEffect(() => {
+    const requested = WORK_FLOORPLAN_STEPS.findIndex((s) => `#${s.id}` === window.location.hash);
+    if (requested < 0) return;
+    skipIntro.current = true;
+    setHasEntered(true);
+    setLinkCount(TOTAL);
+    setPillCount(TOTAL);
+    setStemCount(TOTAL);
+    setTitleCount(TOTAL);
+    setCompletedCount(TOTAL);
+    setFinished(true);
+    showStageCard(requested);
+  }, [showStageCard]);
+
+  /* ---------- start when scrolled into view ---------- */
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
-
-    const observer = new IntersectionObserver(([entry]) => {
-      setIsInView(entry.isIntersecting);
-      if (entry.isIntersecting) setHasEntered(true);
-    }, { threshold: 0.2 });
-
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setHasEntered(true);
+      },
+      { threshold: 0.25 }
+    );
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
 
+  /* ---------- measure the desktop track (size + room left on each side) ---------- */
   useEffect(() => {
-    if (!hasEntered || prefersReducedMotion) return;
-
-    const travelTimer = window.setTimeout(() => setCursorIndex(activeIndex), 360);
+    const el = trackRef.current;
+    if (!el) return;
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      const viewportW = document.documentElement.clientWidth;
+      setTrackW(rect.width);
+      if (rect.height > 0) setTrackH(rect.height);
+      setEdgeRoom(Math.max(0, Math.min(rect.left, viewportW - rect.right) - EDGE_GAP));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener("resize", update);
     return () => {
-      window.clearTimeout(travelTimer);
+      ro.disconnect();
+      window.removeEventListener("resize", update);
     };
-  }, [activeIndex, hasEntered, prefersReducedMotion]);
+  }, []);
 
+  /* ---------- card width: as wide as comfortable, never beyond the screen ----------
+   * The first and last cards are centred on their stems too, so each can
+   * only be as wide as one column plus the free space on both sides. */
+  const colW = trackW / TOTAL;
+  // the label above each beam is at most this wide
+  const labelW = Math.max(0, Math.min(LABEL_W, colW - 8));
+  // widest card that still clears the neighbouring labels (card is centred on its beam)
+  const neighbourLimit = 2 * (colW - labelW / 2 - LABEL_GAP);
+  // widest card that still stays on screen (first / last cards)
+  const edgeLimit = colW + 2 * edgeRoom;
+  const cardW =
+    trackW > 0
+      ? Math.round(Math.max(CARD_MIN_W, Math.min(CARD_MAX_W, neighbourLimit, edgeLimit)))
+      : 0;
+
+  /* ---------- card height: measured from the real content at that width ---------- */
   useEffect(() => {
-    if (hasCompletedFirstPassOnce || !hasEntered || firstPassComplete || prefersReducedMotion) return;
-
-    let stageIndex = 0;
-    const timers: number[] = [];
-    const after = (delay: number, callback: () => void) => {
-      timers.push(window.setTimeout(callback, delay));
-    };
-
-    const revealNextStage = () => {
-      stepCursor.current = stageIndex;
-      setActiveIndex(stageIndex);
-
-      // Let the brand mark spin and travel to the stage before the node and stem appear.
-      after(1050, () => {
-        setMarkerCount(stageIndex + 1);
-        after(500, () => {
-          setStemCount(stageIndex + 1);
-          after(300, () => {
-            setPillCount(stageIndex + 1);
-            after(280, () => {
-              setCopyCount(stageIndex + 1);
-              after(280, () => {
-                setCompletedCount(stageIndex + 1);
-                after(300, () => {
-                stageIndex += 1;
-                if (stageIndex < WORK_FLOORPLAN_STEPS.length) {
-                  revealNextStage();
-                } else {
-                  hasCompletedFirstPassOnce = true;
-                  setFirstPassComplete(true);
-                  setMarkerCount(WORK_FLOORPLAN_STEPS.length);
-                  setStemCount(WORK_FLOORPLAN_STEPS.length);
-                  setPillCount(WORK_FLOORPLAN_STEPS.length);
-                  setCopyCount(WORK_FLOORPLAN_STEPS.length);
-                  stepCursor.current = 0;
-                  setActiveIndex(0);
-                  setCompletedCount(0);
-                }
-              });
-              });
-            });
-          });
-        });
+    const el = measureRef.current;
+    if (!el || cardW <= 0) return;
+    const measure = () => {
+      let max = 0;
+      Array.from(el.children).forEach((child) => {
+        max = Math.max(max, (child as HTMLElement).offsetHeight);
       });
+      if (max > 0) setBodyH(Math.max(MIN_BODY_H, Math.ceil(max) + 2));
     };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    if (typeof document !== "undefined" && document.fonts?.ready) {
+      document.fonts.ready.then(measure).catch(() => undefined);
+    }
+    return () => ro.disconnect();
+  }, [cardW]);
 
-    revealNextStage();
-    return () => timers.forEach(window.clearTimeout);
-  }, [firstPassComplete, hasEntered, prefersReducedMotion]);
+  const cardH = bodyH + STUB_H;
 
+  /* ---------- the choreography ----------
+   * For every stage, in order:
+   *   1. dashed line draws to the next slot (not for stage 1)
+   *   2. pill forms at the bottom
+   *   3. beam rises from the pill
+   *   4. card grows out of the beam tip, text is typed
+   *   5. card collapses back into the beam
+   *   6. the title is written above the beam
+   *   7. the tick forms, then we move on to the next stage
+   */
   useEffect(() => {
-    if (!sequenceComplete || !isInView || prefersReducedMotion) return;
+    if (!hasEntered || skipIntro.current) return;
 
-    let completionTimer = window.setTimeout(() => setCompletedCount(stepCursor.current + 1), 560);
-    const loopTimer = window.setInterval(() => {
-      stepCursor.current = (stepCursor.current + 1) % WORK_FLOORPLAN_STEPS.length;
-      setActiveIndex(stepCursor.current);
-      window.clearTimeout(completionTimer);
+    const t = reduced
+      ? { link: 120, pill: 160, stem: 160, card: 160, hold: 900, close: 160, check: 160, gap: 120 }
+      : { link: 650, pill: 650, stem: 800, card: 300, hold: 1800, close: 1000, check: 600, gap: 250 };
 
-      if (stepCursor.current === 0) {
-        setCompletedCount(0);
-        completionTimer = window.setTimeout(() => setCompletedCount(1), 560);
-      } else {
-        setCompletedCount(stepCursor.current);
-        completionTimer = window.setTimeout(() => setCompletedCount(stepCursor.current + 1), 560);
+    let cancelled = false;
+    const timers = new Set<number>();
+    const wait = (ms: number) =>
+      new Promise<void>((resolve) => {
+        const id = window.setTimeout(() => {
+          timers.delete(id);
+          resolve();
+        }, ms);
+        timers.add(id);
+      });
+
+    (async () => {
+      for (let i = 0; i < TOTAL; i++) {
+        if (cancelled) return;
+        const step = WORK_FLOORPLAN_STEPS[i];
+        const summary = STAGE_SUMMARIES[i];
+
+        if (i > 0) {
+          setLinkCount(i);
+          await wait(t.link);
+          if (cancelled) return;
+        }
+
+        setActiveIndex(i);
+        setPillCount(i + 1);
+        await wait(t.pill);
+        if (cancelled) return;
+
+        setStemCount(i + 1);
+        await wait(t.stem);
+        if (cancelled) return;
+
+        setExpandedIndex(i);
+        const typing = reduced ? 0 : 1100 + step.title.length * 28 + 100 + summary.length * 16 + 500;
+        await wait(t.card + typing + t.hold);
+        if (cancelled) return;
+
+        setExpandedIndex(null);
+        await wait(t.close);
+        if (cancelled) return;
+
+        setTitleCount(i + 1);
+        await wait(reduced ? 120 : 300);
+        if (cancelled) return;
+
+        setCompletedCount(i + 1);
+        await wait(t.check + t.gap);
       }
-    }, 2200);
+      if (!cancelled) setFinished(true);
+    })();
 
     return () => {
-      window.clearInterval(loopTimer);
-      window.clearTimeout(completionTimer);
+      cancelled = true;
+      timers.forEach((id) => window.clearTimeout(id));
     };
-  }, [isInView, prefersReducedMotion, sequenceComplete]);
+  }, [hasEntered, reduced]);
 
   const activeStep = WORK_FLOORPLAN_STEPS[activeIndex];
+
+  /* ---------- card placement: always centred on its own column / beam ---------- */
+  const cardOffset = (colW - cardW) / 2;
+
   return (
     <section
       ref={sectionRef}
@@ -172,237 +556,345 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
         `,
       }}
     >
-      <div
-        className="relative mx-auto flex min-h-[calc(100svh-5.5rem)] w-full max-w-[1600px] flex-col px-5 py-8 sm:px-8 sm:py-10 lg:min-h-[calc(100svh-5.5rem)] lg:px-12 lg:py-[clamp(32px,5vh,56px)]"
-      >
-        <header className="mb-6 flex shrink-0 flex-col gap-3 pb-2 sm:mb-8 lg:mb-5">
+      <div className="relative mx-auto flex min-h-[calc(100svh-5.5rem)] w-full max-w-[1600px] flex-col px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:pb-8 lg:pt-12">
+        {/* ------------------------------- header (top) ------------------------------- */}
+        <header className="mb-6 flex shrink-0 flex-col gap-3 sm:mb-8 lg:mb-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
           <div>
             <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.19em] text-[#C8B4FF] sm:text-xs">
               Our process
             </p>
-            <h2 className="text-[clamp(2.8rem,6vw,4.75rem)] font-light leading-[0.98] tracking-[-0.055em] text-white/90">
+            <h2 className="text-[clamp(2.8rem,6vw,4.75rem)] font-light leading-[0.98] tracking-[-0.055em] text-white/90 lg:text-[clamp(2.8rem,4vw,4rem)]">
               How We Work
             </h2>
           </div>
-          <p className="max-w-md text-xs leading-relaxed text-white/70 sm:text-[13px]">
+          <p className="max-w-md text-xs leading-relaxed text-white/70 sm:text-[13px] lg:pb-1 lg:text-right">
             Six clear stages. One accountable path from first brief to launch.
           </p>
         </header>
 
-        <div className="hidden h-[clamp(440px,58vh,560px)] shrink-0 lg:block">
-          <div className="relative h-full">
-            {/* Shared baseline and the animated journey marker. */}
+        {/* ------------------------------ desktop track (fills the rest) ------------------------------ */}
+        <div
+          ref={trackRef}
+          className="relative hidden min-w-0 flex-1 lg:mx-6 lg:block"
+          style={{ minHeight: TRACK_MIN_H }}
+        >
+          {/* hidden ruler: renders every card's real content at the real card width,
+              so the card height always fits the tallest text. */}
+          {cardW > 0 && (
             <div
+              ref={measureRef}
               aria-hidden="true"
-              className="absolute bottom-[53px] left-[8.333%] right-[8.333%] h-[2px]"
-              style={{ backgroundImage: "repeating-linear-gradient(to right, rgba(255,255,255,0.42) 0 5px, transparent 5px 10px)" }}
+              className="pointer-events-none invisible absolute left-0 top-0 -z-10"
+              style={{ width: cardW }}
             >
-              <motion.div
-                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#A98AFF] to-[#E0D2FF]"
-                animate={{ width: `${cursorProgress * 100}%` }}
-                transition={{ duration: prefersReducedMotion ? 0 : 0.78, ease: [0.22, 1, 0.36, 1] }}
-              />
-              {hasEntered && visibleMarkerCount > 0 && !prefersReducedMotion && (
-                <motion.span
-                  key={`connection-pulse-${activeIndex}`}
-                  aria-hidden="true"
-                  className="absolute top-1/2 z-[1] h-[3px] w-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-transparent via-white to-[#A68AF2] blur-[1px]"
-                  style={{ left: `${cursorProgress * 100}%` }}
-                  initial={{ opacity: 0, scaleX: 0.25 }}
-                  animate={{ opacity: [0, 0.95, 0], scaleX: [0.25, 1, 0.4] }}
-                  transition={{ duration: 0.72, delay: 0.36, ease: [0.22, 1, 0.36, 1] }}
-                />
-              )}
-              {hasEntered && !prefersReducedMotion && (
-                <motion.span
-                  aria-hidden="true"
-                  className="absolute -top-4 left-0 z-[2] flex h-8 w-8 -translate-x-1/2 items-center justify-center"
-                  animate={{ left: `${cursorProgress * 100}%` }}
-                  transition={{ duration: 0.68, ease: [0.2, 0.8, 0.25, 1] }}
+              {WORK_FLOORPLAN_STEPS.map((step, i) => (
+                <div
+                  key={step.id}
+                  className="flex flex-col px-5 pb-3.5 pt-4"
+                  style={{ width: cardW }}
                 >
-                  <motion.span
-                    aria-hidden="true"
-                    className="absolute inset-[5px] rounded-full bg-[#8060D8]/45 opacity-80 blur-md"
-                  />
-                  <motion.span
-                    key={`brand-spin-${activeIndex}-${hasEntered}`}
-                    className="relative z-10 flex h-[26px] w-[26px] items-center justify-center rounded-full border border-white/90 bg-white/85 shadow-[0_4px_12px_rgba(83,57,157,0.25),inset_0_1px_2px_rgba(255,255,255,0.95)] backdrop-blur-md"
-                    initial={{ rotate: -120, scale: 0.72 }}
-                    animate={{ rotate: 360, scale: [0.72, 1.08, 1, 1, 1.28, 1] }}
-                    transition={{
-                      rotate: { duration: 0.36, ease: [0.2, 0.85, 0.25, 1] },
-                      scale: { duration: 1.1, times: [0, 0.32, 0.38, 0.87, 0.95, 1], ease: [0.2, 0.85, 0.25, 1] },
-                    }}
-                  >
-                    <Image src="/logo-square.png" alt="" aria-hidden="true" width={44} height={44} className="h-[22px] w-[22px] object-contain" />
-                  </motion.span>
-                  <motion.span
-                    key={`brand-arrival-${activeIndex}`}
-                    aria-hidden="true"
-                    className="absolute inset-[3px] rounded-full border border-[#8060D8]"
-                    initial={{ scale: 0.65, opacity: 0.9 }}
-                    animate={{ scale: 1.9, opacity: 0 }}
-                    transition={{ duration: 0.56, delay: 0.95, ease: "easeOut" }}
-                  />
-                </motion.span>
-              )}
-            </div>
-
-            <div className="grid h-full grid-cols-6">
-              {WORK_FLOORPLAN_STEPS.map((step, index) => {
-                const hasStem = index < visibleStemCount;
-                const hasMarker = index < visibleMarkerCount;
-                const hasPill = index < visiblePillCount;
-                const hasCopy = index < visibleCopyCount;
-                const isActive = activeIndex === index;
-                const isComplete = index < visibleCompletedCount;
-                const duration = HOW_WE_WORK_CONTENT.steps[index]?.duration;
-                const lift = STAGE_TOPS[index];
-                const StageIcon = STAGE_ICONS[index];
-
-                return (
-                  <div key={step.id} className="relative h-full min-w-0 text-center">
-                    {/* Stage copy rises progressively from left to right. */}
-                    {hasCopy && <Link
-                      href={`/how-we-work#${step.id}`}
-                      onClick={() => {
-                        stepCursor.current = index;
-                        setActiveIndex(index);
-                      }}
-                      aria-current={isActive ? "step" : undefined}
-                      aria-label={`Stage ${step.step}: ${step.title}`}
-                      className={`group process-copy-pop absolute left-2 right-2 flex flex-col items-center text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2C1FF] ${isActive ? "opacity-100" : "opacity-75"}`}
-                      style={{ top: `${lift}px`, minHeight: "132px" }}
-                    >
-                      <span className={`mb-2 font-mono text-[10px] tracking-[0.16em] transition-colors ${isActive ? "text-[#D2C1FF]" : "text-white/45"}`}>
-                        {step.step} / 06
-                      </span>
-                      <h3 className={`max-w-[190px] text-[15px] font-medium leading-[1.2] tracking-[-0.025em] transition-colors xl:text-base ${isActive ? "text-white" : "text-white/75 group-hover:text-white"}`}>
-                        {step.title}
-                      </h3>
-                      <p className="mt-2 max-w-[190px] text-[11px] leading-[1.45] text-white/60">
-                        {STAGE_SUMMARIES[index]}
-                      </p>
-                    </Link>}
-
-                    {/* Each fine vertical stem meets the shared process baseline. */}
-                    {hasStem && <div
-                      aria-hidden="true"
-                      className={`process-stem-rise absolute left-1/2 w-px -translate-x-1/2 ${isActive ? "bg-[#D2C1FF]" : "bg-white/35"}`}
-                      style={{
-                        top: `${lift + 140}px`,
-                        bottom: "53px",
-                        animationDelay: "0ms",
-                      }}
-                    />}
-
-                    {hasMarker && <span
-                      className={`process-stage-marker absolute left-1/2 z-10 flex h-[22px] w-[22px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 transition-all duration-300 ${
-                        isComplete
-                          ? "border-[#BCA5F5] bg-[#8B70E0] shadow-[0_0_0_4px_rgba(185,154,255,0.13)]"
-                          : isActive
-                            ? "border-[#E0D2FF] bg-[#321E5A] shadow-[0_0_0_5px_rgba(210,193,255,0.16)]"
-                            : "border-white/60 bg-[#1E1231] group-hover:border-[#D2C1FF]"
-                      }`}
-                      style={{ top: `${lift + 140}px` }}
-                    >
-                      {isActive && !prefersReducedMotion && (
-                        <motion.span
-                          key={`stage-arrival-${activeIndex}`}
-                          aria-hidden="true"
-                          className="absolute inset-[-5px] rounded-full border border-[#8B6CE1]"
-                          initial={{ scale: 0.72, opacity: 0.75 }}
-                          animate={{ scale: 1.9, opacity: 0 }}
-                          transition={{ duration: 0.68, ease: "easeOut" }}
-                        />
-                      )}
-                      {isComplete && <Check className="process-tick-draw h-[15px] w-[15px] text-white" strokeWidth={3.2} />}
-                    </span>}
-
-                    {hasPill && <Link
-                      href={`/how-we-work#${step.id}`}
-                      aria-label={`View details for ${step.title}`}
-                      className={`process-pill-pop absolute bottom-[35px] left-1/2 z-30 inline-flex h-10 -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border px-1 py-1 pl-3.5 text-[10px] font-medium tracking-wide backdrop-blur-2xl transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2C1FF] ${isActive ? "border-white/55 bg-white/20 text-white shadow-[0_5px_20px_rgba(0,0,0,0.2)]" : "border-white/30 bg-white/10 text-white/80 shadow-[0_3px_12px_rgba(0,0,0,0.12)] hover:border-white/55 hover:bg-white/20 hover:text-white"}`}
-                    >
-                        {duration}
-                      <span className={`flex h-8 w-8 items-center justify-center rounded-full border border-white/35 ${isActive ? "bg-[#A98AFF] text-[#170E29]" : "bg-[#7057D9] text-white"}`}>
-                        <StageIcon className="h-3.5 w-3.5" strokeWidth={1.8} />
-                      </span>
-                    </Link>}
+                  <div className="mb-2 flex h-6 items-center gap-2">
+                    <span className="font-mono text-[10px] tracking-[0.18em]">{step.step} / 06</span>
                   </div>
-                );
-              })}
-        </div>
-        </div>
-        </div>
+                  <h3 className="text-[17px] font-semibold leading-snug tracking-[-0.02em]">{step.title}</h3>
+                  <p className="mt-1 text-xs leading-relaxed">{STAGE_SUMMARIES[i]}</p>
+                  <div className="flex flex-wrap gap-1.5 pt-2.5">
+                    {STAGE_DELIVERABLES[i].map((chip) => (
+                      <span key={chip} className="rounded-full border px-2.5 py-0.5 text-[10px] font-medium">
+                        {chip}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
-        {/* Mobile uses a vertical, connected stage sequence. */}
-        <div className="relative lg:hidden">
-          {WORK_FLOORPLAN_STEPS.map((step, index) => {
-            const hasStem = index < visibleStemCount;
-            const hasMarker = index < visibleMarkerCount;
-            const hasCopy = index < visibleCopyCount;
-            if (!hasStem && !hasMarker && !hasCopy) return null;
-            const isActive = activeIndex === index;
-            const isComplete = index < visibleCompletedCount;
-            const duration = HOW_WE_WORK_CONTENT.steps[index]?.duration;
+          <div className="absolute inset-0 grid grid-cols-6">
+            {WORK_FLOORPLAN_STEPS.map((step, index) => {
+              const hasLink = index < TOTAL - 1 && linkCount > index;
+              const hasPill = index < pillCount;
+              const hasStem = index < stemCount;
+              const hasTitle = index < titleCount;
+              const isComplete = index < completedCount;
+              const isActive = activeIndex === index;
+              const isExpanded = expandedIndex === index;
+              const duration = HOW_WE_WORK_CONTENT.steps[index]?.duration;
+              const StageIcon = STAGE_ICONS[index];
+              const stemH = stemHeight(index, trackH, cardH);
+              const stemTop = STEM_BOTTOM + stemH;
 
-            return (
-              <div key={step.id} className="relative grid min-h-[104px] grid-cols-[28px_minmax(0,1fr)] gap-4 pb-7">
-                <div className="relative flex justify-center">
-                  {index < WORK_FLOORPLAN_STEPS.length - 1 && index + 1 < visibleStemCount && (
-                    <span aria-hidden="true" className="process-mobile-connect absolute left-1/2 top-6 bottom-[-14px] w-px -translate-x-1/2 bg-white/35" />
+              return (
+                <div key={step.id} className="relative h-full min-w-0 text-center">
+                  {/* dashed line from this pill to the next slot */}
+                  {hasLink && (
+                    <motion.div
+                      aria-hidden="true"
+                      className="absolute z-0 h-[2px] origin-left"
+                      initial={{ scaleX: reduced ? 1 : 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: reduced ? 0 : 0.6, ease: "easeInOut" }}
+                      style={{
+                        left: "50%",
+                        width: "100%",
+                        bottom: PILL_BOTTOM + PILL_H / 2 - 1,
+                        backgroundImage:
+                          "repeating-linear-gradient(to right, rgba(255,255,255,0.45) 0 5px, transparent 5px 10px)",
+                      }}
+                    />
                   )}
-                  {hasMarker && (
-                    <span className={`process-mobile-square relative z-10 flex h-6 w-6 items-center justify-center rounded-[6px] border-2 font-mono text-[8px] font-semibold ${isComplete ? "border-[#BCA5F5] bg-[#8B70E0] text-white shadow-[0_0_0_4px_rgba(185,154,255,0.13)]" : isActive ? "border-[#E0D2FF] bg-[#321E5A] text-white shadow-[0_0_0_4px_rgba(210,193,255,0.16)]" : "border-white/60 bg-[#1E1231] text-white/65"}`}>
-                      {isActive && !prefersReducedMotion && (
-                        <motion.span
-                          key={`mobile-stage-arrival-${activeIndex}`}
-                          aria-hidden="true"
-                          className="absolute inset-[-5px] rounded-[9px] border border-[#8B6CE1]"
-                          initial={{ scale: 0.72, opacity: 0.75 }}
-                          animate={{ scale: 1.9, opacity: 0 }}
-                          transition={{ duration: 0.68, ease: "easeOut" }}
+
+                  {/* glassmorphic pill forms at the bottom */}
+                  {hasPill && (
+                    <div
+                      className="pointer-events-none absolute left-0 right-0 z-30 flex justify-center"
+                      style={{ bottom: PILL_BOTTOM }}
+                    >
+                      <motion.button
+                        type="button"
+                        disabled={!finished}
+                        onClick={() => togglePill(index)}
+                        aria-label={`Show ${step.title} card`}
+                        initial={{ opacity: 0, scaleX: reduced ? 1 : 0.2, scaleY: reduced ? 1 : 0.55 }}
+                        animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
+                        transition={{ duration: reduced ? 0 : 0.55, ease: EASE_OUT }}
+                        className={`pointer-events-auto inline-flex items-center gap-2 whitespace-nowrap rounded-full border py-1 pl-3.5 pr-1 text-[10px] font-medium tracking-wide backdrop-blur-xl transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2C1FF] disabled:cursor-default ${isActive
+                          ? "border-[#C8B4FF]/50 bg-[#8057E8]/35 text-white shadow-[0_8px_28px_rgba(128,87,232,.45),inset_0_1px_0_rgba(255,255,255,.35)]"
+                          : "border-white/20 bg-white/[0.07] text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,.18)] enabled:hover:border-white/40 enabled:hover:bg-white/[0.12]"
+                          }`}
+                        style={{ height: PILL_H }}
+                      >
+                        {duration}
+                        <span
+                          className={`flex h-8 w-8 items-center justify-center rounded-full border backdrop-blur-md ${isActive ? "border-white/40 bg-white/20" : "border-white/25 bg-white/10"
+                            }`}
+                        >
+                          <StageIcon className="h-3.5 w-3.5" strokeWidth={1.8} />
+                        </span>
+                      </motion.button>
+                    </div>
+                  )}
+
+                  {/* beam rising from the pill */}
+                  {hasStem && (
+                    <motion.div
+                      aria-hidden="true"
+                      className="absolute z-10 w-[2px] origin-bottom"
+                      initial={{ scaleY: reduced ? 1 : 0 }}
+                      animate={{ scaleY: 1 }}
+                      transition={{ duration: reduced ? 0 : 0.75, ease: [0.22, 1, 0.36, 1] }}
+                      style={{
+                        left: "50%",
+                        marginLeft: -1,
+                        bottom: STEM_BOTTOM,
+                        height: stemH,
+                        background: isExpanded
+                          ? "linear-gradient(to top, #A98AFF, #EFE7FF)"
+                          : isComplete
+                            ? "rgba(156,115,255,.75)"
+                            : "rgba(255,255,255,.3)",
+                        boxShadow: isExpanded ? "0 0 14px 3px rgba(174,126,255,.9)" : "none",
+                        transition: "background .4s, box-shadow .4s",
+                      }}
+                    />
+                  )}
+
+                  {/* card grows out of the beam tip, centred on the beam */}
+                  <AnimatePresence>
+                    {isExpanded && cardW > 0 && (
+                      <div
+                        key="card"
+                        className="absolute"
+                        style={{ left: cardOffset, bottom: stemTop, width: cardW, height: cardH }}
+                      >
+                        <StageCard
+                          index={index}
+                          cardW={cardW}
+                          cardH={cardH}
+                          reduced={reduced}
+                          onClose={finished ? closeStageCard : undefined}
                         />
+                      </div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* title + tick, shown once the card has closed */}
+                  {hasTitle && !isExpanded && (
+                    <>
+                      <div
+                        className="absolute left-1/2 z-20 -translate-x-1/2 text-center"
+                        style={{
+                          bottom: stemTop + CHECK_SIZE + 8,
+                          width: `min(${LABEL_W}px, calc(100% - 8px))`,
+                        }}
+                      >
+                        <p className={`font-mono text-[9px] tracking-[0.16em] ${isActive ? "text-[#C8B4FF]" : "text-white/60"}`}>
+                          {step.step} / 06
+                        </p>
+                        <p
+                          className={`mt-1 text-[12px] font-medium leading-[1.2] xl:text-[13px] ${isActive ? "text-[#C8B4FF]" : "text-white/90"
+                            }`}
+                        >
+                          {step.title}
+                        </p>
+                      </div>
+
+                      {isComplete && (
+                        <motion.span
+                          aria-label="Completed"
+                          initial={{ scale: reduced ? 1 : 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ type: "spring", stiffness: 420, damping: 18 }}
+                          className="absolute left-1/2 z-20 flex items-center justify-center rounded-full bg-[#A98AFF] text-[#170E29] shadow-[0_0_14px_rgba(169,138,255,.55)]"
+                          style={{
+                            width: CHECK_SIZE,
+                            height: CHECK_SIZE,
+                            marginLeft: -CHECK_SIZE / 2,
+                            bottom: stemTop,
+                          }}
+                        >
+                          <Check className="h-3 w-3" strokeWidth={2.8} />
+                        </motion.span>
                       )}
-                      {isComplete ? <Check className="process-tick-draw h-[16px] w-[16px] text-white" strokeWidth={3.2} /> : step.step}
-                    </span>
+                    </>
                   )}
                 </div>
+              );
+            })}
+          </div>
+        </div>
 
-                {hasCopy && (
-                  <Link
-                    href={`/how-we-work#${step.id}`}
-                    onClick={() => {
-                      stepCursor.current = index;
-                      setActiveIndex(index);
-                    }}
-                    aria-current={isActive ? "step" : undefined}
-                    className={`process-mobile-copy group flex flex-col gap-1.5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D2C1FF] ${isActive ? "text-white" : "text-white/75"}`}
+        {/* ------------------------------ mobile: vertical sequence ------------------------------ */}
+        <div className="relative lg:hidden">
+          {WORK_FLOORPLAN_STEPS.map((step, index) => {
+            const hasPill = index < pillCount;
+            if (!hasPill) return null;
+            const hasTitle = index < titleCount;
+            const isComplete = index < completedCount;
+            const isActive = activeIndex === index;
+            const isExpanded = expandedIndex === index;
+            const hasLink = index < TOTAL - 1 && linkCount > index;
+            const duration = HOW_WE_WORK_CONTENT.steps[index]?.duration;
+            const StageIcon = STAGE_ICONS[index];
+
+            return (
+              <div key={step.id} className="relative grid min-h-[96px] grid-cols-[28px_minmax(0,1fr)] gap-4 pb-6">
+                <div className="relative flex justify-center">
+                  {hasLink && (
+                    <motion.span
+                      aria-hidden="true"
+                      className="absolute bottom-[-14px] left-1/2 top-7 w-px origin-top bg-white/35"
+                      initial={{ scaleY: reduced ? 1 : 0 }}
+                      animate={{ scaleY: 1 }}
+                      transition={{ duration: reduced ? 0 : 0.6, ease: "easeInOut" }}
+                    />
+                  )}
+                  <span
+                    className={`relative z-10 mt-2.5 font-mono text-[9px] tracking-[0.14em] ${isActive ? "text-[#D2C1FF]" : "text-white/45"
+                      }`}
                   >
-                    <span className="flex items-center justify-between gap-3">
-                      <span className={`text-[15px] font-medium leading-snug tracking-tight ${isActive ? "text-white" : "text-white/75 group-hover:text-white"}`}>
+                    {step.step}
+                  </span>
+                </div>
+
+                <div className="flex min-w-0 flex-col items-start">
+                  <motion.button
+                    type="button"
+                    disabled={!finished}
+                    onClick={() => togglePill(index)}
+                    aria-label={`Show ${step.title} card`}
+                    initial={{ opacity: 0, scaleX: reduced ? 1 : 0.3 }}
+                    animate={{ opacity: 1, scaleX: 1 }}
+                    transition={{ duration: reduced ? 0 : 0.5, ease: EASE_OUT }}
+                    style={{ transformOrigin: "left center" }}
+                    className={`mt-1 inline-flex items-center gap-2 rounded-full border py-1 pl-3 pr-1 text-[10px] backdrop-blur-xl disabled:cursor-default ${isActive
+                      ? "border-[#C8B4FF]/50 bg-[#8057E8]/35 text-white shadow-[inset_0_1px_0_rgba(255,255,255,.3)]"
+                      : "border-white/20 bg-white/[0.07] text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,.18)]"
+                      }`}
+                  >
+                    {duration}
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full border border-white/30 bg-white/10">
+                      <StageIcon className="h-3 w-3" />
+                    </span>
+                  </motion.button>
+
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.div
+                        key="m-card"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: reduced ? 0 : 0.6, ease: EASE_OUT }}
+                        className="mt-3 w-full overflow-hidden"
+                      >
+                        <div className="relative rounded-xl border border-[#A98AFF]/65 bg-[#171020] p-3.5 pr-10 shadow-[0_0_28px_rgba(128,87,232,.4)]">
+                          {finished && (
+                            <button
+                              type="button"
+                              onClick={closeStageCard}
+                              aria-label="Close stage card"
+                              className="absolute right-2 top-2 rounded-full p-1 text-white/55 hover:bg-white/10 hover:text-white"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                          <h3 className="mb-1.5 text-sm font-semibold text-white">
+                            {reduced ? step.title : <TypewriterText text={step.title} speed={28} delay={450} />}
+                          </h3>
+                          <p className="text-xs leading-relaxed text-white/75">
+                            {reduced ? (
+                              STAGE_SUMMARIES[index]
+                            ) : (
+                              <TypewriterText
+                                text={STAGE_SUMMARIES[index]}
+                                speed={16}
+                                delay={450 + step.title.length * 28 + 120}
+                              />
+                            )}
+                          </p>
+                          <div className="mt-2.5 flex flex-wrap gap-1.5">
+                            {STAGE_DELIVERABLES[index].map((chip) => (
+                              <span
+                                key={chip}
+                                className="rounded-full border border-[#C8B4FF]/30 bg-white/[0.07] px-2 py-0.5 text-[10px] text-[#E4D9FF]"
+                              >
+                                {chip}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {hasTitle && !isExpanded && (
+                    <div className="mt-3 flex items-center gap-2">
+                      {isComplete && (
+                        <motion.span
+                          aria-label="Completed"
+                          initial={{ scale: reduced ? 1 : 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", stiffness: 420, damping: 18 }}
+                          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#A98AFF] text-[#170E29]"
+                        >
+                          <Check className="h-3 w-3" strokeWidth={2.8} />
+                        </motion.span>
+                      )}
+                      <p className="text-[13px] font-medium text-white/90">
                         {step.title}
-                      </span>
-                      <span className="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-medium tracking-wide text-white/55">
-                        <Clock3 className="h-3 w-3" />
-                        {duration}
-                      </span>
-                    </span>
-                    <span className="text-xs leading-relaxed text-white/60">
-                      {STAGE_SUMMARIES[index]}
-                    </span>
-                    <span className="inline-flex items-center gap-1 pt-0.5 text-[10px] font-semibold text-[#D2C1FF]">
-                      View stage <ArrowUpRight className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                    </span>
-                  </Link>
-                )}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
 
-        <span className="sr-only" aria-live="polite">Stage {activeStep.step}: {activeStep.title}</span>
+        <span className="sr-only" aria-live="polite">
+          Stage {activeStep.step}: {activeStep.title}
+        </span>
       </div>
     </section>
   );

@@ -1,20 +1,11 @@
-import { SprintStagesSection } from "@/components/how-we-work/SprintStagesSection";
-import { CollaborationCadenceSection } from "@/components/how-we-work/CollaborationCadenceSection";
+import { HowWeWorkFloorplanSection } from "@/components/how-we-work/HowWeWorkFloorplanSection";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "How We Work — 21Spheres",
-  description: "The AI architecture protocol & 6-stage engineering sprint methodology.",
+  description: "A concise look at the six stages that take a product from first brief to launch.",
 };
 
 export default function HowWeWorkPage() {
-  return (
-    <div className="flex flex-col min-h-screen bg-white">
-      {/* 1. 6-Stage Sprint Cadence & Engineering Deliverables (Starts directly with Deterministic Milestones) */}
-      <SprintStagesSection />
-
-      {/* 2. Collaboration Cadence & Direct Access */}
-      <CollaborationCadenceSection />
-    </div>
-  );
+  return <HowWeWorkFloorplanSection />;
 }

@@ -23,6 +23,9 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
   const [offset, setOffset] = useState<number>(0);
 
   const sectionRef = useRef<HTMLDivElement>(null);
+  const currentOffsetRef = useRef(0);
+  const requestedOffsetRef = useRef(0);
+  const scrollTargetRef = useRef<number | null>(null);
 
   // Scroll tracking: drive which 4 cards pop out as user scrolls through the section
   const { scrollYProgress } = useScroll({
@@ -35,8 +38,26 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
     const maxOffset = 6; // 10 services total, 4 visible at a time (0 to 6)
     const raw = latest * (maxOffset + 0.5);
     const step = Math.min(maxOffset, Math.max(0, Math.floor(raw)));
+    currentOffsetRef.current = step;
     setOffset(step);
+    if (scrollTargetRef.current === null) {
+      requestedOffsetRef.current = step;
+    } else if (step === scrollTargetRef.current) {
+      requestedOffsetRef.current = step;
+      scrollTargetRef.current = null;
+    }
   });
+
+  React.useEffect(() => {
+    const handleScrollEnd = () => {
+      if (scrollTargetRef.current !== null) {
+        requestedOffsetRef.current = currentOffsetRef.current;
+        scrollTargetRef.current = null;
+      }
+    };
+    window.addEventListener("scrollend", handleScrollEnd);
+    return () => window.removeEventListener("scrollend", handleScrollEnd);
+  }, []);
 
   const services = SERVICES_CONTENT.services;
 
@@ -45,38 +66,31 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
     setSimulatorOpen(true);
   };
 
-  // Step up/down through the 7 squads with smooth scroll sync
-  const handlePrevSquad = useCallback(() => {
-    setOffset((prev) => {
-      const next = Math.max(0, prev - 1);
-      if (sectionRef.current && window.matchMedia("(min-width: 1024px)").matches) {
-        const rect = sectionRef.current.getBoundingClientRect();
-        const top = rect.top + window.scrollY;
-        const totalScrollable = sectionRef.current.offsetHeight - window.innerHeight;
-        if (totalScrollable > 0) {
-          const targetY = top + (next / 6) * totalScrollable;
-          window.scrollTo({ top: targetY, behavior: "smooth" });
-        }
+  // Scroll the desktop section to the target squad; let scroll progress own
+  // the visible offset so the cards never jump forward and then snap back.
+  const moveSquad = useCallback((direction: -1 | 1) => {
+    const next = Math.max(0, Math.min(6, (scrollTargetRef.current ?? requestedOffsetRef.current) + direction));
+    const section = sectionRef.current;
+    if (section && window.matchMedia("(min-width: 1024px)").matches) {
+      const rect = section.getBoundingClientRect();
+      const top = rect.top + window.scrollY;
+      const totalScrollable = section.offsetHeight - window.innerHeight;
+      if (totalScrollable > 0) {
+        requestedOffsetRef.current = next;
+        scrollTargetRef.current = next;
+        const targetY = top + (next / 6) * totalScrollable;
+        window.scrollTo({ top: targetY, behavior: "smooth" });
+        return;
       }
-      return next;
-    });
+    }
+
+    requestedOffsetRef.current = next;
+    currentOffsetRef.current = next;
+    setOffset(next);
   }, []);
 
-  const handleNextSquad = useCallback(() => {
-    setOffset((prev) => {
-      const next = Math.min(6, prev + 1);
-      if (sectionRef.current && window.matchMedia("(min-width: 1024px)").matches) {
-        const rect = sectionRef.current.getBoundingClientRect();
-        const top = rect.top + window.scrollY;
-        const totalScrollable = sectionRef.current.offsetHeight - window.innerHeight;
-        if (totalScrollable > 0) {
-          const targetY = top + (next / 6) * totalScrollable;
-          window.scrollTo({ top: targetY, behavior: "smooth" });
-        }
-      }
-      return next;
-    });
-  }, []);
+  const handlePrevSquad = useCallback(() => moveSquad(-1), [moveSquad]);
+  const handleNextSquad = useCallback(() => moveSquad(1), [moveSquad]);
 
   // Section background styles
   const backgroundStyle = showAllCatalog ? {
