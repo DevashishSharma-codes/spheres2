@@ -61,7 +61,7 @@ function SmokeTestVisual() {
 
 function FingerprintVisual() {
   return (
-    <div aria-hidden="true" className="relative mt-5 h-[190px] w-full overflow-hidden rounded-xl border border-white/20 bg-[linear-gradient(145deg,rgba(55,52,63,.72),rgba(27,25,33,.68))] p-3 text-white/80 shadow-[0_18px_40px_rgba(0,0,0,.24),inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur-2xl">
+    <div aria-hidden="true" className="relative mt-5 h-[190px] w-full overflow-hidden rounded-xl border border-white/15 bg-black p-3 text-white/80 shadow-[0_18px_40px_rgba(0,0,0,.4)]">
       <div className="mb-3 flex items-center justify-between text-[8px] text-white/55"><span className="flex items-center gap-1.5"><i className="h-1.5 w-1.5 rounded-full bg-violet-400"/>Release workflow</span><span className="rounded-full border border-white/15 bg-white/[0.08] px-2 py-1 text-emerald-300 shadow-sm">Running</span></div>
       <div className="relative grid grid-cols-3 gap-2">
         <svg className="absolute left-[16%] right-[16%] top-1/2 h-8 w-[68%] -translate-y-1/2 overflow-visible" viewBox="0 0 300 40" fill="none"><path d="M12 20h276" stroke="#ddd6e7" strokeWidth="2"/><path d="M12 20h276" stroke="#8e61d4" strokeWidth="2" strokeDasharray="8 8" className="insight-flow-line"/><circle cx="12" cy="20" r="4" fill="#b98ce9"/><circle cx="150" cy="20" r="4" fill="#b98ce9"/><circle cx="288" cy="20" r="4" fill="#b98ce9"/></svg>
@@ -89,7 +89,7 @@ function CodeVisual() {
 
 function InsightLink({ children }: { children: ReactNode }) {
   return (
-    <Link href="/insights" className="relative z-10 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-4 py-2 text-[11px] font-medium text-white/90 shadow-[0_5px_14px_rgba(0,0,0,.18),inset_0_1px_0_rgba(255,255,255,.12)] backdrop-blur-xl transition hover:border-violet-300/50 hover:bg-violet-300/15 hover:text-white">
+    <Link href="/insights" className="relative z-10 inline-flex items-center gap-2 rounded-full border border-black/15 bg-black px-4 py-2 text-[11px] font-medium text-white shadow-[0_5px_14px_rgba(0,0,0,.18)] transition hover:bg-[#292929]">
       {children}<span aria-hidden="true">↗</span>
     </Link>
   );
@@ -100,25 +100,21 @@ export function InsightsLandingSection() {
     <section
       id="insights"
       aria-label="Insights and field notes"
-      className="relative w-full overflow-hidden px-0 py-8 text-white sm:py-10"
-      style={{
-        background: "radial-gradient(ellipse 76% 64% at 78% 8%, rgba(112, 72, 194, 0.2) 0%, transparent 72%), radial-gradient(ellipse 58% 72% at 0% 100%, rgba(94, 61, 148, 0.16) 0%, transparent 72%), linear-gradient(118deg, #07060b 0%, #0b0911 48%, #100b19 100%)",
-      }}
+      className="relative w-full overflow-hidden bg-white px-0 py-8 text-[#171717] sm:py-10"
     >
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
-        <header className="mb-5 flex flex-col justify-between gap-4 border-b border-white/15 pb-5 sm:mb-6 sm:flex-row sm:items-end sm:gap-8 sm:pb-6">
+        <header className="mb-5 flex flex-col justify-between gap-4 border-b border-black/15 pb-5 sm:mb-6 sm:flex-row sm:items-end sm:gap-8 sm:pb-6">
           <div className="shrink-0">
-            <p className="mb-1 text-[12px] font-bold uppercase tracking-[0.18em] text-[#C8B4FF] sm:text-[13px]">Our Insights</p>
-            <h2 className="whitespace-nowrap text-3xl font-light leading-none tracking-[-0.04em] text-white/90 sm:text-4xl md:text-5xl lg:text-[52px]">Insights</h2>
+            <p className="mb-1 text-[12px] font-bold uppercase tracking-[0.18em] text-[#555] sm:text-[13px]">Our Insights</p>
+            <h2 className="whitespace-nowrap text-3xl font-light leading-none tracking-[-0.04em] text-black sm:text-4xl md:text-5xl lg:text-[52px]">Insights</h2>
           </div>
-          <p className="max-w-lg pb-0.5 text-xs leading-relaxed text-white/65 sm:text-right sm:text-[13px]">
+          <p className="max-w-lg pb-0.5 text-xs leading-relaxed text-black/65 sm:text-right sm:text-[13px]">
             Ideas and field notes on building thoughtful, dependable digital products.
           </p>
         </header>
-        <div className="relative isolate overflow-hidden border border-white/20 bg-[#0c0a0e] p-1.5 shadow-2xl sm:p-2 md:p-3">
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-45" style={{ background: "radial-gradient(ellipse at 15% 10%, rgba(112,72,194,.24), transparent 48%), radial-gradient(ellipse at 90% 90%, rgba(82,57,132,.2), transparent 46%)" }} />
-          <div className="relative grid grid-cols-1 gap-3 md:grid-cols-12 md:grid-rows-[minmax(400px,auto)_auto] md:gap-4">
-          <article className="group relative aspect-square min-h-[360px] overflow-hidden rounded-none border border-white/20 bg-[#121214] shadow-[0_18px_48px_rgba(0,0,0,.28),inset_0_1px_0_rgba(255,255,255,.16)] md:col-span-4 md:row-start-1 md:aspect-auto md:min-h-0">
+        <div className="relative isolate overflow-hidden rounded-[28px] border border-black/10 bg-[#e3e3e3] p-2 shadow-[0_20px_56px_rgba(0,0,0,.16)] sm:p-3 md:p-4">
+          <div className="relative grid grid-cols-1 gap-4 md:grid-cols-12 md:grid-rows-[minmax(400px,auto)_auto] md:gap-5">
+          <article className="group relative aspect-square min-h-[360px] overflow-hidden rounded-2xl border border-black/15 bg-black shadow-[0_12px_32px_rgba(0,0,0,.18)] md:col-span-4 md:row-start-1 md:aspect-auto md:min-h-0">
             <Image src="/om-bawal-photo.jpg" alt="Om Bawal, Founder and Chief Architect at 21Spheres" fill sizes="(max-width: 768px) 100vw, 34vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/95" />
             <span className="absolute left-4 top-4 font-mono text-[8px] uppercase tracking-[0.18em] text-white/80">CEO Insight / 01</span>
@@ -133,29 +129,29 @@ export function InsightsLandingSection() {
             </div>
           </article>
 
-          <article className="group relative flex min-h-[390px] flex-col overflow-hidden rounded-none border border-white/20 bg-[linear-gradient(145deg,rgba(62,59,68,.82),rgba(27,25,33,.88))] p-5 shadow-[0_18px_48px_rgba(0,0,0,.28),inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur-2xl md:col-span-8 md:row-start-1">
+          <article className="group relative flex min-h-[390px] flex-col overflow-hidden rounded-2xl border border-black/10 bg-[#fafafa] p-5 shadow-[0_14px_32px_rgba(0,0,0,.14)] md:col-span-8 md:row-start-1">
             <div className="grid shrink-0 grid-cols-1 gap-3 sm:grid-cols-2">
               <AppScanVisual />
               <SmokeTestVisual />
             </div>
             <div className="relative z-10 mt-4 max-w-[520px]">
-              <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.22em] text-violet-200/80">Engineering / 8 min read</p>
-              <h2 className="mb-2 text-xl font-medium tracking-[-0.025em] text-white sm:text-2xl">Catch the edge cases earlier</h2>
-              <p className="mb-4 max-w-xl text-xs leading-relaxed text-white/65 sm:text-[13px]">A closer look at code review signals, safer defaults, and the small checks that keep product bugs from reaching customers.</p>
+              <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.22em] text-black/55">Engineering / 8 min read</p>
+              <h2 className="mb-2 text-xl font-medium tracking-[-0.025em] text-black sm:text-2xl">Catch the edge cases earlier</h2>
+              <p className="mb-4 max-w-xl text-xs leading-relaxed text-black/65 sm:text-[13px]">A closer look at code review signals, safer defaults, and the small checks that keep product bugs from reaching customers.</p>
               <InsightLink>Learn more</InsightLink>
             </div>
           </article>
 
-          <article className="group relative min-h-[510px] overflow-hidden rounded-none border border-white/20 bg-[linear-gradient(145deg,rgba(62,59,68,.82),rgba(27,25,33,.88))] p-5 shadow-[0_18px_48px_rgba(0,0,0,.28),inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur-2xl md:col-span-4 md:row-start-2 md:min-h-0 md:h-full">
-            <p className="mb-3 text-[9px] font-semibold uppercase tracking-[0.22em] text-violet-200/80">Engineering Culture</p>
-            <h2 className="mb-3 text-2xl font-medium tracking-[-0.03em] text-white sm:text-[27px]">The craft behind reliable software</h2>
-            <p className="relative z-10 mb-4 max-w-sm text-xs leading-relaxed text-white/65 sm:text-[13px]">Good engineering is a set of small, deliberate decisions: make complexity visible, protect the critical path, and leave the system easier to change.</p>
+          <article className="group relative min-h-[510px] overflow-hidden rounded-2xl border border-black/10 bg-[#fafafa] p-5 shadow-[0_14px_32px_rgba(0,0,0,.14)] md:col-span-4 md:row-start-2 md:min-h-0 md:h-full">
+            <p className="mb-3 text-[9px] font-semibold uppercase tracking-[0.22em] text-black/55">Engineering Culture</p>
+            <h2 className="mb-3 text-2xl font-medium tracking-[-0.03em] text-black sm:text-[27px]">The craft behind reliable software</h2>
+            <p className="relative z-10 mb-4 max-w-sm text-xs leading-relaxed text-black/65 sm:text-[13px]">Good engineering is a set of small, deliberate decisions: make complexity visible, protect the critical path, and leave the system easier to change.</p>
             <InsightLink>Learn more</InsightLink>
             <FingerprintVisual />
           </article>
 
           <div className="grid min-h-[510px] grid-rows-[190px_1fr] gap-4 md:col-span-4 md:row-start-2 md:min-h-0 md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
-            <article className="group relative aspect-[4/3] w-full overflow-hidden rounded-none border border-white/20 bg-[linear-gradient(145deg,rgba(62,59,68,.82),rgba(27,25,33,.88))] p-1 shadow-[0_18px_48px_rgba(0,0,0,.28),inset_0_1px_0_rgba(255,255,255,.16)] md:aspect-auto md:h-full">
+            <article className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-black/15 bg-black p-1 shadow-[0_12px_32px_rgba(0,0,0,.18)] md:aspect-auto md:h-full">
               <Image src="/insights/platform-grid-reference.png" alt="Figma, GitHub, and product interface tiles arranged on a dark platform grid" fill sizes="(max-width: 768px) 100vw, 32vw" className="object-cover md:object-[center_62%]" />
               <div className="absolute inset-x-1 bottom-1 bg-gradient-to-t from-[#09090b]/95 via-[#09090b]/75 to-transparent px-4 pb-3 pt-10 text-left">
                 <p className="mb-1 font-mono text-[8px] uppercase tracking-[0.18em] text-violet-200/80">Interface systems / Figma</p>
@@ -164,7 +160,7 @@ export function InsightsLandingSection() {
               </div>
             </article>
 
-            <article className="group relative min-h-[150px] overflow-hidden rounded-none border border-white/20 bg-[#09090b] shadow-[0_18px_48px_rgba(0,0,0,.28),inset_0_1px_0_rgba(255,255,255,.16)] md:min-h-0">
+            <article className="group relative min-h-[150px] overflow-hidden rounded-2xl border border-black/15 bg-black shadow-[0_12px_32px_rgba(0,0,0,.18)] md:min-h-0">
               <Image src="/insights/lap-track.png" alt="Purple and white lap lines circling a vertical race track marker" fill sizes="(max-width: 768px) 100vw, 32vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#09090b]/95 via-[#09090b]/20 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-4">
@@ -174,12 +170,12 @@ export function InsightsLandingSection() {
             </article>
           </div>
 
-          <article className="group relative flex min-h-[510px] flex-col overflow-hidden rounded-none border border-white/20 bg-[linear-gradient(145deg,rgba(62,59,68,.82),rgba(27,25,33,.88))] p-5 shadow-[0_18px_48px_rgba(0,0,0,.28),inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur-2xl md:col-span-4 md:row-start-2 md:min-h-0 md:self-start">
+          <article className="group relative flex min-h-[510px] flex-col overflow-hidden rounded-2xl border border-black/10 bg-[#fafafa] p-5 shadow-[0_14px_32px_rgba(0,0,0,.14)] md:col-span-4 md:row-start-2 md:min-h-0 md:self-start">
             <CodeVisual />
             <div className="relative z-10 mt-4">
-              <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.22em] text-violet-200/80">Systems / Software Design</p>
-              <h2 className="mb-3 text-2xl font-medium tracking-[-0.03em] text-white sm:text-[27px]">Architecture for the next scale</h2>
-              <p className="mb-4 text-xs leading-relaxed text-white/65 sm:text-[13px]">A practical look at event-driven systems, performance budgets, and the foundations that let digital products grow without losing their speed.</p>
+              <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.22em] text-black/55">Systems / Software Design</p>
+              <h2 className="mb-3 text-2xl font-medium tracking-[-0.03em] text-black sm:text-[27px]">Architecture for the next scale</h2>
+              <p className="mb-4 text-xs leading-relaxed text-black/65 sm:text-[13px]">A practical look at event-driven systems, performance budgets, and the foundations that let digital products grow without losing their speed.</p>
               <InsightLink>Learn more</InsightLink>
             </div>
           </article>
