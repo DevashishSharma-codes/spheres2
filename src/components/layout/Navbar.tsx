@@ -173,8 +173,9 @@ export function Navbar() {
         const trackedSections = [
           { id: "about", key: "about" },
           { id: "how-we-work", key: "how-we-work" },
-          { id: "services", key: "services" },
           { id: "portfolio", key: "portfolio" },
+          { id: "services", key: "services" },
+          { id: "insights", key: "insights" },
           { id: "industries", key: "industries" },
           { id: "testimonials", key: "testimonials" },
         ];
@@ -192,7 +193,7 @@ export function Navbar() {
         }
 
         if (!current && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80) {
-          current = "services";
+          current = "testimonials";
         }
 
         setActiveSection(current);
@@ -218,10 +219,10 @@ export function Navbar() {
   const primaryNav = [
     { label: "About Us", href: "/about", key: "about" },
     { label: "How We Work", href: "/how-we-work", key: "how-we-work" },
-    { label: "Services", href: "/services", key: "services" },
     { label: "Portfolio", href: "/portfolio", key: "portfolio" },
-    { label: "Industries", href: "/industries/healthcare", key: "industries" },
+    { label: "Services", href: "/services", key: "services" },
     { label: "Insights", href: "/insights", key: "insights" },
+    { label: "Industries", href: "/industries/healthcare", key: "industries" },
     { label: "Testimonials", href: "/testimonials", key: "testimonials" },
   ];
 
@@ -235,6 +236,7 @@ export function Navbar() {
     if (cleanPath === "/" && activeSection === "how-we-work" && cleanHref === "/how-we-work") return true;
     if (cleanPath === "/" && activeSection === "services" && cleanHref === "/services") return true;
     if (cleanPath === "/" && activeSection === "portfolio" && cleanHref === "/portfolio") return true;
+    if (cleanPath === "/" && activeSection === "insights" && cleanHref === "/insights") return true;
     if (cleanPath === "/" && activeSection === "industries" && cleanHref.startsWith("/industries")) return true;
     if (cleanPath === "/" && activeSection === "testimonials" && cleanHref.startsWith("/testimonials")) return true;
     return false;

@@ -23,19 +23,19 @@ export default function HomePage() {
       {/* Second Section: How We Work (Interactive Architectural Floorplan Map) */}
       <HowWeWorkFloorplanSection />
 
-      {/* Third Section: Services (Studio Capabilities) */}
-      <ServicesSection embedded />
-
-      {/* Fourth Section: Portfolio (TCS-style borderless editorial showcase) */}
+      {/* Portfolio */}
       <PortfolioLandingSection />
 
-      {/* Fifth Section: Industries & Vertical Domains (Split Showcase with arrow stepper & modal) */}
-      <IndustriesLandingSection />
+      {/* Services */}
+      <ServicesSection embedded />
 
       {/* Insights */}
       <InsightsLandingSection />
 
-      {/* Sixth Section: Testimonials & Wall of Love (Exact 21Spheres DNA in Purple/White/Grayish/Black) */}
+      {/* Industries */}
+      <IndustriesLandingSection />
+
+      {/* Testimonials */}
       <TestimonialsLandingSection />
     </div>
   );

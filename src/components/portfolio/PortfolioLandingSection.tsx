@@ -54,13 +54,7 @@ export function PortfolioLandingSection() {
     <section 
       id="portfolio" 
       className="relative w-full min-h-[calc(100vh-64px)] lg:min-h-[calc(100vh-64px)] flex flex-col justify-between text-[#1D1D1F] py-8 sm:py-10 lg:py-12 overflow-hidden border-b border-[#E5E5EA]"
-      style={{
-        background: `
-          radial-gradient(ellipse 78% 82% at 88% 8%, rgba(180, 148, 255, 0.40) 0%, rgba(218, 204, 255, 0.24) 40%, transparent 78%),
-          radial-gradient(ellipse 60% 74% at 4% 96%, rgba(198, 176, 255, 0.34) 0%, rgba(228, 219, 255, 0.16) 48%, transparent 76%),
-          linear-gradient(118deg, #FFFFFF 0%, #FCFAFF 42%, #F2ECFF 100%)
-        `,
-      }}
+      style={{ background: "#FFFFFF" }}
     >
       <div className="relative z-10 w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between flex-1 min-h-0">
         
