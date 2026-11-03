@@ -33,8 +33,10 @@ function isPastTime(year: number, month: number, day: number, time: string, now 
 }
 
 export default function ContactBookingPanel() {
-  const [currentDate, setCurrentDate] = useState(() => new Date());
-  const [selectedDay, setSelectedDay] = useState(() => new Date().getDate());
+  // Keep the prerender deterministic; initialize the visitor's local date after hydration.
+  const [currentDate, setCurrentDate] = useState(() => new Date(2000, 0, 1));
+  const [selectedDay, setSelectedDay] = useState(1);
+  const [now, setNow] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [stepIndex, setStepIndex] = useState(2);
   const [autoPlaying, setAutoPlaying] = useState(true);
@@ -42,7 +44,12 @@ export default function ContactBookingPanel() {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  const now = new Date();
+  useEffect(() => {
+    const today = new Date();
+    setNow(today);
+    setCurrentDate(today);
+    setSelectedDay(today.getDate());
+  }, []);
   const { daysInMonth, startingDayOfWeek } = useMemo(() => ({
     daysInMonth: new Date(year, month + 1, 0).getDate(),
     startingDayOfWeek: new Date(year, month, 1).getDay(),
@@ -76,9 +83,9 @@ export default function ContactBookingPanel() {
   }, [calendarOpen]);
 
   const stepPercent = (stepIndex / (sliderSteps.length - 1)) * 100;
-  const canGoPrevious = year > now.getFullYear() || (year === now.getFullYear() && month > now.getMonth());
+  const canGoPrevious = now !== null && (year > now.getFullYear() || (year === now.getFullYear() && month > now.getMonth()));
   const selectedDateLabel = `${monthNames[month]} ${selectedDay}, ${year}`;
-  const selectedSlotPast = selectedTime ? isPastTime(year, month, selectedDay, selectedTime, now) : true;
+  const selectedSlotPast = selectedTime ? !now || isPastTime(year, month, selectedDay, selectedTime, now) : true;
 
   const changeMonth = (delta: number) => {
     if (delta < 0 && !canGoPrevious) return;
@@ -88,6 +95,7 @@ export default function ContactBookingPanel() {
   };
 
   const selectDay = (day: number) => {
+    if (!now) return;
     if (isPastDate(year, month, day, now)) return;
     setSelectedDay(day);
     if (selectedTime && isPastTime(year, month, day, selectedTime, now)) setSelectedTime(null);
@@ -143,7 +151,7 @@ export default function ContactBookingPanel() {
           {Array.from({ length: daysInMonth }, (_, index) => {
             const day = index + 1;
             const selected = selectedDay === day;
-            const past = isPastDate(year, month, day, now);
+            const past = now !== null && isPastDate(year, month, day, now);
             return <button key={day} type="button" disabled={past} aria-pressed={selected} onClick={() => selectDay(day)} className={`flex min-h-[38px] items-center justify-center border text-xs transition sm:min-h-[44px] ${selected ? "border-violet-500 bg-violet-100 font-semibold text-violet-950 ring-1 ring-violet-300" : "border-black/10 text-black/70 hover:border-violet-300 hover:bg-violet-50"} ${past ? "cursor-not-allowed opacity-30" : ""}`}>{day}</button>;
           })}
         </div>
@@ -152,7 +160,7 @@ export default function ContactBookingPanel() {
           <p className="mb-2 text-[9px] font-semibold uppercase tracking-wider text-black/55">Select a time · {selectedDateLabel}</p>
           <div className="grid grid-cols-3 gap-2">
             {timeSlots.map((slot) => {
-              const past = isPastTime(year, month, selectedDay, slot.time, now);
+              const past = now !== null && isPastTime(year, month, selectedDay, slot.time, now);
               const selected = selectedTime === slot.time;
               return <button key={slot.time} type="button" disabled={past} aria-pressed={selected} onClick={() => setSelectedTime(slot.time)} className={`rounded-none border px-2 py-2.5 text-[9px] font-semibold transition sm:text-[10px] disabled:cursor-not-allowed disabled:opacity-30 ${selected ? slot.selected : `${slot.color} hover:brightness-[0.98]`}`}>{slot.time}</button>;
             })}
