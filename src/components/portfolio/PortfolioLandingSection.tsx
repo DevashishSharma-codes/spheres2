@@ -69,10 +69,10 @@ export function PortfolioLandingSection() {
             ========================================================= */}
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 shrink-0 pb-3.5 sm:pb-4 border-b border-[#E5E5EA]/70 mb-4 sm:mb-6 lg:mb-8">
           <div className="flex flex-col items-start">
-            <span className="text-[12px] sm:text-[13px] font-bold text-[#7C3AED] tracking-[0.18em] uppercase mb-1">
+            <span className="mb-1 text-[12px] font-bold uppercase tracking-[0.18em] text-[#7C3AED] sm:text-[13px]">
               OUR WORK
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light tracking-[-0.04em] leading-none text-black select-none whitespace-nowrap">
+            <h2 className="select-none whitespace-nowrap text-3xl font-light leading-none tracking-[-0.04em] text-black sm:text-4xl md:text-5xl lg:text-[52px]">
               Portfolio
             </h2>
           </div>

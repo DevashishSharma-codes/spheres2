@@ -104,6 +104,41 @@ body {
   display: none;
 }
 
+@keyframes insights-lens-float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-8px, 5px); }
+}
+
+@keyframes insights-flow-dash {
+  to { stroke-dashoffset: -48; }
+}
+
+@keyframes insights-chart-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.insight-lens-float {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: insights-lens-float 5s ease-in-out infinite;
+}
+
+.insight-flow-line {
+  animation: insights-flow-dash 2.4s linear infinite;
+}
+
+.insight-chart-draw {
+  animation: insights-chart-draw 2.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .insight-lens-float,
+  .insight-flow-line,
+  .insight-chart-draw {
+    animation: none !important;
+  }
+}
+
 @keyframes hww-process-copy-pop {
   0% { opacity: 0; translate: 0 18px; scale: 0.96; }
   72% { opacity: 1; translate: 0 -3px; scale: 1.015; }

@@ -17,7 +17,7 @@ const CARDS: TestimonialCardData[] = [
     bgImage: "/card-bgs/user-bg-pink-purple.png",
     themeVariant: "purple",
   },
-  // Column 1 Bottom (gocanvas) - Slate
+  // Column 1 Bottom (gocanvas) - Noir
   {
     id: 2,
     company: "gocanvas",
@@ -26,9 +26,9 @@ const CARDS: TestimonialCardData[] = [
     role: "Director of Growth Marketing @GoCanvas",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
     bgImage: "/card-bgs/user-bg-yellow-peach.jpg",
-    themeVariant: "slate",
+    themeVariant: "noir",
   },
-  // Column 2 Top (GROWTH PROTOCOL) - Noir
+  // Column 2 Top (GROWTH PROTOCOL) - Slate
   {
     id: 3,
     company: "GROWTH PROTOCOL",
@@ -37,9 +37,9 @@ const CARDS: TestimonialCardData[] = [
     role: "AE @Growth Protocol",
     avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
     bgImage: "/card-bgs/user-bg-green-gradient.png",
-    themeVariant: "noir",
+    themeVariant: "slate",
   },
-  // Column 2 Bottom (Kaster) - Frost
+  // Column 2 Bottom (Kaster) - Purple
   {
     id: 4,
     company: "Kaster",
@@ -48,9 +48,9 @@ const CARDS: TestimonialCardData[] = [
     role: "CTO @ Kaster",
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80",
     bgImage: "/card-bgs/user-bg-pink-purple.png",
-    themeVariant: "frost",
+    themeVariant: "purple",
   },
-  // Column 3 Top (Brex) - Slate
+  // Column 3 Top (Brex) - Noir
   {
     id: 5,
     company: "Brex",
@@ -59,9 +59,9 @@ const CARDS: TestimonialCardData[] = [
     role: "CRO @ Brex",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
     bgImage: "/card-bgs/user-bg-yellow-peach.jpg",
-    themeVariant: "slate",
+    themeVariant: "noir",
   },
-  // Column 3 Bottom (Gallea Ai) - Noir
+  // Column 3 Bottom (Gallea Ai) - Frost
   {
     id: 6,
     company: "Gallea Ai",
@@ -70,7 +70,7 @@ const CARDS: TestimonialCardData[] = [
     role: "Chief Architect @ Gallea Ai",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
     bgImage: "/card-bgs/user-bg-green-gradient.png",
-    themeVariant: "noir",
+    themeVariant: "frost",
   },
   // Column 4 Top (10X Management) - Purple
   {
@@ -83,7 +83,7 @@ const CARDS: TestimonialCardData[] = [
     bgImage: "/card-bgs/user-bg-pink-purple.png",
     themeVariant: "purple",
   },
-  // Column 4 Bottom (Superposition) - Frost
+  // Column 4 Bottom (Superposition) - Slate
   {
     id: 8,
     company: "Superposition",
@@ -92,7 +92,7 @@ const CARDS: TestimonialCardData[] = [
     role: "Founder at Superposition",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
     bgImage: "/card-bgs/user-bg-yellow-peach.jpg",
-    themeVariant: "frost",
+    themeVariant: "slate",
   },
 ];
 
@@ -242,12 +242,7 @@ export function TestimonialsWall() {
     <section
       ref={sectionRef}
       className="relative z-10 text-[#18181B] py-6 sm:py-8 lg:py-12 min-h-screen flex flex-col justify-between select-none overflow-hidden border-t border-[#DADADD]/70"
-      style={{
-        background: `
-          radial-gradient(ellipse 80% 38% at 50% 0%, rgba(124, 58, 237, 0.16) 0%, rgba(196, 181, 253, 0.10) 48%, transparent 100%),
-          linear-gradient(180deg, #F4F0FF 0%, #FAF9FC 48%, #F7F4FC 100%)
-        `,
-      }}
+      style={{ background: "#FFFFFF" }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full relative z-10 flex flex-col items-center pt-2 sm:pt-4 mb-auto">
         

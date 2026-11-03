@@ -15,8 +15,6 @@ import {
   Building2,
   Terminal,
   ArrowUpRight,
-  ChevronLeft,
-  ChevronRight,
   ChevronUp,
   ChevronDown
 } from "lucide-react";
@@ -169,42 +167,33 @@ export function OpenBoxServicesVisual({
   useEffect(() => {
     if (!isInView) return;
 
-    // 1. Ray ignition: beams shoot out from the box
-    const t0 = setTimeout(() => {
+    const t0 = window.setTimeout(() => {
       setLightOn(true);
-      setBurstCount((c) => c + 1);
+      setBurstCount((count) => count + 1);
     }, 150);
-
-    // 2. Card 1 launches and pops to Slot 0
-    const t1 = setTimeout(() => {
+    const t1 = window.setTimeout(() => {
       setIntroStage(1);
-      setBurstCount((c) => c + 1);
+      setBurstCount((count) => count + 1);
     }, 1050);
-
-    // 3. Card 2 launches and pops to Slot 1
-    const t2 = setTimeout(() => {
+    const t2 = window.setTimeout(() => {
       setIntroStage(2);
-      setBurstCount((c) => c + 1);
+      setBurstCount((count) => count + 1);
     }, 1400);
-
-    // 4. Card 3 launches and pops to Slot 2
-    const t3 = setTimeout(() => {
+    const t3 = window.setTimeout(() => {
       setIntroStage(3);
-      setBurstCount((c) => c + 1);
+      setBurstCount((count) => count + 1);
     }, 1750);
-
-    // 5. Card 4 launches and pops into the mouth of the box
-    const t4 = setTimeout(() => {
+    const t4 = window.setTimeout(() => {
       setIntroStage(4);
-      setBurstCount((c) => c + 1);
+      setBurstCount((count) => count + 1);
     }, 2100);
 
     return () => {
-      clearTimeout(t0);
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
+      window.clearTimeout(t0);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.clearTimeout(t3);
+      window.clearTimeout(t4);
     };
   }, [isInView]);
 
@@ -487,31 +476,6 @@ export function OpenBoxServicesVisual({
         />
       ))}
 
-      {/* Floating mini arrow buttons for the box scroll up and down animation */}
-      {(onPrevSquad || onNextSquad) && (
-        <div className="hidden lg:flex absolute right-1 sm:right-2 lg:-right-3 top-[18%] sm:top-[20%] z-40 flex-col items-center gap-1.5 p-1 rounded-full bg-white/[0.12] hover:bg-white/[0.18] border border-white/25 backdrop-blur-xl shadow-[0_8px_28px_rgba(0,0,0,0.45)] transition-all">
-          <button
-            onClick={onPrevSquad}
-            disabled={!canPrevSquad}
-            aria-label="Scroll box cards up"
-            title="Scroll cards up"
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 active:scale-95 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer"
-          >
-            <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-          <div className="w-2.5 h-[1px] bg-white/20" />
-          <button
-            onClick={onNextSquad}
-            disabled={!canNextSquad}
-            aria-label="Scroll box cards down"
-            title="Scroll cards down"
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 active:scale-95 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer"
-          >
-            <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-        </div>
-      )}
-
       {/* ========================================================
           1. UPPER GLASS CARDS (1, 2, 3) WITH VERTICAL ENERGY THREAD
           ======================================================== */}
@@ -520,8 +484,6 @@ export function OpenBoxServicesVisual({
           {upperBatch.map((card, index) => {
             const Icon = card.icon;
             const isHovered = hoveredId === card.id;
-
-            // During initial intro, cards pop out sequentially from the box
             const isCardActive = isIntroComplete || introStage > index;
             if (!isCardActive) return null;
 
@@ -529,30 +491,15 @@ export function OpenBoxServicesVisual({
               <motion.div
                 key={card.id}
                 layout
-                initial={{ 
-                  y: isIntroComplete ? 65 : 240, 
-                  scale: isIntroComplete ? 0.84 : 0.6, 
+                initial={{
+                  y: isIntroComplete ? 65 : 240,
+                  scale: isIntroComplete ? 0.84 : 0.6,
                   opacity: 0,
-                  filter: "blur(6px)" 
+                  filter: "blur(6px)",
                 }}
-                animate={{ 
-                  y: 0, 
-                  scale: 1, 
-                  opacity: 1, 
-                  filter: "blur(0px)" 
-                }}
-                exit={{ 
-                  y: -45, 
-                  scale: 0.92, 
-                  opacity: 0,
-                  filter: "blur(3px)" 
-                }}
-                transition={{ 
-                  type: "spring", 
-                  stiffness: 300, 
-                  damping: 20,
-                  mass: 0.8
-                }}
+                animate={{ y: 0, scale: 1, opacity: 1, filter: "blur(0px)" }}
+                exit={{ y: -45, scale: 0.92, opacity: 0, filter: "blur(3px)" }}
+                transition={{ type: "spring", stiffness: 300, damping: 20, mass: 0.8 }}
                 className="w-full flex flex-col items-center"
               >
                 {/* Glass Card */}
@@ -630,7 +577,6 @@ export function OpenBoxServicesVisual({
                       <div className="relative flex items-center justify-center">
                         <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#A855F7]/40 blur-[2.5px] animate-pulse" />
                         <div className="absolute w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white shadow-[0_0_6px_#FFFFFF,0_0_12px_#C084FC,0_0_18px_#7C3AED]" />
-                        <div className="absolute w-4 sm:w-5 h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent" />
                       </div>
 
                       <div className="w-[1.5px] h-1.5 sm:h-2 bg-gradient-to-b from-white to-[#C084FC] shadow-[0_0_6px_#A855F7]" />
@@ -690,30 +636,15 @@ export function OpenBoxServicesVisual({
             {(isIntroComplete || introStage >= 4) && card4 && (
               <motion.div
                 key={card4.id}
-                initial={{ 
-                  y: isIntroComplete ? 88 : 120, 
-                  scale: isIntroComplete ? 0.84 : 0.7, 
+                initial={{
+                  y: isIntroComplete ? 88 : 120,
+                  scale: isIntroComplete ? 0.84 : 0.7,
                   opacity: 0,
-                  filter: "blur(5px)" 
+                  filter: "blur(5px)",
                 }}
-                animate={{ 
-                  y: 0, 
-                  scale: 1, 
-                  opacity: 1, 
-                  filter: "blur(0px)" 
-                }}
-                exit={{ 
-                  y: -38, 
-                  scale: 0.92, 
-                  opacity: 0,
-                  filter: "blur(3px)" 
-                }}
-                transition={{ 
-                  type: "spring", 
-                  stiffness: 320, 
-                  damping: 22,
-                  mass: 0.85
-                }}
+                animate={{ y: 0, scale: 1, opacity: 1, filter: "blur(0px)" }}
+                exit={{ y: -38, scale: 0.92, opacity: 0, filter: "blur(3px)" }}
+                transition={{ type: "spring", stiffness: 320, damping: 22, mass: 0.85 }}
                 className="w-full flex flex-col items-center"
               >
                 <motion.div
@@ -775,7 +706,6 @@ export function OpenBoxServicesVisual({
                   <div className="relative flex items-center justify-center">
                     <div className="w-5 h-5 rounded-full bg-[#A855F7]/40 blur-[3px] animate-pulse" />
                     <div className="absolute w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_8px_#FFFFFF,0_0_14px_#C084FC,0_0_20px_#7C3AED]" />
-                    <div className="absolute w-6 h-[1px] bg-gradient-to-r from-transparent via-white/90 to-transparent" />
                   </div>
                 </motion.div>
               </motion.div>
@@ -785,9 +715,6 @@ export function OpenBoxServicesVisual({
 
         {/* LAYER 3 (z-30): FRONT WALL OF BOX (Physically covers the lower edge of Card 4) */}
         <div className="absolute bottom-0 inset-x-0 h-[50.53%] z-[30] pointer-events-none overflow-hidden flex items-end justify-center">
-          {/* Luminous Box lip rim catchlight: photon spill across top edge of front cardboard */}
-          <div className="absolute top-0 inset-x-[12%] h-[2px] bg-gradient-to-r from-transparent via-[#E9D5FF]/95 to-transparent blur-[1px] shadow-[0_0_12px_#C084FC,0_0_24px_#A855F7]" />
-          
           <Image
             src="/assets/services/box-front-clean.png"
             alt="21Spheres Box Front Lip"
@@ -801,27 +728,46 @@ export function OpenBoxServicesVisual({
       </div>
 
       {(onPrevSquad || onNextSquad) && (
-        <div className="mt-2 flex items-center justify-center gap-5 lg:hidden">
+        <>
+        <div className="absolute right-0 top-[86%] z-40 hidden -translate-y-1/2 flex-row items-center gap-0.5 rounded-full border border-white/25 bg-white/[0.1] p-1.5 text-white/80 shadow-[0_8px_28px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all hover:bg-white/[0.16] lg:-right-16 lg:flex">
           <button
             onClick={onPrevSquad}
             disabled={!canPrevSquad}
             aria-label="Show previous services"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/[0.1] text-white/80 shadow-[0_6px_20px_rgba(0,0,0,0.24)] backdrop-blur-xl transition hover:bg-white/20 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-white/20 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-30"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronUp className="h-4 w-4" />
           </button>
-          <span className="min-w-[88px] text-center font-mono text-[10px] tracking-[0.12em] text-white/55">
-            SERVICES {String(safeOffset + 1).padStart(2, "0")}–{String(Math.min(safeOffset + 4, ALL_SERVICES_DATA.length)).padStart(2, "0")}
-          </span>
+          <span aria-hidden="true" className="h-3 w-px bg-white/20" />
           <button
             onClick={onNextSquad}
             disabled={!canNextSquad}
             aria-label="Show next services"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/[0.1] text-white/80 shadow-[0_6px_20px_rgba(0,0,0,0.24)] backdrop-blur-xl transition hover:bg-white/20 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-white/20 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-30"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronDown className="h-4 w-4" />
           </button>
         </div>
+        <div className="relative z-40 mt-1 flex flex-row items-center gap-0.5 rounded-full border border-white/25 bg-white/[0.1] p-1.5 text-white/80 shadow-[0_8px_28px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all hover:bg-white/[0.16] lg:hidden">
+          <button
+            onClick={onPrevSquad}
+            disabled={!canPrevSquad}
+            aria-label="Show previous services"
+            className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-white/20 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+          >
+            <ChevronUp className="h-4 w-4" />
+          </button>
+          <span aria-hidden="true" className="h-3 w-px bg-white/20" />
+          <button
+            onClick={onNextSquad}
+            disabled={!canNextSquad}
+            aria-label="Show next services"
+            className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-white/20 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-30"
+          >
+            <ChevronDown className="h-4 w-4" />
+          </button>
+        </div>
+        </>
       )}
 
     </div>

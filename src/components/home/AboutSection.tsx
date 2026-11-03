@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
@@ -113,15 +113,16 @@ const BASE_CARDS: AboutCardItem[] = [
   },
 ];
 
-// 25 replicated sets for a completely seamless, continuous infinite loop that never glitches or runs out of cards
-const REPEAT_COUNT = 25;
-const CENTER_SET_INDEX = 12; // Center set index (starts centered at set 12 of 25)
-const INFINITE_CARDS = Array.from({ length: REPEAT_COUNT }, () => BASE_CARDS).flat();
+// Start with a short runway in both directions and extend the track as it is used.
+const INITIAL_SET_COUNT = 5;
+const CENTER_SET_INDEX = 2;
 
 export function AboutSection({ showStatistics = false }: { showStatistics?: boolean } = {}) {
   const baseCount = BASE_CARDS.length;
-  // Start centered in set 12
+  // Start centered in the middle copy so either direction has room to slide.
   const [currentIndex, setCurrentIndex] = useState(baseCount * CENTER_SET_INDEX);
+  const [firstCardIndex, setFirstCardIndex] = useState(0);
+  const [lastCardIndex, setLastCardIndex] = useState(baseCount * INITIAL_SET_COUNT - 1);
   const [isHovered, setIsHovered] = useState(false);
   const [withTransition, setWithTransition] = useState(true);
   const [selectedCard, setSelectedCard] = useState<AboutCardItem | null>(null);
@@ -142,6 +143,21 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
     setWithTransition(true);
     setCurrentIndex((prev) => prev - 1);
   }, []);
+
+  const handleTrackTransitionEnd = useCallback((event: React.TransitionEvent<HTMLDivElement>) => {
+    if (event.propertyName !== "transform") return;
+
+    const nearStart = currentIndex <= firstCardIndex + baseCount;
+    const nearEnd = currentIndex >= lastCardIndex - baseCount;
+
+    // Keep the current card nodes and position; just add identical cards beyond either edge.
+    if (nearEnd) setLastCardIndex((lastIndex) => lastIndex + baseCount);
+    if (nearStart) {
+      // Prepending shifts DOM offsets, so recalculate without animating that coordinate correction.
+      setWithTransition(false);
+      setFirstCardIndex((firstIndex) => firstIndex - baseCount);
+    }
+  }, [baseCount, currentIndex, firstCardIndex, lastCardIndex]);
 
   // Shortest circular path for pagination dots:
   // e.g. clicking dot 0 from dot 4 smoothly advances forward by 1 (+1) rather than rewinding across all 4 cards
@@ -294,8 +310,9 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
     const containerWidth = container.offsetWidth;
 
     // Use live DOM child measurement for sub-pixel centering precision
-    if (trackRef.current && trackRef.current.children[currentIndex]) {
-      const activeChild = trackRef.current.children[currentIndex] as HTMLElement;
+    const activeChildIndex = currentIndex - firstCardIndex;
+    if (trackRef.current && trackRef.current.children[activeChildIndex]) {
+      const activeChild = trackRef.current.children[activeChildIndex] as HTMLElement;
       const cardCenter = activeChild.offsetLeft + activeChild.offsetWidth / 2;
       const containerCenter = containerWidth / 2;
       setTrackTranslateX(cardCenter - containerCenter);
@@ -309,20 +326,29 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
       const gap = isMobile ? 14 : 20;
 
       let leftOffset = 0;
-      for (let i = 0; i < currentIndex; i++) {
+      for (let i = firstCardIndex; i < currentIndex; i++) {
         leftOffset += inactiveWidth + gap;
       }
 
       const centeredOffset = leftOffset - (containerWidth / 2) + (activeWidth / 2);
       setTrackTranslateX(centeredOffset);
     }
-  }, [currentIndex]);
+  }, [currentIndex, firstCardIndex]);
+
+  useLayoutEffect(() => {
+    updateTrackPosition();
+  }, [updateTrackPosition]);
 
   useEffect(() => {
-    updateTrackPosition();
     window.addEventListener("resize", updateTrackPosition);
     return () => window.removeEventListener("resize", updateTrackPosition);
   }, [updateTrackPosition]);
+
+  useEffect(() => {
+    if (withTransition) return;
+    const frame = window.requestAnimationFrame(() => setWithTransition(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, [withTransition]);
 
   return (
     <div className="relative z-0 overflow-hidden w-full border-b border-[#DADADD]/70 bg-[#FBFBFA]">
@@ -373,11 +399,11 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
             
             {/* Left: OUR STORY label (no pill) & Heading */}
             <div className="lg:col-span-6 flex flex-col items-start">
-              <span className="text-[12px] sm:text-[13px] font-bold text-[#7E22CE] tracking-[0.18em] uppercase mb-1">
+              <span className="mb-1 text-[12px] font-bold uppercase tracking-[0.18em] text-[#7E22CE] sm:text-[13px]">
                 OUR STORY
               </span>
 
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light tracking-[-0.04em] leading-none text-[#111114] select-none">
+              <h2 className="select-none whitespace-nowrap text-3xl font-light leading-none tracking-[-0.04em] text-[#111114] sm:text-4xl md:text-5xl lg:text-[52px]">
                 About Us
               </h2>
 
@@ -427,13 +453,16 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
               {/* Horizontal Sliding Track: Aligned at bottom, active card stands taller without clipping */}
               <div 
                 ref={trackRef}
+                onTransitionEnd={handleTrackTransitionEnd}
                 className={`relative flex items-end gap-3.5 sm:gap-5 ${withTransition ? "transition-transform duration-600 ease-out" : ""}`}
                 style={{
                   transform: `translateX(-${trackTranslateX}px)`,
                   transformStyle: "preserve-3d",
                 }}
               >
-                {INFINITE_CARDS.map((card, index) => {
+                {Array.from({ length: lastCardIndex - firstCardIndex + 1 }, (_, offset) => {
+                  const index = firstCardIndex + offset;
+                  const card = BASE_CARDS[((index % baseCount) + baseCount) % baseCount];
                   const isActive = currentIndex === index;
 
                   // Subtle 3D depth
@@ -443,7 +472,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                   return (
                     <div
                       key={`${card.id}-${index}`}
-                      id={index >= baseCount * CENTER_SET_INDEX && index < baseCount * (CENTER_SET_INDEX + 1) ? card.id : undefined}
+                      id={isActive ? card.id : undefined}
                       onClick={() => {
                         if (isActive) {
                           setSelectedCard(card);

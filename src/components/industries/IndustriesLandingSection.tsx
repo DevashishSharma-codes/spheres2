@@ -54,12 +54,12 @@ export function IndustriesLandingSection() {
       className="relative z-10 m-0 flex h-[calc(100vh-3.5rem)] w-full select-none flex-col overflow-hidden border-y border-white/10 p-0 text-white outline-none scroll-mt-14 sm:h-[calc(100vh-4rem)] sm:scroll-mt-16"
       style={sectionBackground}
     >
-      <header className="relative z-20 flex shrink-0 flex-col gap-2 border-b border-white/10 bg-transparent px-6 py-3.5 sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:px-8 sm:py-4 lg:px-10">
+      <header className="relative z-20 mx-auto flex w-full max-w-[1380px] shrink-0 flex-col gap-2 border-b border-white/10 bg-transparent px-4 py-3.5 sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:px-6 sm:py-4 lg:px-8">
         <div className="shrink-0">
-          <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C8B4FF] sm:text-[11px]">
+          <p className="mb-1 text-[12px] font-bold uppercase tracking-[0.18em] text-[#C8B4FF] sm:text-[13px]">
             Our expertise
           </p>
-          <h2 className="text-[clamp(1.9rem,4vw,3rem)] font-light leading-none tracking-[-0.05em] text-white">
+          <h2 className="whitespace-nowrap text-3xl font-light leading-none tracking-[-0.04em] text-white sm:text-4xl md:text-5xl lg:text-[52px]">
             Industries
           </h2>
         </div>
