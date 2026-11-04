@@ -10,6 +10,8 @@ import { ServiceDetailDrawer } from "./ServiceDetailDrawer";
 import { ServiceItem } from "@/types";
 import { ArrowRight } from "lucide-react";
 import { AllServicesCatalog } from "./AllServicesCatalog";
+import { ServicesIntro } from "./ServicesIntro";
+import { Container } from "@/components/ui/Container";
 
 interface ServicesSectionProps {
   embedded?: boolean;
@@ -110,31 +112,33 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
   // Dedicated catalog view on /services page
   if (showAllCatalog) {
     return (
+      <div ref={sectionRef}>
       <section 
         id="services" 
-        className="relative z-0 overflow-hidden border-b border-[#ECEBF0] pt-7 pb-2 text-[#24232A] sm:pt-10 sm:pb-3"
+        className="relative z-0 overflow-hidden border-b border-[#ECEBF0] pb-2 text-[#24232A] sm:pb-3"
         style={backgroundStyle}
       >
-        <div className="relative z-10 w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-5 flex flex-col justify-between gap-3 border-b border-[#E7E5EB] pb-4 sm:mb-6 sm:flex-row sm:items-end">
+        <ServicesIntro />
+        <Container wide className="relative z-10">
+          <div className="mb-5 flex flex-col justify-between gap-3 border-b border-[#E7E5EB] pb-4 sm:flex-row sm:items-end">
             <div className="flex flex-col items-start">
               <span className="mb-2 text-[10px] font-semibold uppercase tracking-[0.19em] text-[#7057D9] sm:text-[11px]">
                 OUR CAPABILITIES
               </span>
-              <h2 className="select-none whitespace-nowrap text-4xl font-light leading-none tracking-[-0.045em] text-[#232129] sm:text-5xl lg:text-[58px]">
-                Services
+              <h2 className="text-3xl font-light leading-none tracking-[-0.045em] text-[#232129] sm:text-[40px]">
+                All services
               </h2>
             </div>
-            <p className="max-w-[470px] pb-0.5 text-sm font-light leading-relaxed text-[#777680] sm:text-right sm:text-[15px]">
-              Dedicated engineering teams for complex digital products. From mobile and web platforms to AI systems, we build secure software around your needs, designed to scale as your business grows.
+            <p className="max-w-[420px] pb-0.5 text-sm font-light leading-relaxed text-[#6E6D78] sm:text-right">
+              Filter by category, or open any card to see what&apos;s included.
             </p>
           </div>
-          <AllServicesCatalog
-            services={services}
-            onSelectService={(s) => setSelectedService(s)}
-            onOpenMobileSimulator={() => handleOpenSimulator("mobile-application-development")}
-          />
-        </div>
+        </Container>
+        <AllServicesCatalog
+          services={services}
+          onSelectService={(s) => setSelectedService(s)}
+          onOpenMobileSimulator={() => handleOpenSimulator("mobile-application-development")}
+        />
         <IPhoneSimulatorModal
           isOpen={simulatorOpen}
           onClose={() => setSimulatorOpen(false)}
@@ -147,6 +151,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
           onOpenInPhone={(serviceId) => handleOpenSimulator(serviceId)}
         />
       </section>
+      </div>
     );
   }
 

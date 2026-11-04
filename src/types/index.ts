@@ -21,6 +21,8 @@ export interface ServiceItem {
   tags: string[];
   category?: string;
   icon?: string;
+  cardImage?: string;
+  cardImagePosition?: string;
   metric?: string;
   pills?: StackedPillItem[];
 }

@@ -8,6 +8,8 @@ export const SERVICES_CONTENT = {
   services: [
     {
       id: "mobile-application-development",
+      cardImage: "/portfolio/photos/delivery-app.jpg",
+      cardImagePosition: "50% 45%",
       number: "01",
       title: "Mobile Application development",
       headline: "Fluid iOS & Android architectures with sub-16ms render cycles and native haptics.",
@@ -45,6 +47,8 @@ export const SERVICES_CONTENT = {
     },
     {
       id: "web-application-development",
+      cardImage: "/portfolio/photos/analytics.jpg",
+      cardImagePosition: "50% 60%",
       number: "02",
       title: "Web Application development",
       headline: "Ultra-responsive Next.js 15 platforms engineered for millions of concurrent users.",
@@ -82,6 +86,7 @@ export const SERVICES_CONTENT = {
     },
     {
       id: "custom-ai-development",
+      cardImage: "/about/corp-performance.jpg",
       number: "03",
       title: "Custom AI development",
       headline: "Proprietary neural architectures, bespoke model fine-tuning, and reasoning graphs.",
@@ -119,6 +124,8 @@ export const SERVICES_CONTENT = {
     },
     {
       id: "llm-integration",
+      cardImage: "/about/corp-swarms.jpg",
+      cardImagePosition: "50% 70%",
       number: "04",
       title: "LLM Integration",
       headline: "Enterprise-grade RAG pipelines and deterministic tool calling with zero hallucinations.",
@@ -156,6 +163,7 @@ export const SERVICES_CONTENT = {
     },
     {
       id: "chatbot-development",
+      cardImage: "/services/chatbot.jpg",
       number: "05",
       title: "Chatbot development",
       headline: "Conversational agents with episodic memory, voice synthesis, and CRM execution.",
@@ -193,6 +201,7 @@ export const SERVICES_CONTENT = {
     },
     {
       id: "workflow-automation",
+      cardImage: "/services/workflow.jpg",
       number: "06",
       title: "Workflow automation",
       headline: "Eliminating manual bottlenecks with self-healing, deterministic automation engines.",
@@ -230,6 +239,8 @@ export const SERVICES_CONTENT = {
     },
     {
       id: "website-development",
+      cardImage: "/services/website.jpg",
+      cardImagePosition: "50% 18%",
       number: "07",
       title: "Website development",
       headline: "Award-winning corporate digital flagships with 120 FPS kinetic micro-interactions.",
@@ -267,6 +278,7 @@ export const SERVICES_CONTENT = {
     },
     {
       id: "saas-development",
+      cardImage: "/about/corp-automation.jpg",
       number: "08",
       title: "SaaS development",
       headline: "Multi-tenant cloud architectures built for rapid ARR growth and enterprise compliance.",
@@ -304,6 +316,7 @@ export const SERVICES_CONTENT = {
     },
     {
       id: "enterprise-software-development",
+      cardImage: "/about/corp-security.jpg",
       number: "09",
       title: "Enterprise software development",
       headline: "Mission-critical architectures engineered for zero downtime and strict governance.",
@@ -341,6 +354,7 @@ export const SERVICES_CONTENT = {
     },
     {
       id: "custom-software-development",
+      cardImage: "/about/card-integration.jpg",
       number: "10",
       title: "Custom software development",
       headline: "Bespoke digital engines tailored to solve complex, proprietary business challenges.",

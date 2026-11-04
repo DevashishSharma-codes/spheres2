@@ -1,315 +1,205 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowUpRight } from 'lucide-react';
+import React, { useState } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
 
-/**
- * FolderTabCard
- * A modern tactile UI card featuring an ethereal animated mesh aurora gradient header,
- * circular diagonal glass arrow action button, and an asymmetrical folder-tab cutout sheet
- * housing category metadata and dynamic metrics.
- * 
- * Supports both dark and light modes with responsive text sizing and layout.
- */
-interface FolderTabCardProps {
-  title?: string;
-  subtitle?: string;
-  description?: string;
-  tagsCount?: string;
-  tagsLabel?: string;
-  shotsCount?: string;
-  onAction?: (() => void) | null;
-  className?: string;
+export interface FolderTabCardProps {
+  id: string;
+  number: string;
+  category?: string;
+  title: string;
+  description: string;
+  image?: string;
+  imagePosition?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  ctaLabel?: string;
+  onClick: () => void;
 }
 
-export default function FolderTabCard({
-  title = "Components",
-  subtitle = "Modern UI Library",
+/**
+ * Rounded folder-tab card with a photo on top. Shared by the /services catalog
+ * and the portfolio's "More projects" row so the two stay identical.
+ */
+export function FolderTabCard({
+  id,
+  number,
+  category,
+  title,
   description,
-  tagsCount = "48",
-  tagsLabel = "Items",
-  shotsCount = "100% Free",
-  onAction = null,
-  className = "",
+  image,
+  imagePosition,
+  icon: Icon,
+  ctaLabel = "Know more",
+  onClick,
 }: FolderTabCardProps) {
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof document !== 'undefined') {
-      return document.documentElement.classList.contains('dark');
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    const checkTheme = () => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    };
-    checkTheme();
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme'] });
-    return () => observer.disconnect();
-  }, []);
-
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isCompact, setIsCompact] = useState(false);
-
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const applyWidth = (w: number) => setIsCompact(w < 220);
-    applyWidth(el.getBoundingClientRect().width);
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) applyWidth(entry.contentRect.width);
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 45;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 45;
-    setMousePos({ x, y });
-  };
-
-  const handleMouseLeave = () => {
-    setMousePos({ x: 0, y: 0 });
-  };
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="flex items-center justify-center w-full max-w-full h-full max-h-full p-1 select-none">
-      <div
-        ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        className={`relative w-full max-w-[300px] sm:max-w-[320px] xl:max-w-[335px] aspect-[4/4.8] max-h-[380px] rounded-none p-2 overflow-hidden transition-colors duration-300 ${
-          isDark
-            ? "bg-[#0c0b10] border border-white/10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.35)]"
-            : "bg-[#FFFFFF] border border-[#DADADD] shadow-[0_2px_10px_-2px_rgba(0,0,0,0.05)]"
-        } ${className}`}
-      >
-        {/* Inner Card Canvas with Sharp Corners */}
-        <div className="relative w-full h-full rounded-none overflow-hidden">
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={`${title}: ${ctaLabel}`}
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onClick();
+        }
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`
+        group relative w-full h-[400px] rounded-[22px] overflow-hidden
+        transition-all duration-300 ease-out p-[1.5px] select-none flex flex-col cursor-pointer text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8]
+        ${
+          isHovered
+            ? "shadow-[0_18px_40px_-10px_rgba(50,35,110,0.5)]"
+            : "shadow-[0_14px_30px_-12px_rgba(20,16,35,0.45)]"
+        }
+      `}
+    >
+      {/* 1. Static Border Outline (visible when not hovered) */}
+      <div 
+        className={`absolute inset-0 rounded-[22px] border border-white/25 transition-opacity duration-300 pointer-events-none ${
+          isHovered ? "opacity-0" : "opacity-100"
+        }`} 
+      />
 
-          {/* ── 1. Background Animated Mesh Gradient (Brand Lilac Palette) ── */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Base Background Tint */}
-            <div 
-              className={`absolute inset-0 transition-colors duration-500 ${
-                isDark ? "bg-[#090710]" : "bg-[#F3EEFA]"
-              }`} 
-            />
+      {/* 2. Soft Glowing Halo following the minimal light strip */}
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 2.8, ease: "linear" }}
+        className={`absolute -inset-[150%] pointer-events-none filter blur-[8px] transition-opacity duration-300 ${
+          isHovered ? "opacity-75" : "opacity-0"
+        }`}
+        style={{
+          background: "conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 320deg, rgba(147, 51, 234, 0) 325deg, #7E22CE 338deg, #A855F7 348deg, #FFFFFF 355deg, rgba(192, 132, 252, 0) 360deg)",
+        }}
+      />
 
-            {/* Continuous Swirling Mesh Container with Organic Drift & Hover Reactivity */}
-            <motion.div 
-              animate={{ 
-                rotate: [0, 360],
-                x: mousePos.x,
-                y: mousePos.y,
-              }}
-              transition={{ 
-                rotate: { duration: 22, repeat: Infinity, ease: "linear" },
-                x: { type: "spring", stiffness: 120, damping: 18 },
-                y: { type: "spring", stiffness: 120, damping: 18 },
-              }}
-              className="absolute -top-[35%] -left-[35%] w-[170%] h-[170%] pointer-events-none"
-            >
-              {/* Blob 1: Strong Brand Lilac (#9C8EB8 / #C1B4D8) */}
-              <motion.div
-                animate={{
-                  x: [-55, 50, -35, -55],
-                  y: [-35, 45, -50, -35],
-                  scale: [1, 1.35, 0.88, 1],
-                  borderRadius: [
-                    "42% 58% 70% 30% / 45% 45% 55% 55%",
-                    "58% 42% 35% 65% / 60% 35% 65% 40%",
-                    "42% 58% 70% 30% / 45% 45% 55% 55%",
-                  ],
-                }}
-                transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-[20%] left-[15%] w-[68%] h-[68%] blur-[22px]"
-                style={{
-                  background: isDark
-                    ? "radial-gradient(circle, #C1B4D8 0%, #9C8EB8 45%, #6A5688 80%, rgba(106,86,136,0) 100%)"
-                    : "radial-gradient(circle, #C1B4D8 0%, #D4CBE5 50%, #A895C2 85%, rgba(168,149,194,0) 100%)",
-                }}
+      {/* 3. Crisp Minimal Moving Light Strip around the perimeter */}
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 2.8, ease: "linear" }}
+        className={`absolute -inset-[150%] pointer-events-none transition-opacity duration-300 ${
+          isHovered ? "opacity-100" : "opacity-0"
+        }`}
+        style={{
+          background: "conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 325deg, rgba(126, 34, 206, 0) 328deg, #7E22CE 338deg, #A855F7 348deg, #FFFFFF 356deg, rgba(233, 213, 255, 0) 360deg)",
+        }}
+      />
+
+      {/* 4. Card Body: Covers the center so only the 1.5px minimal moving light strip is visible */}
+      <div className="relative w-full h-full rounded-[20.5px] p-2 bg-gradient-to-b from-[#55545c] via-[#45444c] to-[#37363d] shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] flex flex-col justify-between overflow-hidden">
+        {/* Inner Canvas */}
+        <div className="relative w-full h-full rounded-[15px] overflow-hidden flex flex-col justify-between">
+          
+          {/* ── 1. Photo ── */}
+          <div className="absolute inset-x-0 top-0 h-[62%] overflow-hidden bg-[#55545c]">
+            {image && (
+              <Image
+                src={image}
+                alt=""
+                fill
+                sizes="(max-width: 639px) 92vw, (max-width: 1023px) 46vw, (max-width: 1279px) 31vw, 24vw"
+                style={{ objectPosition: imagePosition }}
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               />
-
-              {/* Blob 2: Radiant Luminous Core White-Lilac Highlight */}
-              <motion.div
-                animate={{
-                  x: [45, -50, 35, 45],
-                  y: [35, -40, 50, 35],
-                  scale: [0.9, 1.45, 0.92, 0.9],
-                  borderRadius: [
-                    "50% 50% 42% 58% / 42% 58% 50% 50%",
-                    "42% 58% 58% 42% / 52% 42% 58% 48%",
-                    "50% 50% 42% 58% / 42% 58% 50% 50%",
-                  ],
-                }}
-                transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-[24%] left-[22%] w-[58%] h-[58%] blur-[16px]"
-                style={{
-                  background: isDark
-                    ? "radial-gradient(circle, #FFFFFF 0%, #E4DDF0 35%, #D4CBE5 68%, rgba(212,203,229,0) 90%)"
-                    : "radial-gradient(circle, #FFFFFF 0%, #FBFAFE 40%, #D4CBE5 75%, rgba(212,203,229,0) 95%)",
-                }}
-              />
-
-              {/* Blob 3: Soft Ethereal Sky/Cyan Accent */}
-              <motion.div
-                animate={{
-                  x: [40, -35, 45, 40],
-                  y: [-45, 40, -25, -45],
-                  scale: [0.85, 1.3, 0.9, 0.85],
-                }}
-                transition={{ duration: 6.8, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-[16%] right-[12%] w-[55%] h-[55%] blur-[22px] opacity-85"
-                style={{
-                  background: isDark
-                    ? "radial-gradient(circle, #7DD3FC 0%, #818CF8 35%, #9C8EB8 65%, rgba(156,142,184,0) 90%)"
-                    : "radial-gradient(circle, #BAE6FD 0%, #C7D2FE 40%, #D4CBE5 75%, rgba(212,203,229,0) 95%)",
-                }}
-              />
-
-              {/* Blob 4: Warm Peach-Dawn Accent */}
-              <motion.div
-                animate={{
-                  x: [-45, 40, -25, -45],
-                  y: [35, -40, 30, 35],
-                  scale: [0.88, 1.32, 0.85, 0.88],
-                }}
-                transition={{ duration: 5.8, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-[8%] left-[8%] w-[52%] h-[52%] blur-[20px] opacity-80"
-                style={{
-                  background: isDark
-                    ? "radial-gradient(circle, #FBA27A 0%, #E4DDF0 45%, rgba(228,221,240,0) 80%)"
-                    : "radial-gradient(circle, #FCD5C2 0%, #EEEAF7 50%, rgba(238,234,247,0) 80%)",
-                }}
-              />
-            </motion.div>
-
-            {/* Vignette */}
-            <div 
-              className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${
-                isDark 
-                  ? "bg-gradient-to-t from-black/50 via-transparent to-transparent" 
-                  : "bg-gradient-to-t from-white/20 via-transparent to-transparent"
-              }`}
-            />
+            )}
+            <div aria-hidden="true" className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/35 to-transparent" />
           </div>
 
-          {/* ── 2. Top Glass Action Button with Sharp Edges (Diagonal Arrow ↗) ── */}
-          <div className="absolute z-20 top-3 right-3 sm:top-3.5 sm:right-3.5">
-            <motion.button
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.94 }}
-              onClick={onAction || undefined}
-              className={`rounded-none flex items-center justify-center backdrop-blur-xl transition-colors duration-200 cursor-pointer shadow-sm ${
-                isCompact ? 'w-8 h-8' : 'w-9 h-9 sm:w-10 sm:h-10'
-              } ${
-                isDark
-                  ? "bg-white/25 hover:bg-white/35 text-white border border-white/30"
-                  : "bg-white/85 hover:bg-white text-black border border-black/10"
-              }`}
-              title="Explore Design"
-            >
-              <ArrowUpRight className={`transition-transform duration-200 ${isCompact ? 'w-3.5 h-3.5' : 'w-4 h-4 sm:w-4.5 sm:h-4.5'}`} />
-            </motion.button>
+        {/* ── 2. Top Bar: Number Badge at Top Left & Icon at Top Right ── */}
+        <div className="absolute z-20 top-3 left-3 sm:top-3.5 sm:left-3.5 flex items-center pointer-events-none">
+          <div className={`h-9 sm:h-10 px-3.5 rounded-full backdrop-blur-md border font-mono text-xs sm:text-[13px] font-semibold flex items-center justify-center tracking-wider shadow-sm transition-all duration-300 ${
+            isHovered
+              ? "bg-black/50 border-white/50 text-white"
+              : "bg-black/35 border-white/30 text-white"
+          }`}>
+            <span>{number}</span>
           </div>
+        </div>
 
-          {/* ── 3. Asymmetrical Sharp Folder-Tab Cutout Sheet ── */}
-          <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-end">
-            <div className="relative w-full h-[64%]">
-              {/* Sharp Architectural Cutout Silhouette Path */}
-              <svg
-                viewBox="0 0 380 240"
-                preserveAspectRatio="none"
-                className="absolute inset-0 w-full h-full filter drop-shadow-[0_-3px_8px_rgba(0,0,0,0.04)]"
-              >
-                <path
-                  d="M 0 0
-                     L 225 0
-                     L 225 38
-                     L 380 38
-                     L 380 240
-                     L 0 240
-                     Z"
-                  fill={isDark ? "#14131A" : "#FFFFFF"}
-                  stroke={isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"}
-                  strokeWidth="1"
-                />
-              </svg>
+        <div className="absolute z-20 top-3 right-3 sm:top-3.5 sm:right-3.5">
+          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full backdrop-blur-md border transition-all shadow-sm flex items-center justify-center text-white ${
+            isHovered ? "bg-black/50 border-white/50" : "bg-black/35 border-white/30"
+          }`}>
+            <Icon className="w-4 h-4" />
+          </div>
+        </div>
 
-              {/* Foreground Typography & Content inside the Folder Flap */}
-              <div className={`relative z-20 w-full h-full flex flex-col justify-between pointer-events-auto ${
-                isCompact ? 'p-3' : 'p-3.5 sm:p-4.5'
-              }`}>
-                {/* Upper Left Tab Content: Geist light & mono font matching site */}
-                <div className="pt-0.5 max-w-[58%]">
-                  <h3 className={`font-light tracking-[-0.03em] leading-tight ${
-                    isCompact ? 'text-[12px]' : 'text-[13px] sm:text-[15px]'
-                  } ${
-                    isDark ? "text-white" : "text-black"
-                  }`}>
-                    {title}
-                  </h3>
-                  {subtitle && !description && (
-                    <p className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-wider mt-0.5 ${
-                      isDark ? "text-neutral-400" : "text-black/50"
-                    }`}>
-                      {subtitle}
-                    </p>
-                  )}
-                </div>
+        {/* ── 3. Folder-Tab Sheet ── */}
+        <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-end">
+          <div className="relative w-full h-[58%]">
+            <svg
+              viewBox="0 0 380 240"
+              preserveAspectRatio="none"
+              className="absolute inset-0 h-full w-full overflow-visible"
+            >
+              <defs>
+                <linearGradient id={`glass-tab-${id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#4a4951" />
+                  <stop offset="45%" stopColor="#403f47" />
+                  <stop offset="100%" stopColor="#37363d" />
+                </linearGradient>
+              </defs>
 
-                {description ? (
-                  /* Narrative Pillar Layout */
-                  <div className="flex-1 flex flex-col justify-between pt-2">
-                    <p className={`text-[11px] sm:text-[12px] font-light leading-relaxed line-clamp-3 ${
-                      isDark ? "text-neutral-300" : "text-black/75"
-                    }`}>
-                      {description}
-                    </p>
-                    <div className="pt-2 border-t border-black/8 flex items-center justify-between text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-black/50">
-                      <span>{subtitle || "01 // STRATEGY"}</span>
-                      <span className="text-black/40">21SPHERES</span>
-                    </div>
-                  </div>
-                ) : (
-                  /* Lower Footer Metrics Row */
-                  <div className="flex items-end justify-between pb-0.5">
-                    {/* Left: Count & Label in Geist Light */}
-                    <div className="flex items-baseline gap-1.5">
-                      <span className={`font-light tracking-[-0.04em] leading-none ${
-                        isCompact ? 'text-xl' : 'text-2xl sm:text-3xl'
-                      } ${
-                        isDark ? "text-white" : "text-black"
-                      }`}>
-                        {tagsCount}
-                      </span>
-                      <span className={`font-mono text-[10px] sm:text-[11px] uppercase tracking-wider ${
-                        isDark ? "text-neutral-400" : "text-black/60"
-                      }`}>
-                        {tagsLabel}
-                      </span>
-                    </div>
+              {/* Folder sheet: every corner of the tab and step is rounded */}
+              <path
+                d="M 0 18
+                   A 18 18 0 0 1 18 0
+                   L 207 0
+                   A 18 18 0 0 1 225 18
+                   L 225 20
+                   A 18 18 0 0 0 243 38
+                   L 362 38
+                   A 18 18 0 0 1 380 56
+                   L 380 222
+                   A 18 18 0 0 1 362 240
+                   L 18 240
+                   A 18 18 0 0 1 0 222
+                   Z"
+                fill={`url(#glass-tab-${id})`}
+                stroke={isHovered ? "rgba(185, 166, 255, 0.7)" : "rgba(255, 255, 255, 0.2)"}
+                strokeWidth="1"
+                vectorEffect="non-scaling-stroke"
+                className="transition-all duration-300"
+              />
+            </svg>
 
-                    {/* Right: Badge */}
-                    <div className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-wider ${
-                      isDark ? "text-neutral-400" : "text-black/50"
-                    }`}>
-                      {shotsCount}
-                    </div>
-                  </div>
-                )}
+            {/* Content inside the sheet */}
+            <div className="relative z-20 w-full h-full flex flex-col justify-between p-3.5 sm:p-4.5 pointer-events-auto">
+              
+              {/* Upper Left Tab Shelf: category label */}
+              <div className="flex h-5 max-w-[56%] items-center">
+                <span className="truncate text-[11px] font-medium text-[#C9BBFF]">{category}</span>
               </div>
+
+              <div className="flex min-h-0 flex-1 flex-col pt-3">
+                <h3 className="mb-1.5 text-[17px] font-normal leading-snug tracking-[-0.01em] text-white">
+                  {title}
+                </h3>
+                <p className="line-clamp-2 text-[12.5px] leading-relaxed text-white/80">
+                  {description}
+                </p>
+
+                <div className="mt-auto flex justify-end pt-2">
+                  <span className="inline-flex h-10 items-center gap-4 rounded-full bg-gradient-to-r from-[#2a2a2e] to-[#6a6a70] pl-4 pr-1 text-[12.5px] text-white">
+                    {ctaLabel}
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black">
+                      <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-px group-hover:translate-x-px motion-reduce:transition-none" />
+                    </span>
+                  </span>
+                </div>
+              </div>
+
             </div>
           </div>
-
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

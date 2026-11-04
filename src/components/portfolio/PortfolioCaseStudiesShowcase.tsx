@@ -4,12 +4,21 @@ import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { Bot, Landmark, ShieldCheck, Smartphone, type LucideIcon } from "lucide-react";
+import { FolderTabCard } from "@/components/ui/FolderTabCard";
 import {
   DISCIPLINE_TABS,
   PORTFOLIO_CASE_STUDIES,
   type DetailedCaseStudy,
 } from "@/content/portfolioCaseStudies";
+
+/* Short labels fit the card's folder tab; filters and the laptop keep the full name */
+const DISCIPLINE_CARD_META: Record<string, { icon: LucideIcon; label: string }> = {
+  "Autonomous AI & Agents": { icon: Bot, label: "AI & Agents" },
+  "Fintech & WealthTech": { icon: Landmark, label: "Fintech & WealthTech" },
+  "InsurTech & Cloud Platforms": { icon: ShieldCheck, label: "InsurTech & Cloud" },
+  "Mobile & High-Concurrency": { icon: Smartphone, label: "Mobile" },
+};
 
 /* Shared glass surface: dark, translucent, soft top highlight */
 const glass =
@@ -75,39 +84,6 @@ function Laptop({ project }: { project: DetailedCaseStudy }) {
 /* ------------------------------------------------------------------ */
 /* One case study: laptop on the left, details on the right            */
 /* ------------------------------------------------------------------ */
-function MoreProjectCard({ project, onOpen }: { project: DetailedCaseStudy; onOpen: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="group mx-auto flex w-full max-w-[420px] flex-col rounded-[30px] border border-white/25 bg-gradient-to-b from-white/[0.2] via-white/[0.1] to-white/[0.05] p-2.5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.4),inset_0_0_24px_rgba(255,255,255,0.05),0_24px_50px_-20px_rgba(0,0,0,.75)] backdrop-blur-[36px] transition-colors duration-300 hover:border-white/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8]"
-    >
-      <span className="relative block aspect-[1/1.05] w-full overflow-hidden rounded-[21px] bg-white/5">
-        <Image
-          src={project.cardImage}
-          alt=""
-          fill
-          sizes="(max-width: 767px) 92vw, (max-width: 1279px) 46vw, 22vw"
-          style={{ objectPosition: project.cardImagePosition }}
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-        />
-      </span>
-      <span className="flex flex-1 flex-col items-center px-3 pb-3 pt-6">
-        <span className="text-[19px] font-normal leading-[1.2] tracking-[-0.01em] text-white">{project.title}</span>
-        <span className="mt-2.5 text-[13px] leading-[1.5] text-white/85">{project.headline}</span>
-        <span className="mt-auto pt-6">
-          <span className="inline-flex h-12 items-center gap-6 rounded-full bg-gradient-to-r from-[#1b1b1e] to-[#5a5a60] pl-5 pr-1.5 text-[13px] text-white">
-            Know more
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black">
-              <ArrowUpRight className="h-[18px] w-[18px] transition-transform duration-300 group-hover:-translate-y-px group-hover:translate-x-px motion-reduce:transition-none" />
-            </span>
-          </span>
-        </span>
-      </span>
-    </button>
-  );
-}
-
 function CaseStudyCard({ project }: { project: DetailedCaseStudy }) {
   const lead = project.whatChanged.metrics[0];
 
@@ -251,7 +227,7 @@ export function PortfolioCaseStudiesSection() {
           "radial-gradient(60% 45% at 50% 0%, rgba(112,87,217,0.22) 0%, transparent 70%), radial-gradient(45% 40% at 95% 35%, rgba(167,139,250,0.10) 0%, transparent 70%), radial-gradient(50% 40% at 5% 80%, rgba(112,87,217,0.12) 0%, transparent 70%)",
       }}
     >
-      <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
         <header className="mb-12 max-w-2xl">
           <h2 className="w-fit bg-gradient-to-r from-white via-[#E4DCFF] to-[#9D85F2] bg-clip-text pb-1 text-4xl font-light leading-[1.05] tracking-[-0.055em] text-transparent sm:text-5xl lg:text-6xl">
             Built to make a difference.
@@ -318,16 +294,26 @@ export function PortfolioCaseStudiesSection() {
             <h3 className="text-xl font-medium tracking-tight sm:text-2xl">More projects</h3>
             <span className="text-sm text-white/50">{projects.length} projects</span>
           </div>
-          <div className="relative isolate">
-            <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-              <div className="absolute left-[8%] top-[10%] h-[70%] w-[40%] rounded-full bg-white opacity-[0.1] blur-[80px]" />
-              <div className="absolute right-[6%] top-[25%] h-[65%] w-[40%] rounded-full bg-[#7057D9] opacity-[0.28] blur-[90px]" />
-            </div>
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {projects.filter((project) => project.id !== featured?.id).map((project) => (
-              <MoreProjectCard key={project.id} project={project} onOpen={() => openProject(project.id)} />
+              <motion.div
+                key={project.id}
+                whileHover={{ scale: 1.02, y: -6 }}
+                transition={{ type: "spring", stiffness: 400, damping: 26 }}
+              >
+                <FolderTabCard
+                  id={project.id}
+                  number={project.index.split(" / ")[0]}
+                  category={DISCIPLINE_CARD_META[project.discipline]?.label ?? project.discipline}
+                  title={project.title}
+                  description={project.headline}
+                  image={project.cardImage}
+                  imagePosition={project.cardImagePosition}
+                  icon={DISCIPLINE_CARD_META[project.discipline]?.icon ?? Bot}
+                  onClick={() => openProject(project.id)}
+                />
+              </motion.div>
             ))}
-            </div>
           </div>
         </div>
       </div>
