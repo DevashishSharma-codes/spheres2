@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import PortfolioPage from "@/components/portfolio/BentoPortfolioGrid";
+import PortfolioHero from "@/components/portfolio/BentoPortfolioGrid";
+import { PortfolioCaseStudiesShowcase } from "@/components/portfolio/PortfolioCaseStudiesShowcase";
 
 export const metadata: Metadata = {
   title: "Portfolio & Deliverables — 21Spheres",
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <PortfolioPage />;
+  return (
+    <div className="flex flex-col min-h-screen bg-[#05060A]">
+      <PortfolioHero />
+      <PortfolioCaseStudiesShowcase />
+    </div>
+  );
 }

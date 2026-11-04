@@ -16,3 +16,5 @@ Images were downloaded from Unsplash and are used under the Unsplash License.
 4k/clinical-ai.png — https://unsplash.com/photos/doctor-on-phone-working-on-laptop-in-office-egCFrNJ6Djw
 4k/analytics.png — https://unsplash.com/photos/a-laptop-screen-displays-data-analytics-charts-and-statistics-fDisDvdiqrQ
 4k/team.png — https://unsplash.com/photos/six-colleagues-collaborating-around-a-conference-table-with-laptops-RdEFWm0N84o
+
+external/kaster-document-review.jpg — https://unsplash.com/photos/two-people-reviewing-documents-at-a-table-MhqUBTxQ3Hw (Olena Kholina, Unsplash License)

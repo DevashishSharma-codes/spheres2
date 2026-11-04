@@ -71,6 +71,9 @@ export interface InsightItem {
   assetType: string;
   industry: string;
   topic: string;
+  /** Longer preview text for landing cards. Falls back to `excerpt`. */
+  summary?: string;
+  takeaways?: string[];
 }
 
 export interface TestimonialItem {

@@ -153,6 +153,95 @@ body {
   .insight-article-hero-image { animation: none; }
 }
 
+@keyframes portfolio-heat-in {
+  from { opacity: 0.2; transform: scale(0.65); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.portfolio-heat-cell {
+  animation: portfolio-heat-in 500ms ease-out both;
+}
+
+@keyframes github-contribution-reveal {
+  from { opacity: 0; transform: scale(0.25); }
+  70% { opacity: 1; transform: scale(1.18); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.portfolio-github-cell {
+  animation: github-contribution-reveal 460ms cubic-bezier(0.2, 0.8, 0.25, 1) both, github-contribution-pulse 1.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes github-contribution-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  45% { opacity: 0.72; transform: scale(0.84); }
+  72% { opacity: 1; transform: scale(1.12); }
+}
+
+.portfolio-code-line {
+  animation: portfolio-code-active 2.4s ease-in-out infinite;
+}
+
+.portfolio-code-line:nth-of-type(2) { animation-delay: 0ms; }
+.portfolio-code-line:nth-of-type(3) { animation-delay: 220ms; }
+.portfolio-code-line:nth-of-type(4) { animation-delay: 440ms; }
+.portfolio-code-line:nth-of-type(5) { animation-delay: 660ms; }
+.portfolio-code-line:nth-of-type(6) { animation-delay: 880ms; }
+.portfolio-code-line:nth-of-type(7) { animation-delay: 1100ms; }
+.portfolio-code-line:nth-of-type(8) { animation-delay: 1320ms; }
+
+@keyframes portfolio-code-active {
+  0%, 100% { opacity: 0.48; }
+  35%, 65% { opacity: 1; }
+}
+
+.portfolio-phone-progress {
+  animation: portfolio-phone-progress 3.2s ease-in-out infinite alternate;
+}
+
+@keyframes portfolio-phone-progress {
+  from { width: 28%; }
+  to { width: 82%; }
+}
+
+@keyframes portfolio-trend-reveal {
+  from { stroke-dashoffset: 600; }
+  to { stroke-dashoffset: 0; }
+}
+
+.portfolio-trend-line {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: portfolio-trend-reveal 1.4s cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-heat-cell,
+  .portfolio-trend-line { animation: none; }
+}
+
+@keyframes portfolio-hero-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes portfolio-hero-laptop-in {
+  from { opacity: 0; transform: translate(-10px, 18px); }
+  to { opacity: 1; transform: translate(0, 0); }
+}
+
+.portfolio-hero-copy { animation: portfolio-hero-rise 650ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.portfolio-hero-laptop { animation: portfolio-hero-laptop-in 800ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-hero-copy,
+  .portfolio-hero-laptop { animation: none !important; }
+  .portfolio-github-cell,
+  .portfolio-code-line,
+  .portfolio-phone-progress { animation: none !important; }
+}
+
 @keyframes hww-process-stem-rise {
   from { scale: 1 0; opacity: 0.35; }
   to { scale: 1 1; opacity: 1; }

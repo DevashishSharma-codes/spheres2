@@ -1,971 +1,681 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
 
-import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { createPortal } from "react-dom";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  Bike,
-  Check,
-  Leaf,
-  Link2,
-  MapPin,
-  ShieldCheck,
-  Sparkles,
-  WifiOff,
-  X,
-  Zap,
-  ArrowRight,
-} from "lucide-react";
-
-const photo = (id: string, px = 160) =>
-  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${px}&h=${px}&q=80`;
-
-const FACES = {
-  a: "1494790108377-be9c29b29330",
-  b: "1507003211169-0a1dd7228f2d",
-  c: "1438761681033-6461ffad8d80",
-  d: "1500648767791-00dcc994a43e",
-  e: "1472099645785-5658abf4ff4e",
-  f: "1544005313-94ddf0286df2",
-};
+import { ArrowRight } from "lucide-react";
 
 /* =========================================================================
-   FIGMA-STYLE PRIMITIVES (Infused with 21Spheres Purple + Apple Craft)
+   PortfolioHero — all CSS lives in the <style> tag at the bottom of this file.
+   Every class is prefixed `sph-` so nothing leaks into (or out of) global CSS.
+   Dark device scene outside, minimal light data screens inside:
+   laptop (typing code) · monitor (heatmap, big number, dot grid, lollipop chart) · phone.
    ========================================================================= */
 
-function Avatar({ id, name, size = 32, square = false }: { id: string; name: string; size?: number; square?: boolean }) {
-  const [failed, setFailed] = useState(false);
-  const initials = name.split(" ").map((s) => s[0]).join("").slice(0, 2);
-  return (
-    <span
-      className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden bg-gradient-to-br from-[#DDD6FE] to-[#EDE9FE] font-semibold text-[#5B21B6] ring-2 ring-white ${square ? "rounded-xl" : "rounded-full"}`}
-      style={{ width: size, height: size, fontSize: size * 0.36 }}
-    >
-      {initials}
-      {!failed && (
-        <img
-          src={photo(id, Math.round(size * 3))}
-          alt=""
-          onError={() => setFailed(true)}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      )}
-    </span>
-  );
-}
+const STAGE_W = 1200;
+const STAGE_H = 600;
 
-function Dots() {
-  return (
-    <div
-      aria-hidden
-      className="absolute inset-0 opacity-60 [background-image:radial-gradient(rgba(112,87,217,0.15)_1px,transparent_1px)] [background-size:16px_16px]"
-    />
-  );
-}
+/* ---- deterministic heatmap data (no hydration mismatch) ---- */
+const WEEKS = 26;
+const HEAT: number[][] = Array.from({ length: WEEKS }, (_, w) =>
+  Array.from({ length: 7 }, (_, d) => {
+    const s = Math.sin((w + 1) * 127.1 + (d + 1) * 311.7) * 43758.5453;
+    const r = s - Math.floor(s);
+    const weekday = d > 0 && d < 6 ? 0.14 : -0.04;
+    const wave = (Math.sin(w * 0.33) + Math.cos(w * 0.17)) * 0.06;
+    const v = Math.min(0.999, Math.max(0, r + weekday + wave));
+    return v < 0.4 ? 0 : v < 0.62 ? 1 : v < 0.8 ? 2 : v < 0.92 ? 3 : 4;
+  })
+);
 
-function Phone({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`relative rounded-[42px] bg-[linear-gradient(145deg,#f8f7fb_0%,#585661_5%,#121216_13%,#050506_78%,#77737e_94%,#17171a_100%)] p-[3px] shadow-[0_32px_70px_-20px_rgba(13,10,22,0.44),0_12px_28px_-12px_rgba(112,87,217,0.35)] transition-transform duration-500 [transform:perspective(1100px)_rotateY(-7deg)_rotateX(2deg)] group-hover/visual:[transform:perspective(1100px)_rotateY(-3deg)_rotateX(0deg)_translateY(-4px)] ${className}`}>
-      <div className="h-full w-full rounded-[39px] bg-[linear-gradient(135deg,#151519,#050506_22%,#28272d_80%,#080809)] p-[4px]">
-      <div className="relative h-full w-full overflow-hidden rounded-[35px] bg-white">
-        <div className="absolute left-1/2 top-2 z-20 h-[22px] w-[74px] -translate-x-1/2 rounded-full bg-black" />
-        <div className="flex items-center justify-between px-5 pt-[11px] text-[10px] font-semibold text-[#111114]">
-          <span>9:41</span>
-          <span className="h-2 w-4 rounded-[3px] bg-[#111114]" />
-        </div>
-        <div className="relative h-[128%] w-[128%] origin-top-left scale-[0.78]">{children}</div>
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 rounded-[35px] bg-[linear-gradient(115deg,rgba(255,255,255,0.17)_0%,transparent_18%,transparent_72%,rgba(255,255,255,0.08)_100%)]" />
-      </div>
-      </div>
-    </div>
-  );
-}
+const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+const LOLLI = [48, 44, 52, 50, 64, 76, 78, 100, 66, 82, 60, 42];
+const PEAK = 7;
+const DOTS = 72;
+const DOTS_ON = 63; // 87%
 
-/** Figma multiplayer cursor with 21Spheres studio color tag */
-function Cursor({ label, color = "#7057D9", className = "" }: { label: string; color?: string; className?: string }) {
-  return (
-    <div className={`pointer-events-none absolute z-30 ${className}`}>
-      <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden>
-        <path d="M1.5 1.5l4.2 12.6 2.2-5.3 5.3-2.2z" fill={color} stroke="#fff" strokeWidth="1.2" strokeLinejoin="round" />
-      </svg>
-      <span className="ml-3.5 -mt-0.5 block w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium text-white shadow-sm" style={{ background: color }}>
-        {label}
-      </span>
-    </div>
-  );
-}
-
-function Chip({ children, active = false }: { children: React.ReactNode; active?: boolean }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium shadow-xs ring-1 transition-all ${
-        active
-          ? "bg-[#7057D9] text-white ring-[#7057D9] shadow-[0_2px_10px_rgba(112,87,217,0.30)]"
-          : "bg-white text-[#1D1D1F] ring-black/5 hover:ring-[#7057D9]/30"
-      }`}
-    >
-      {children}
-    </span>
-  );
-}
-
-/* =========================================================================
-   CARD VISUALS (21Spheres Purple + Apple Craft)
-   ========================================================================= */
-
-function BimakartVisual() {
-  const rows = [
-    { n: "HDFC Ergo", p: "₹13,940", c: "#FF453A", l: "H", sel: true },
-    { n: "Star Health", p: "₹14,280", c: "#FF9F0A", l: "S" },
-    { n: "Niva Bupa", p: "₹15,120", c: "#7057D9", l: "N" },
-  ];
-  return (
-    <>
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,#D9EBF2_0%,#F2DCCF_48%,#E3D9F2_100%)]" />
-      <div aria-hidden="true" className="absolute left-1/2 top-[42%] h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#bca8f2]/30 blur-[70px]" />
-      <Phone className="absolute left-1/2 top-1/2 h-[17rem] w-[9rem] -translate-x-1/2 -translate-y-1/2">
-        <div className="px-4 pt-5">
-          <div className="mb-4 flex items-center justify-between">
-            <div><p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#8E8E93]">Bimakart</p><p className="mt-0.5 text-[16px] font-semibold tracking-tight text-[#111114]">Choose a plan</p></div>
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-[#F2EEFC] text-[#7057D9]"><ShieldCheck className="h-4 w-4" /></span>
-          </div>
-          <div className="rounded-[14px] bg-[#F5F3F8] p-3">
-            <p className="text-[9px] font-medium uppercase tracking-[0.11em] text-[#8E8E93]">Family health cover</p>
-            <div className="mt-2 flex items-end justify-between"><p className="text-[20px] font-semibold tracking-tight text-[#17151B]">₹10 lakh</p><span className="text-[9px] text-[#746D7D]">4 members</span></div>
-          </div>
-          <div className="mt-3 flex items-center justify-between"><p className="text-[10px] font-semibold text-[#24212A]">Best matches</p><span className="text-[9px] font-mono text-[#7057D9]">14 LIVE QUOTES</span></div>
-          <div className="mt-2 space-y-1.5">
-            {rows.slice(0, 2).map((r) => (
-              <div
-                key={r.n}
-                className={`flex items-center gap-2 rounded-xl p-2 ${
-                  r.sel
-                    ? "bg-[#111114] text-white ring-1 ring-[#7057D9]/40 shadow-xs"
-                    : "bg-[#F5F5F7] text-[#111114]"
-                }`}
-              >
-                <span className="grid h-7 w-7 place-items-center rounded-full text-[11px] font-bold text-white shadow-xs" style={{ background: r.c }}>
-                  {r.l}
-                </span>
-                <div className="flex-1">
-                  <p className="text-[11px] font-semibold leading-tight">{r.n}</p>
-                  <p className={`text-[10px] ${r.sel ? "text-white/60" : "text-[#8E8E93]"}`}>{r.p} / year</p>
-                </div>
-                {r.sel && <Check className="h-3.5 w-3.5 text-[#A78BFA]" />}
-              </div>
-            ))}
-          </div>
-          <div className="mt-3 flex items-center justify-between rounded-full bg-[#7057D9] px-3.5 py-2.5 text-[10px] font-semibold text-white shadow-[0_4px_14px_rgba(112,87,217,0.35)]">
-            <span>Continue to proposal</span><ArrowRight className="h-3.5 w-3.5" />
-          </div>
-        </div>
-      </Phone>
-    </>
-  );
-}
-
-function ClinicalAiVisual() {
-  return (
-    <>
-      <div className="absolute inset-0 bg-[linear-gradient(125deg,#D7EBF1_0%,#F3DCCD_52%,#E5DDF7_100%)]" />
-      <div aria-hidden="true" className="absolute -right-10 -top-16 h-48 w-48 rounded-full bg-white/50 blur-3xl" />
-      <div className="absolute inset-3 flex items-center sm:inset-4">
-        <div className="w-full rounded-[14px] border border-white/80 bg-white/90 p-3 shadow-[0_14px_34px_rgba(52,45,63,0.12)] backdrop-blur-xl sm:rounded-[17px] sm:p-4">
-          <div className="flex items-center justify-between gap-2 border-b border-[#EEEAF0] pb-2">
-            <div className="flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded-lg bg-[#7456D7] text-white"><Sparkles className="h-3.5 w-3.5" /></span><p className="text-[10px] font-semibold text-[#29252F] sm:text-xs">Clinical Assist</p></div>
-            <span className="inline-flex items-center gap-1 text-[8px] font-medium text-[#438661] sm:text-[9px]"><Check className="h-3 w-3" /> Source verified</span>
-          </div>
-          <p className="mt-2 rounded-lg bg-[#F5F3F7] px-2.5 py-2 text-[8px] leading-snug text-[#716B76] sm:text-[10px]">“Headache with light sensitivity and restlessness.”</p>
-          <div className="mt-2 flex items-center justify-between"><p className="text-[9px] font-semibold text-[#302B35] sm:text-[10px]">Closest matches</p><span className="font-mono text-[8px] text-[#7057D9] sm:text-[9px]">99.4% CITED</span></div>
-          <div className="mt-1.5 grid grid-cols-2 gap-1.5">
-            <div className="rounded-lg border border-[#E9E5EF] bg-white px-2 py-1.5"><p className="text-[9px] font-medium text-[#2D2931] sm:text-[10px]">Belladonna</p><p className="mt-0.5 text-[7px] text-[#57906C] sm:text-[8px]">Strong match</p></div>
-            <div className="rounded-lg border border-[#E9E5EF] bg-white px-2 py-1.5"><p className="text-[9px] font-medium text-[#2D2931] sm:text-[10px]">Glonoinum</p><p className="mt-0.5 text-[7px] text-[#8B8590] sm:text-[8px]">Possible</p></div>
-          </div>
-          <div className="mt-2 flex items-center gap-1 text-[7px] text-[#756A8D] sm:text-[8px]"><Link2 className="h-2.5 w-2.5" /> Organon §153 <span className="text-[#C4BEC9]">·</span> Materia medica</div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function MobileVisual() {
-  return (
-    <>
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,#F4D9C8_0%,#E8E5F1_48%,#CFE7EC_100%)]" />
-      <div aria-hidden="true" className="absolute -right-10 -top-12 h-44 w-44 rounded-full bg-white/50 blur-3xl" />
-      <div className="absolute inset-x-3 top-3 flex items-center justify-between sm:inset-x-4 sm:top-4">
-        <div><p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-[#8E8798]">UrbanFlow</p><p className="mt-0.5 text-[13px] font-semibold tracking-tight text-[#211D28]">Live delivery</p></div>
-        <span className="rounded-full bg-white px-2.5 py-1 text-[9px] font-medium text-[#4B9C6C] shadow-sm">On schedule</span>
-      </div>
-      <div className="absolute inset-x-3 bottom-[4.25rem] top-[3.75rem] overflow-hidden rounded-[12px] border border-white/90 bg-[#F5F3F5] sm:inset-x-4 sm:bottom-[4.5rem]">
-        <div aria-hidden="true" className="absolute inset-0 opacity-40 [background-image:linear-gradient(90deg,transparent_49%,#D9D4DE_50%,transparent_51%),linear-gradient(0deg,transparent_49%,#D9D4DE_50%,transparent_51%)] [background-size:48px_48px]" />
-        <div className="absolute left-[22%] top-[58%] h-0.5 w-[58%] rotate-[-19deg] rounded-full bg-[#7057D9] shadow-[0_0_8px_rgba(112,87,217,0.32)]" />
-        <span className="absolute left-[18%] top-[56%] grid h-5 w-5 place-items-center rounded-full bg-white text-[#7057D9] shadow-md ring-2 ring-[#7057D9]/20"><MapPin className="h-3 w-3" /></span>
-        <span className="absolute right-[17%] top-[24%] grid h-7 w-7 place-items-center rounded-full bg-[#7057D9] text-white shadow-lg ring-4 ring-white/80"><Bike className="h-3.5 w-3.5" /></span>
-        <span className="absolute bottom-2 left-2 rounded-md bg-white/90 px-2 py-1 text-[8px] font-medium text-[#706A78]">Courier nearby</span>
-      </div>
-      <div className="absolute inset-x-3 bottom-3 flex items-center gap-2.5 rounded-[12px] bg-white p-2 shadow-[0_8px_20px_rgba(40,30,56,0.10)] ring-1 ring-black/[0.04] sm:inset-x-4 sm:bottom-4">
-        <Avatar id={FACES.b} name="Arjun" size={32} />
-        <div className="min-w-0 flex-1"><p className="text-[10px] font-semibold text-[#211D28]">Arjun is 6 min away</p><p className="text-[9px] text-[#88828F]">Order picked up · 1.8 km</p></div>
-        <ArrowRight className="h-3.5 w-3.5 text-[#7057D9]" />
-      </div>
-    </>
-  );
-}
-
-function WealthVisual() {
-  return (
-    <>
-      <div className="absolute inset-0 bg-[linear-gradient(125deg,#F0D8C7_0%,#DFEAF0_50%,#E9DDF5_100%)]" />
-      <div aria-hidden="true" className="absolute -right-10 -top-16 h-56 w-56 rounded-full bg-white/45 blur-3xl" />
-      <div className="absolute inset-3 flex items-center sm:inset-4">
-        <div className="grid w-full grid-cols-[1.35fr_0.8fr] gap-3 rounded-[16px] border border-white/80 bg-white/85 p-3 shadow-[0_16px_40px_rgba(47,40,61,0.12)] backdrop-blur-xl sm:gap-5 sm:p-5">
-          <div className="min-w-0">
-            <div className="flex items-start justify-between gap-3"><div><p className="text-[8px] font-medium uppercase tracking-[0.14em] text-[#89828E]">Portfolio outlook</p><p className="mt-1 text-xl font-medium tracking-[-0.04em] text-[#26222A] sm:text-3xl">$1.4B</p></div><span className="rounded-full bg-[#E5F3E9] px-2 py-1 text-[8px] font-medium text-[#398554]">+12.8%</span></div>
-            <svg className="mt-2 h-16 w-full sm:h-24" viewBox="0 0 520 100" preserveAspectRatio="none" aria-label="Portfolio growth chart">
-              <defs><linearGradient id="wealthArea" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#8064D8" stopOpacity=".26"/><stop offset="1" stopColor="#8064D8" stopOpacity="0"/></linearGradient></defs>
-              <path d="M0 78 C35 74 50 61 82 67 S132 52 162 60 S217 49 244 54 S294 39 325 46 S370 26 404 36 S468 18 520 12 L520 100 L0 100Z" fill="url(#wealthArea)" />
-              <path d="M0 78 C35 74 50 61 82 67 S132 52 162 60 S217 49 244 54 S294 39 325 46 S370 26 404 36 S468 18 520 12" fill="none" stroke="#7558CB" strokeWidth="3" vectorEffect="non-scaling-stroke" />
-            </svg>
-            <div className="flex justify-between text-[7px] text-[#99929D] sm:text-[9px]"><span>JAN</span><span>MAR</span><span>JUN</span><span>SEP</span><span>DEC</span></div>
-          </div>
-          <div className="flex flex-col justify-between border-l border-[#ECE8EF] pl-3 sm:pl-5">
-            <div><p className="text-[8px] text-[#89828E]">Risk profile</p><p className="mt-1 text-[11px] font-medium text-[#28242D] sm:text-sm">Balanced growth</p></div>
-            <div><p className="text-[8px] text-[#89828E]">Annual return</p><p className="mt-1 text-sm font-medium text-[#28242D] sm:text-lg">8.42%</p></div>
-            <div><p className="text-[8px] text-[#89828E]">Next review</p><p className="mt-1 text-[9px] font-medium text-[#28242D] sm:text-xs">12 Dec 2025</p></div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function FraudVisual() {
-  return (
-    <>
-      <div className="absolute inset-0 bg-gradient-to-b from-[#FFF3F1] via-[#FFF9F8] to-[#F5F5F7]" />
-      <div className="absolute left-1/2 top-12 w-[16rem] max-w-[88%] -translate-x-1/2 rounded-[12px] bg-white p-3.5 shadow-[0_16px_40px_rgba(0,0,0,0.10)] ring-1 ring-black/5">
-        <div className="flex items-center justify-between border-b border-black/5 pb-2">
-          <span className="text-[11px] font-semibold text-[#111114]">National ID</span>
-          <ShieldCheck className="h-4 w-4 text-[#34C759]" />
-        </div>
-        <div className="mt-3 flex gap-3">
-          <Avatar id={FACES.f} name="Meera Joshi" size={64} square />
-          <div className="min-w-0 flex-1 space-y-2">
-            <div>
-              <p className="text-[10px] text-[#8E8E93]">Name</p>
-              <p className="text-[12.5px] font-medium text-[#111114]">Meera Joshi</p>
-            </div>
-            <div>
-              <p className="text-[10px] text-[#8E8E93]">Date of birth</p>
-              <span className="relative inline-block rounded-[3px] border-[1.5px] border-[#FF3B30] px-1.5 py-0.5 text-[12.5px] font-medium text-[#111114]">
-                14 Aug 1996
-                {["-left-[4px] -top-[4px]", "-right-[4px] -top-[4px]", "-left-[4px] -bottom-[4px]", "-right-[4px] -bottom-[4px]"].map((p) => (
-                  <i key={p} className={`absolute h-[6px] w-[6px] border border-[#FF3B30] bg-white ${p}`} />
-                ))}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <Cursor label="Altered" color="#FF3B30" className="left-[calc(50%+2.2rem)] top-[10.6rem]" />
-      <div className="absolute left-4 top-4">
-        <Chip>
-          <Check className="h-3.5 w-3.5 text-[#34C759]" /> Seal verified
-        </Chip>
-      </div>
-      <div className="absolute bottom-4 right-14">
-        <Chip>
-          <Zap className="h-3.5 w-3.5 text-[#7057D9]" /> Checked in 0.4 s
-        </Chip>
-      </div>
-    </>
-  );
-}
-
-function RepertoryVisual() {
-  const chips: [string, boolean][] = [
-    ["Throbbing headache", true],
-    ["Worse in sunlight", true],
-    ["Thirstless", true],
-    ["Better lying down", false],
-    ["Irritable", false],
-    ["Chilly", false],
-  ];
-  return (
-    <>
-      <div className="absolute inset-0 bg-gradient-to-b from-[#F9F7FE] to-[#E7F5EC]" />
-      <div className="absolute inset-0 flex flex-col justify-center gap-4 p-4">
-        <div className="flex flex-wrap gap-2">
-          {chips.map(([c, a]) => (
-            <Chip key={c} active={a}>
-              {a && <Check className="h-3 w-3" />}
-              {c}
-            </Chip>
-          ))}
-        </div>
-        <div className="flex items-center gap-3 rounded-[12px] bg-white p-3 shadow-[0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-black/5">
-          <span className="grid h-10 w-10 place-items-center rounded-[8px] bg-[#34C759]/15 text-[#248A3D]">
-            <Leaf className="h-5 w-5" />
-          </span>
-          <div className="flex-1">
-            <p className="text-[13px] font-semibold text-[#111114]">Belladonna</p>
-            <p className="text-[11px] text-[#8E8E93]">Matches 3 of 3 symptoms</p>
-          </div>
-          <span className="inline-flex items-center gap-1 rounded-full bg-[#7057D9]/10 px-2 py-1 text-[10.5px] font-medium text-[#7057D9]">
-            <WifiOff className="h-3 w-3" /> Wasm Offline
-          </span>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function GraphVisual() {
-  const nodes = [
-    { t: "React", x: 22, y: 22, done: true },
-    { t: "System design", x: 76, y: 24, done: true },
-    { t: "SQL", x: 20, y: 76, done: true },
-    { t: "Docker", x: 78, y: 76, done: false },
-  ];
-  return (
-    <>
-      <div className="absolute inset-0 bg-gradient-to-b from-[#FAF9FE] to-[#F1EBFF]" />
-      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
-        {nodes.map((n) => (
-          <path
-            key={n.t}
-            d={`M50 50 Q ${(50 + n.x) / 2} ${n.y < 50 ? 34 : 66} ${n.x} ${n.y}`}
-            fill="none"
-            stroke={n.done ? "#7057D9" : "#A1A1AA"}
-            strokeOpacity={n.done ? 0.6 : 0.4}
-            strokeWidth="1.5"
-            strokeDasharray="3 3"
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
-      </svg>
-      <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1.5">
-        <span className="rounded-full ring-[6px] ring-[#7057D9]/20 shadow-xs">
-          <Avatar id={FACES.a} name="Aanya" size={56} />
-        </span>
-        <span className="rounded-full bg-[#7057D9] px-2.5 py-0.5 text-[11px] font-medium text-white shadow-xs">Aanya</span>
-      </div>
-      {nodes.map((n) => (
-        <div key={n.t} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${n.x}%`, top: `${n.y}%` }}>
-          <Chip>
-            <span className={`grid h-4 w-4 place-items-center rounded-full ${n.done ? "bg-[#34C759] text-white" : "bg-[#E5E5EA] text-[#8E8E93]"}`}>
-              {n.done ? <Check className="h-2.5 w-2.5" /> : <span className="h-1 w-1 rounded-full bg-current" />}
-            </span>
-            {n.t}
-          </Chip>
-        </div>
-      ))}
-      <Cursor label="Up next" color="#7057D9" className="left-[calc(78%+1.8rem)] top-[calc(76%+0.2rem)]" />
-    </>
-  );
-}
-
-function BrandVisual({ src, name, from, to }: { src: string; name: string; from: string; to: string }) {
-  const [failed, setFailed] = useState(false);
-  return (
-    <>
-      <div className="absolute inset-0" style={{ background: `linear-gradient(160deg, ${from}, ${to})` }} />
-      <Dots />
-      <div className="absolute left-1/2 top-1/2 grid h-28 w-28 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[14px] bg-white p-5 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.14)] ring-1 ring-black/5 hover:scale-105 transition-transform duration-300">
-        {failed ? (
-          <span className="text-[15px] font-semibold text-[#111114]">{name}</span>
-        ) : (
-          <img src={src} alt={`${name} logo`} onError={() => setFailed(true)} className="max-h-full max-w-full object-contain" />
-        )}
-      </div>
-    </>
-  );
-}
-
-/* =========================================================================
-   DATA — 21Spheres Production Systems & Ventures
-   ========================================================================= */
-
-type Category = "Mobile Apps" | "Autonomous AI" | "Web Platforms" | "Computer Vision" | "Systems Engineering";
-
-interface Project {
-  id: string;
-  name: string;
-  category: Category;
-  client: string;
-  description: string;
-  year?: string;
-  layout?: "tall" | "half" | "wide" | "standard";
-  metrics?: { label: string; value: string }[];
-  tags: string[];
-  cover: { src: string; alt: string; position?: string };
-  cardVisual: "photo" | "illustration" | "logo";
-  logoSrc?: string;
-  details: { overview: string; architecture: string; deliverables: string[] };
-  visual: React.ReactNode;
-}
-
-const PROJECTS: Project[] = [
-  {
-    id: "bimakart",
-    name: "Bimakart Connect API Gateway",
-    category: "Web Platforms",
-    client: "Bimakart Technologies",
-    description: "One gateway that quotes 100+ insurers at once and issues the policy, in under 2.4 seconds.",
-    year: "2024–2026",
-    // Tall lead tile keeps the real handset photo prominent in the bento.
-    layout: "tall",
-    metrics: [
-      { label: "Query latency", value: "< 2.4s" },
-      { label: "Carriers", value: "100+" },
-      { label: "Daily queries", value: "2.5M+" },
-    ],
-    tags: ["FastAPI", "Redis", "AWS EKS", "GraphQL", "Next.js"],
-    cover: { src: "/portfolio/photos/delivery-app.jpg", alt: "A close-up photograph of a hand using a smartphone", position: "center 38%" },
-    cardVisual: "photo",
-    details: {
-      overview: "Standardized fragmented XML insurer endpoints into a unified high-throughput JSON API gateway supporting tens of thousands of active POSP brokers.",
-      architecture: "Distributed cache orchestrator using Redis cluster sharding and asynchronous Python workers to aggregate insurance quotes concurrently in under 2.4s.",
-      deliverables: [
-        "Concurrent multi-carrier query engine reducing latency from 45s to 2.4s",
-        "Automated proposal issuance and policy PDF assembly pipeline",
-        "Multi-tenant broker management portal with real-time commissions",
-      ],
-    },
-    visual: <BimakartVisual />,
-  },
-  {
-    id: "clinical-ai",
-    name: "Autonomous Clinical & Support AI",
-    category: "Autonomous AI",
-    client: "Clinical Therapeutics Group",
-    description: "An assistant that answers with cited sources, or doesn’t answer at all.",
-    year: "2025",
-    metrics: [
-      { label: "Accuracy", value: "99.4%" },
-      { label: "Voice turnaround", value: "< 280ms" },
-      { label: "First-contact fix", value: "68%" },
-    ],
-    tags: ["LangGraph", "Qdrant", "FastAPI", "Whisper", "TypeScript"],
-    cover: { src: "/portfolio/photos/4k/clinical-ai.png", alt: "A clinician working between a laptop and smartphone", position: "center 43%" },
-    layout: "half",
-    cardVisual: "illustration",
-    details: {
-      overview: "Deploys fine-tuned reasoning agents that ingest enterprise policy corpora and clinical documents to resolve customer queries autonomously.",
-      architecture: "An orchestrator routes each intent to a specialized sub-agent. Deterministic citation guardrails block any claim without a source.",
-      deliverables: [
-        "Sub-280ms conversational voice loop with streaming synthesis",
-        "Multi-modal document inspection and entity cross-referencing",
-        "Guardrail engine that rejects speculative outputs",
-      ],
-    },
-    visual: <ClinicalAiVisual />,
-  },
-  {
-    id: "on-demand-mobile",
-    name: "On-Demand Logistics & Service App",
-    category: "Mobile Apps",
-    client: "UrbanFlow Logistics",
-    description: "Native iOS and Android dispatch with live activities and offline-first sync.",
-    year: "2025",
-    metrics: [
-      { label: "Frame rate", value: "120 FPS" },
-      { label: "Haptic cycle", value: "< 16ms" },
-      { label: "Monthly orders", value: "450k+" },
-    ],
-    tags: ["React Native", "SwiftUI", "WatermelonDB", "Expo", "WebSockets"],
-    cover: { src: "/portfolio/photos/on-demand-delivery.png", alt: "On the way delivery progress screen with an estimated delivery time", position: "center" },
-    layout: "half",
-    cardVisual: "photo",
-    details: {
-      overview: "Synchronizes real-time courier telemetry with sub-second geospatial routing and background location updates for urban service dispatch.",
-      architecture: "Offline-first SQLite layer with optimistic UI. Haptics are driven natively through CoreHaptics and SwiftUI.",
-      deliverables: [
-        "120 FPS micro-interactions and native gesture curves",
-        "Offline sync that resolves multi-device conflicts",
-        "Battery-efficient background tracking (< 2% drain/hour)",
-      ],
-    },
-    visual: <MobileVisual />,
-  },
-  {
-    id: "wealth-wisdom",
-    name: "Institutional Wealth & Analytics Terminal",
-    category: "Web Platforms",
-    client: "Wealth Wisdom Global",
-    description: "Goal-based planning that advisors can stress-test and share with clients.",
-    year: "2024–2025",
-    layout: "wide",
-    metrics: [
-      { label: "AUM monitored", value: "$1.4B+" },
-      { label: "Stress test", value: "100k runs" },
-      { label: "Tax alpha", value: "+$18.4k" },
-    ],
-    tags: ["React 19", "TypeScript", "PostgreSQL", "Recharts", "Tailwind"],
-    cover: { src: "/portfolio/photos/wealth-wisdom-roadmap.png", alt: "Wealth Wisdom financial planning application with a personalized wealth roadmap", position: "center" },
-    cardVisual: "photo",
-    details: {
-      overview: "Advisory platform that lets wealth managers run portfolio stress tests, tax-loss harvesting and client rebalancing in real time.",
-      architecture: "A calculation engine runs 100,000-iteration Monte Carlo projections across debt and equity baskets, rendered with interactive SVG.",
-      deliverables: [
-        "Real-time asset allocation and risk exposure breakdowns",
-        "Automated tax-loss harvesting with net alpha calculation",
-        "White-label PDF plan generation",
-      ],
-    },
-    visual: <Image src="/portfolio/photos/wealth-wisdom-roadmap.png" alt="Wealth Wisdom personalized wealth roadmap application" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />,
-  },
-  {
-    id: "document-fraud",
-    name: "Neural Vision & Document Fraud Inspector",
-    category: "Computer Vision",
-    client: "Kaster Underwriting",
-    description: "Spots edited fields and forged seals in scanned documents.",
-    year: "2025",
-    metrics: [
-      { label: "Scan time", value: "420ms" },
-      { label: "Tamper catch", value: "99.4%" },
-      { label: "False positive", value: "< 0.08%" },
-    ],
-    tags: ["PyTorch", "Vision Transformer", "Rust", "FastAPI"],
-    cover: { src: "/portfolio/photos/developer.jpg", alt: "A software engineer reviewing code on a laptop", position: "center 48%" },
-    cardVisual: "illustration",
-    details: {
-      overview: "Inspects scanned policy endorsements, identity cards and financial statements for micro-alterations.",
-      architecture: "Combines frequency-domain Fourier analysis with spatial vision transformers to catch clone stamps, spliced typography and compression artifacts.",
-      deliverables: [
-        "420ms authenticity verification over a REST API",
-        "Pixel-level heatmap of altered zones",
-        "Automated ID metadata extraction and blacklist check",
-      ],
-    },
-    visual: <FraudVisual />,
-  },
-  {
-    id: "repertory-search",
-    name: "Zero-Latency Embedded Search Engine",
-    category: "Systems Engineering",
-    client: "Repertory Labs",
-    description: "Pick symptoms, get remedies instantly, even without a connection.",
-    year: "2025",
-    metrics: [
-      { label: "Query time", value: "4.2ms" },
-      { label: "Cache hit", value: "94%" },
-      { label: "Uptime", value: "100%" },
-    ],
-    tags: ["Rust", "WebAssembly", "Typesense", "TypeScript"],
-    cover: { src: "/portfolio/photos/medical-scan.jpg", alt: "A clinician reviewing diagnostic information on a tablet", position: "center 48%" },
-    cardVisual: "illustration",
-    details: {
-      overview: "Lets clinicians query multi-volume medical repertories instantly, with no internet connection or server lookup.",
-      architecture: "A compact inverted index compiled to WebAssembly and held in client memory, using bitset intersection for symptom matching.",
-      deliverables: [
-        "Sub-5ms multi-rubric queries in the browser",
-        "Full offline capability with zero server overhead",
-        "Deterministic symptom hierarchy weighting",
-      ],
-    },
-    visual: <RepertoryVisual />,
-  },
-  {
-    id: "career-graph",
-    name: "Dynamic Career Trajectory Knowledge Graph",
-    category: "Autonomous AI",
-    client: "Futureogy AI",
-    description: "Maps live job requirements to each student’s skills and shows the next step.",
-    year: "2024–2025",
-    metrics: [
-      { label: "Active learners", value: "250k+" },
-      { label: "Graph nodes", value: "14,000" },
-      { label: "Placement lift", value: "+42%" },
-    ],
-    tags: ["Neo4j", "Next.js", "Python", "Cypher", "Vector DB"],
-    cover: { src: "/portfolio/photos/4k/team.png", alt: "A team collaborating around a table with laptops", position: "center 48%" },
-    cardVisual: "photo",
-    details: {
-      overview: "Parses live technology job postings daily and restructures learning nodes to match market skill demand.",
-      architecture: "A Neo4j graph paired with semantic vector embeddings to calculate learning pathways and skill-gap maps.",
-      deliverables: [
-        "Live skill-demand tracking across tech sectors",
-        "Personal competency scoring for 250,000+ students",
-        "Course recommendations that drove a +42% placement lift",
-      ],
-    },
-    visual: <GraphVisual />,
-  },
-  {
-    id: "jetaa",
-    name: "Jetaa",
-    category: "Web Platforms",
-    client: "Jetaa",
-    description: "Product engineering and platform delivery.",
-    tags: ["Web platform"],
-    cover: { src: "/portfolio/photos/developer.jpg", alt: "A software engineer building a digital platform", position: "center 35%" },
-    cardVisual: "logo",
-    logoSrc: "/clients/jetaa.png",
-    details: {
-      overview: "Product engineering and platform delivery for Jetaa.",
-      architecture: "High-performance enterprise web architecture and distributed systems.",
-      deliverables: ["Product engineering and delivery", "Scalable cloud architecture"],
-    },
-    visual: <BrandVisual src="/clients/jetaa.png" name="Jetaa" from="#F5F2FE" to="#FAF9FD" />,
-  },
-  {
-    id: "enspire",
-    name: "Enspire",
-    category: "Web Platforms",
-    client: "Enspire",
-    description: "Product engineering and platform delivery.",
-    tags: ["Web platform"],
-    cover: { src: "/portfolio/photos/team.jpg", alt: "A product team collaborating on a web platform", position: "center 44%" },
-    cardVisual: "logo",
-    logoSrc: "/clients/enspire.png",
-    details: {
-      overview: "Product engineering and platform delivery for Enspire.",
-      architecture: "Multi-tenant digital experience and enterprise workflows.",
-      deliverables: ["Platform modernization", "End-to-end design & delivery"],
-    },
-    visual: <BrandVisual src="/clients/enspire.png" name="Enspire" from="#FFF7ED" to="#FAF9FD" />,
-  },
-  {
-    id: "wtmf",
-    name: "WTMF",
-    category: "Web Platforms",
-    client: "WTMF",
-    description: "Product engineering and platform delivery.",
-    tags: ["Web platform"],
-    cover: { src: "/portfolio/photos/analytics.jpg", alt: "An analytics dashboard on a laptop screen", position: "center 58%" },
-    cardVisual: "logo",
-    logoSrc: "/clients/wtmf.png",
-    details: {
-      overview: "Product engineering and platform delivery for WTMF.",
-      architecture: "High-throughput operational platform and analytics infrastructure.",
-      deliverables: ["Systems integration", "Real-time data visualization"],
-    },
-    visual: <BrandVisual src="/clients/wtmf.png" name="WTMF" from="#F0FDF4" to="#FAF9FD" />,
-  },
+type Tok = [string, string];
+const CODE: Tok[][] = [
+  [["k", "export async function "], ["f", "ship"], ["p", "("], ["v", "build"], ["p", ") {"]],
+  [["k", "  const "], ["v", "image"], ["p", " = "], ["k", "await "], ["v", "docker"], ["p", "."], ["f", "build"], ["p", "("], ["v", "build"], ["p", ");"]],
+  [["k", "  await "], ["v", "cache"], ["p", "."], ["f", "warm"], ["p", "("], ["s", "'edge'"], ["p", ");"]],
+  [["k", "  for await "], ["p", "("], ["k", "const "], ["v", "check "], ["k", "of "], ["f", "probes"], ["p", "()) {"]],
+  [["k", "    if "], ["p", "(!"], ["v", "check"], ["p", "."], ["v", "ok"], ["p", ") "], ["k", "return "], ["f", "rollback"], ["p", "("], ["v", "image"], ["p", ");"]],
+  [["p", "  }"]],
+  [["k", "  return "], ["f", "publish"], ["p", "("], ["v", "image"], ["p", ");"]],
+  [["p", "}"]],
+  [["c", "// deploy healthy, 2.4s"]],
 ];
 
-const FILTERS = ["All", "Mobile Apps", "Autonomous AI", "Web Platforms", "Computer Vision", "Systems Engineering"] as const;
-type Filter = (typeof FILTERS)[number];
+// typing timeline: each line types at ~55 chars/sec with a short pause between lines
+const CHAR_S = 0.018;
+const GAP_S = 0.22;
+let _t = 0.5;
+const LINES = CODE.map((line) => {
+  const n = line.reduce((a, t) => a + t[1].length, 0);
+  const du = Math.max(0.12, n * CHAR_S);
+  const dl = _t;
+  _t += du + GAP_S;
+  return { n, du, dl };
+});
+const TYPE_END = _t;
 
-/* =========================================================================
-   GRID + SHEET (Apple Minimalism + 21Spheres Theme)
-   ========================================================================= */
-
-export function BentoPortfolioGrid() {
-  const [filter, setFilter] = useState<Filter>("All");
-  const [open, setOpen] = useState<Project | null>(null);
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
-
-  const list = filter === "All" ? PROJECTS : PROJECTS.filter((p) => p.category === filter);
-
-  return (
-    <div className="w-full text-[#111114] antialiased">
-      {/* Category Filter Pills (Apple Segmented Bar with 21Spheres Precision) */}
-      <div className="mb-8 flex overflow-x-auto pb-1 [scrollbar-width:none]">
-        <div role="tablist" className="mx-auto flex gap-1 rounded-full bg-[#EAEAEF] p-1 shadow-inner">
-          {FILTERS.map((f) => (
-            <button
-              key={f}
-              role="tab"
-              aria-selected={filter === f}
-              onClick={() => setFilter(f)}
-              className={`whitespace-nowrap rounded-full px-4 py-1.5 text-[13px] font-medium transition-all focus-visible:outline-2 focus-visible:outline-[#7057D9] ${
-                filter === f
-                  ? "bg-white text-[#111114] shadow-sm font-semibold ring-1 ring-black/5"
-                  : "text-[#6E6E73] hover:text-[#111114]"
-              }`}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Bento Grid */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-6 lg:auto-rows-[430px] lg:grid-cols-12 lg:gap-4.5">
-        {list.map((p, projectIndex) => {
-          const span = filter !== "All"
-            ? "md:col-span-3 lg:col-span-6 lg:row-span-1"
-            : p.layout === "wide"
-              ? "md:col-span-6 lg:col-span-8 lg:row-span-1"
-              : p.layout === "tall"
-                ? "md:col-span-3 lg:col-span-4 lg:row-span-2"
-                : "md:col-span-3 lg:col-span-4 lg:row-span-1";
-          const cardTones = ["bg-[#D8D8DE]/55", "bg-[#E3E3E8]/60", "bg-[#D8D8DE]/55", "bg-[#E3E3E8]/60", "bg-[#D8D8DE]/55", "bg-[#E3E3E8]/60"];
-          return (
-            <article
-              key={p.id}
-              className={`group relative flex h-[430px] flex-col overflow-hidden rounded-[18px] border border-white/80 p-4 shadow-[0_10px_30px_-18px_rgba(23,20,32,0.2)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_38px_-20px_rgba(47,39,66,0.24)] sm:h-[450px] sm:p-5 lg:h-full ${cardTones[projectIndex % cardTones.length]} ${span}`}
-            >
-              <div className="relative z-10 shrink-0 px-1 pb-1">
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <span className="inline-flex max-w-[72%] truncate rounded-full border border-black/[0.06] bg-white/70 px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.11em] text-[#625D69]">{p.category}</span>
-                  {p.year && <span className="shrink-0 text-[10px] text-[#817B85]">{p.year}</span>}
-                </div>
-                <h3 className="line-clamp-2 min-h-[48px] text-[19px] font-medium leading-[1.2] tracking-[-0.035em] text-[#393640] transition-colors group-hover:text-[#5842B5] sm:text-[21px]">
-                  {p.name}
-                </h3>
-                <p className="mt-1 line-clamp-2 text-[12px] leading-[1.5] text-[#6E6972] sm:text-[12.5px]">{p.description}</p>
-              </div>
-
-              <div className={`group/visual relative mt-3 min-h-0 w-full flex-1 overflow-hidden rounded-[14px] border border-white/65 ${p.cardVisual === "photo" ? "bg-[#E8E6EA]" : "bg-white/60"}`}>
-                {p.cardVisual === "illustration" ? (
-                  <div className="absolute inset-0 overflow-hidden">
-                    <div className={p.id === "bimakart" ? "absolute inset-0" : "absolute left-0 top-0 h-[122%] w-[122%] origin-top-left scale-[0.82]"}>{p.visual}</div>
-                  </div>
-                ) : p.cardVisual === "logo" ? (
-                  <div className="absolute inset-0 grid place-items-center bg-[linear-gradient(135deg,#F2F1F3,#FFFFFF_58%,#F0EEF4)] p-5 sm:p-8">
-                    {p.logoSrc && <Image src={p.logoSrc} alt={`${p.client} logo`} width={p.id === "wtmf" ? 240 : 420} height={p.id === "wtmf" ? 240 : 180} className="block h-auto max-h-[82%] max-w-[84%] object-contain" />}
-                  </div>
-                ) : (
-                  <>
-                    <Image
-                      src={p.cover.src}
-                      alt={p.cover.alt}
-                      fill
-                      sizes={p.layout === "wide" ? "(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 66vw" : "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 34vw"}
-                      className={`${p.id === "on-demand-mobile" ? "object-contain bg-[#EEEEEE]" : "object-cover"} transition-transform duration-700 ease-out group-hover:scale-[1.035] ${p.id === "bimakart" ? "object-[center_38%]" : ""}`}
-                      style={{ objectPosition: p.cover.position ?? "center" }}
-                    />
-                    {p.id !== "on-demand-mobile" && p.id !== "wealth-wisdom" && (
-                      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#101016]/45 via-transparent to-white/5" />
-                    )}
-                    {p.id === "bimakart" && (
-                      <div className="absolute right-3 top-3 w-[min(56%,290px)] rounded-[15px] border border-white/55 bg-[#777780]/35 p-3 text-white shadow-[0_16px_38px_rgba(19,18,26,0.2)] backdrop-blur-2xl sm:right-4 sm:top-4 sm:p-3.5">
-                        <div className="flex items-center justify-between gap-2"><span className="text-[8px] font-medium uppercase tracking-[0.14em] text-white/75">Family health cover</span><ShieldCheck className="h-3.5 w-3.5 text-white/90" /></div>
-                        <p className="mt-1 text-lg font-medium tracking-[-0.04em] sm:text-xl">₹10 lakh</p>
-                        <div className="mt-2 space-y-1 border-t border-white/30 pt-2">
-                          <div className="flex items-center justify-between gap-2 text-[8px] sm:text-[9px]"><span className="text-white/80">HDFC Ergo</span><span className="font-medium">₹13,940 / yr</span></div>
-                          <div className="flex items-center justify-between gap-2 text-[8px] sm:text-[9px]"><span className="text-white/80">Star Health</span><span className="font-medium">₹14,280 / yr</span></div>
-                        </div>
-                        <div className="mt-2 flex items-center justify-between border-t border-white/30 pt-2 text-[7px] uppercase tracking-[0.1em] text-white/80"><span>14 insurers</span><span>Quotes in 2.4s</span></div>
-                      </div>
-                    )}
-                    {p.id !== "on-demand-mobile" && p.id !== "wealth-wisdom" && (
-                      <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-3 sm:inset-x-4 sm:bottom-4">
-                        <div className="min-w-0">
-                          <p className="truncate text-[10px] font-medium uppercase tracking-[0.14em] text-white/75">{p.client}</p>
-                          {p.metrics?.[0] && <p className="mt-1 text-sm font-medium tracking-[-0.02em] text-white sm:text-base">{p.metrics[0].value}<span className="ml-1.5 text-[11px] font-normal tracking-normal text-white/75">{p.metrics[0].label}</span></p>}
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-
-              <span className="pointer-events-none absolute bottom-7 right-7 z-40 grid h-8 w-8 place-items-center rounded-full border border-white/70 bg-white/90 text-[#24212B] shadow-[0_3px_12px_rgba(28,23,38,0.12)] transition-all duration-300 group-hover:bg-[#7057D9] group-hover:text-white">
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </span>
-
-              <button
-                onClick={() => setOpen(p)}
-                aria-label={`Open ${p.name} details`}
-                className="absolute inset-0 z-30 rounded-[20px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7057D9]"
-              />
-            </article>
-          );
-        })}
-      </div>
-
-      {/* Detail Modal portaled directly to document.body to guarantee stacking above Navbar */}
-      {mounted &&
-        createPortal(
-          <AnimatePresence>
-            {open && <Sheet project={open} onClose={() => setOpen(null)} />}
-          </AnimatePresence>,
-          document.body
-        )}
-    </div>
-  );
-}
-
-function Sheet({ project: p, onClose }: { project: Project; onClose: () => void }) {
-  const closeRef = useRef<HTMLButtonElement>(null);
-
+function useStageScale(copyRef: React.RefObject<HTMLDivElement | null>) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [dim, setDim] = useState({ scale: 1, left: 0 });
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    closeRef.current?.focus();
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+    const el = ref.current;
+    if (!el) return;
+    const update = () => {
+      const w = el.clientWidth;
+      const copyH = copyRef.current?.offsetHeight ?? 150;
+      // viewport minus navbar, copy block, paddings and gaps, so the whole hero sits in one screen
+      const availH = window.innerHeight - copyH - 150;
+      const scale = Math.max(0.3, Math.min(1.1, w / STAGE_W, availH / STAGE_H));
+      setDim({ scale, left: (w - STAGE_W * scale) / 2 });
     };
-  }, [onClose]);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [copyRef]);
+  return { ref, ...dim };
+}
+
+function useCountUp(target: number, ms = 2200, run = 0) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / ms);
+      setN(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, ms, run]);
+  return n;
+}
+
+export function PortfolioHero() {
+  const copyRef = useRef<HTMLDivElement>(null);
+  const { ref, scale, left } = useStageScale(copyRef);
+  const [cycle, setCycle] = useState(0);
+  const total = useCountUp(2847, 2400, cycle);
+  const commits = useCountUp(1284, 2400, cycle);
+  const prs = useCountUp(148, 2000, cycle);
+  const reviews = useCountUp(392, 2200, cycle);
+  const growth = useCountUp(184, 2200, cycle);
+  const pass = useCountUp(87, 2200, cycle);
+
+  // restart the typing sequence so the laptop code keeps "running"
+  useEffect(() => {
+    const id = window.setInterval(() => setCycle((c) => c + 1), 11000);
+    return () => window.clearInterval(id);
+  }, []);
 
   return (
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 md:p-8"
-    >
-      {/* Dark Translucent Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-md cursor-pointer"
-      />
+    <section className="sph-root" aria-label="21Spheres selected work">
+      <div className="sph-aurora" aria-hidden />
+      <div className="sph-gridlines" aria-hidden />
+      <div className="sph-grain" aria-hidden />
 
-      {/* Modal Dialog with Guaranteed Headroom & Internal Scrolling */}
-      <motion.div
-        role="dialog"
-        aria-modal="true"
-        aria-label={p.name}
-        initial={{ opacity: 0, y: 20, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 20, scale: 0.98 }}
-        transition={{ type: "spring", damping: 30, stiffness: 340 }}
-        className="relative z-10 my-auto flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-[20px] bg-[#F7F7F6] shadow-2xl ring-1 ring-black/10"
-      >
-        {/* Pinned Modal Header */}
-        <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[#E5E5EA] bg-white px-5 py-3.5 sm:px-8 sm:py-4 shrink-0">
-          <div className="flex items-center gap-2.5 min-w-0 pr-4">
-            <span className="rounded-full bg-[#7057D9]/10 px-2.5 py-0.5 text-[11px] font-mono font-semibold uppercase text-[#7057D9] shrink-0">
-              {p.category}
-            </span>
-            <span className="text-[12px] font-mono text-[#8E8E93] truncate">
-              {p.client} {p.year ? `· ${p.year}` : ""}
-            </span>
-          </div>
-          <button
-            ref={closeRef}
-            onClick={onClose}
-            aria-label="Close"
-            className="cursor-pointer grid h-8 w-8 place-items-center rounded-full bg-[#F5F5F7] text-[#111114] hover:bg-[#E5E5EA] active:scale-95 transition-all focus-visible:outline-2 focus-visible:outline-[#7057D9] shrink-0"
-          >
-            <X className="h-4 w-4" />
-          </button>
+      <div ref={copyRef} className="sph-copy">
+        <h1 className="sph-title">Products we&rsquo;ve shipped.</h1>
+        <p className="sph-sub">
+          Thoughtful engineering, steady momentum, and products built to do meaningful work.
+        </p>
+        <div className="sph-links-wrap" style={{ display: "inline-flex", gap: "16px", alignItems: "center", justifyContent: "center", marginTop: "14px" }}>
+          <Link href="#case-studies" className="sph-link" style={{ marginTop: 0 }}>
+            Explore case studies <ArrowRight size={14} />
+          </Link>
+          <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "12px" }}>•</span>
+          <Link href="/contact" className="sph-link" style={{ marginTop: 0, color: "rgba(255,255,255,0.55)" }}>
+            Discuss a product
+          </Link>
         </div>
+      </div>
 
-        {/* Scrollable Content Container */}
-        <div className="flex-1 space-y-6 overflow-y-auto px-4 py-6 sm:space-y-8 sm:px-8 sm:py-8 [scrollbar-width:thin] [scrollbar-color:rgba(0,0,0,0.2)_transparent]">
-          <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex rounded-full bg-[#EAE8E6] px-4 py-1.5 text-[9px] font-medium uppercase tracking-[0.16em] text-[#6A6670]">{p.category} <span className="mx-2 text-[#B3AEB8]">/</span> Case study</span>
-            <h2 className="mt-4 text-[30px] font-medium leading-[1.04] tracking-[-0.045em] text-[#15141A] sm:text-[42px]">{p.name}</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[#66616C] sm:text-base">{p.description}</p>
+      <div ref={ref} className="sph-wrap" style={{ height: STAGE_H * scale }}>
+        <div
+          className="sph-stage"
+          style={{ transform: `scale(${scale})`, left }}
+          role="img"
+          aria-label="Laptop running code beside a monitor showing an animated contribution heatmap and charts, and a phone"
+        >
+          <div className="sph-halo" aria-hidden />
+          <div className="sph-floor" aria-hidden />
+
+          {/* ───────── floating glass: uptime ───────── */}
+          <div className="sph-glass sph-g1" aria-hidden>
+            <div className="sph-g-label"><i className="sph-g-dot" /> Uptime <em>last 90 days</em></div>
+            <div className="sph-g-big">99.98%</div>
+            <div className="sph-g-track"><i /></div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-3 md:grid-rows-[220px_210px]">
-            <article className="overflow-hidden rounded-[18px] bg-[#E9E7E5] md:row-span-2">
-              <div className="relative h-[210px] overflow-hidden bg-white sm:h-[250px] md:h-[54%]">{p.visual}</div>
-              <div className="p-5 sm:p-6">
-                <p className="mb-2 text-[9px] font-medium uppercase tracking-[0.15em] text-[#817B85]">The project</p>
-                <h3 className="text-lg font-medium leading-snug tracking-[-0.02em] text-[#19171D] sm:text-xl">{p.name}</h3>
-                <p className="mt-2 text-xs leading-relaxed text-[#68636D]">{p.details.overview}</p>
-                <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#17171A] py-2 pl-4 pr-2 text-[11px] text-white">{p.client}<span className="grid h-6 w-6 place-items-center rounded-full bg-white text-[#17171A]"><ArrowRight className="h-3.5 w-3.5" /></span></span>
-              </div>
-            </article>
-
-            <article className="flex flex-col justify-between rounded-[18px] bg-[#E8F0F5] p-5 sm:p-6">
-              <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-[#71808B]">Built for the real workflow</p>
-              <div>
-                <p className="text-lg font-medium leading-snug tracking-[-0.025em] text-[#20262B] sm:text-xl">{p.client}</p>
-                <p className="mt-2 text-xs leading-relaxed text-[#68737B]">{p.details.architecture}</p>
-              </div>
-            </article>
-
-            <article className="relative flex min-h-[190px] items-end overflow-hidden rounded-[18px] bg-[#F5EDE4] p-5 sm:p-6">
-              <div aria-hidden="true" className="absolute -right-8 -top-10 h-44 w-44 rounded-full border-[24px] border-[#D9A16A]/20" />
-              <div aria-hidden="true" className="absolute right-8 top-8 h-24 w-24 rounded-full border border-[#C88B55]/30" />
-              <div className="relative">
-                <p className="text-[42px] font-medium leading-none tracking-[-0.055em] text-[#222024] sm:text-[50px]">{p.metrics?.[0]?.value ?? "01"}</p>
-                <p className="mt-2 max-w-[180px] text-[11px] leading-relaxed text-[#766B62]">{p.metrics?.[0]?.label ?? "Project outcome"}</p>
-              </div>
-            </article>
-
-            <article className="relative flex flex-col justify-between overflow-hidden rounded-[18px] bg-[#E9E5F1] p-5 sm:p-6 md:col-span-2 md:flex-row md:items-end md:gap-6">
-              <div className="relative z-10 max-w-lg">
-                <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-[#7C6A9A]">System design</p>
-                <h3 className="mt-3 text-lg font-medium leading-snug tracking-[-0.025em] text-[#211C29] sm:text-xl">A connected platform, designed around performance.</h3>
-                <p className="mt-2 text-xs leading-relaxed text-[#6B6474]">{p.details.architecture}</p>
-              </div>
-              <div className="relative mt-5 flex min-w-[190px] items-center justify-between gap-2 md:mb-1 md:mt-0">
-                <span className="absolute left-4 right-4 top-1/2 h-px bg-[#9B8CAF]/50" />
-                {[p.tags[0], p.tags[1], p.tags[2]].filter(Boolean).map((tag, index) => <span key={tag} className={`relative grid h-12 w-12 place-items-center rounded-full border border-white/80 text-[8px] font-medium text-[#51465E] shadow-sm ${["bg-[#DCEAF3]", "bg-white", "bg-[#F6DFCA]"][index]}`}>{tag.split(/[ /]/)[0]}</span>)}
-              </div>
-            </article>
+          {/* ───────── floating glass: pull requests ───────── */}
+          <div className="sph-glass sph-g2" aria-hidden>
+            <div className="sph-g-label">Pull requests merged</div>
+            <div className="sph-g-big">{prs}<em>+12 vs last quarter</em></div>
+            <div className="sph-g-bars">
+              {[40, 65, 52, 78, 60, 90].map((h, i) => (
+                <i key={i} style={{ height: `${h}%`, animationDelay: `${i * 0.18}s` }} />
+              ))}
+            </div>
           </div>
 
-          {p.metrics && p.metrics.length > 1 && <section aria-label="Project outcomes">
-            <div className="mb-3 flex items-end justify-between gap-4"><div><p className="text-[9px] font-medium uppercase tracking-[0.15em] text-[#817B85]">Measured outcomes</p><h3 className="mt-1 text-xl font-medium tracking-[-0.025em] text-[#201D24]">Built to make an impact.</h3></div><span className="hidden text-[10px] text-[#8A8490] sm:block">{p.year ?? "21Spheres project"}</span></div>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">{p.metrics.map((metric, index) => <div key={metric.label} className={`rounded-[14px] p-4 sm:p-5 ${["bg-[#E9E7E5]", "bg-[#E7EEF1]", "bg-[#EEE9F5]"][index % 3]}`}><p className="text-2xl font-medium tracking-[-0.04em] text-[#211F23] sm:text-3xl">{metric.value}</p><p className="mt-1 text-[10px] leading-snug text-[#726D76]">{metric.label}</p></div>)}</div>
-          </section>}
+          {/* ───────── LAPTOP ───────── */}
+          <div className="sph-laptop" aria-hidden>
+            <div className="sph-lap-lid">
+              <div className="sph-lap-screen">
+                <div className="sph-ed-tabs mono">
+                  <span className="on"><i />deploy.ts<b /></span>
+                  <span><i />cache.ts</span>
+                  <span><i className="js" />probes.js</span>
+                </div>
+                <div className="sph-lap-body">
+                  <div className="sph-act" aria-hidden><i className="on" /><i /><i /><i /></div>
+                  <div className="sph-tree">
+                    <p>EXPLORER</p>
+                    <span className="d">v deploy-service</span>
+                    <span className="d f">v src</span>
+                    <span className="f2 on">deploy.ts</span>
+                    <span className="f2">cache.ts</span>
+                    <span className="f2">probes.js</span>
+                    <span className="d f">&gt; tests</span>
+                    <span className="f">package.json</span>
+                    <span className="f">tsconfig.json</span>
+                  </div>
+                  <div className="sph-code" key={cycle}>
+                    {CODE.map((line, i) => (
+                      <div
+                        className="sph-ln"
+                        key={i}
+                        style={{ ["--n" as string]: LINES[i].n, ["--du" as string]: `${LINES[i].du}s`, ["--dl" as string]: `${LINES[i].dl}s` } as React.CSSProperties}
+                      >
+                        <b>{i + 1}</b>
+                        <span className="sph-ln-wrap">
+                          <span className="sph-ln-text">
+                            {line.map(([c, t], j) => (
+                              <span key={j} className={`sph-t-${c}`}>{t}</span>
+                            ))}
+                          </span>
+                          <i className="sph-tcaret" />
+                        </span>
+                      </div>
+                    ))}
+                    <div className="sph-ln" style={{ ["--dl" as string]: `${TYPE_END - 0.2}s` } as React.CSSProperties}>
+                      <b>{CODE.length + 1}</b>
+                      <span className="sph-ln-wrap"><i className="sph-ecaret" /></span>
+                    </div>
+                  </div>
+                </div>
+                <div className="sph-term mono" key={`t${cycle}`} style={{ ["--t0" as string]: `${TYPE_END}s` } as React.CSSProperties}>
+                  <p className="r1"><i /> Build passed <span>214 modules, 2.4s</span></p>
+                  <p className="r2"><i /> 128 tests passed <span>0 failed</span></p>
+                  <p className="r3"><i className="p" /> Deployed to production <span>ap-south-1</span></p>
+                </div>
+                <div className="sph-status mono">
+                  <span><b>main</b><b>0 errors</b></span>
+                  <span><b>Ln 9, Col 24</b><b>TypeScript</b><b>UTF-8</b></span>
+                </div>
+              </div>
+            </div>
+            <div className="sph-lap-base"><span /></div>
+          </div>
 
-          <section className="grid gap-5 border-t border-[#E2DFE3] pt-6 md:grid-cols-[0.8fr_1.2fr] md:gap-10">
-            <div><p className="text-[9px] font-medium uppercase tracking-[0.15em] text-[#7653D6]">Engineering notes</p><h3 className="mt-2 text-xl font-medium tracking-[-0.025em] text-[#201D24]">What we delivered</h3><p className="mt-2 text-xs leading-relaxed text-[#706A74]">A practical foundation, shaped for the way this product is used.</p></div>
-            <ul className="grid gap-2 sm:grid-cols-2">{p.details.deliverables.map((deliverable, index) => <li key={deliverable} className="flex gap-3 rounded-[12px] bg-white p-3.5 text-xs leading-relaxed text-[#47434B]"><span className="font-mono text-[9px] text-[#7653D6]">0{index + 1}</span>{deliverable}</li>)}</ul>
-          </section>
+          {/* ───────── MONITOR ───────── */}
+          <div className="sph-monitor">
+            <div className="sph-mon-body">
+              <div className="sph-mon-screen">
+                <div className="sph-topbar">
+                  <div className="sph-crumb"><b>21Spheres</b><span>/</span>Engineering</div>
+                  <div className="sph-tabs mono"><span>Week</span><span>Month</span><span className="on">Year</span></div>
+                  <span className="sph-live mono"><i /> Live</span>
+                </div>
+                <div className="sph-dash-grid">
+                  {/* heatmap */}
+                  <div className="sph-card sph-heat-card">
+                    <div className="sph-card-top">
+                      <p className="sph-lbl">Contributions, last 6 months</p>
+                      <div className="sph-legend mono" aria-hidden>
+                        Less <i className="l0" /><i className="l1" /><i className="l2" /><i className="l3" /><i className="l4" /> More
+                      </div>
+                    </div>
+                    <div className="sph-heat-head">
+                      <p className="sph-big">{total.toLocaleString("en-US")}</p>
+                      <div className="sph-mini-stats">
+                        <div><b>{commits.toLocaleString("en-US")}</b><span>Commits</span></div>
+                        <div><b>{prs}</b><span>Pull requests</span></div>
+                        <div><b>{reviews}</b><span>Reviews</span></div>
+                      </div>
+                    </div>
+                    <div className="sph-heat-wrap">
+                      <div className="sph-days mono" aria-hidden>
+                        <span /><span>Mon</span><span /><span>Wed</span><span /><span>Fri</span><span />
+                      </div>
+                      <div className="sph-heat-main">
+                        <div className="sph-months mono" aria-hidden>
+                          <span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span>
+                        </div>
+                        <div className="sph-heat" aria-label="Animated contribution heatmap">
+                          {HEAT.flatMap((col, w) =>
+                            col.map((lvl, d) => (
+                              <span
+                                key={`${w}-${d}`}
+                                className={`sph-cell l${lvl}`}
+                                style={{
+                                  gridColumn: w + 1,
+                                  gridRow: d + 1,
+                                  ["--w" as string]: w,
+                                  ["--d" as string]: d,
+                                } as React.CSSProperties}
+                              />
+                            ))
+                          )}
+                          <span className="sph-sweep" aria-hidden />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-          <div className="flex flex-col gap-4 border-t border-[#E2DFE3] pt-5 sm:flex-row sm:items-center sm:justify-between">
-            <div><p className="text-[9px] font-medium uppercase tracking-[0.15em] text-[#817B85]">Technology</p><div className="mt-2 flex flex-wrap gap-1.5">{p.tags.map((tag) => <span key={tag} className="rounded-full border border-[#DDD9E1] bg-white px-2.5 py-1 text-[10px] text-[#625D69]">{tag}</span>)}</div></div>
-            <Link href="/contact" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#17171A] px-5 py-3 text-xs font-medium text-white transition-colors hover:bg-[#7057D9]">Start a similar project <ArrowRight className="h-3.5 w-3.5" /></Link>
+                  {/* big number + plan vs fact */}
+                  <div className="sph-card sph-fact-card">
+                    <p className="sph-huge">+{(growth / 10).toFixed(1)}%</p>
+                    <p className="sph-lbl muted">More shipped than in 2025</p>
+                    <svg viewBox="0 0 120 26" preserveAspectRatio="none" className="sph-spark" aria-hidden>
+                      <path className="sph-spark-fill" d="M0 20 C10 18 14 22 26 15 S46 17 58 11 S80 13 92 7 S110 8 120 2 V26 H0Z" />
+                      <path className="sph-spark-line" pathLength={1} d="M0 20 C10 18 14 22 26 15 S46 17 58 11 S80 13 92 7 S110 8 120 2" />
+                      <circle className="sph-spark-dot" cx="119" cy="2" r="2" />
+                    </svg>
+                    <div className="sph-pf">
+                      <div className="sph-pf-track"><i /></div>
+                      <div className="sph-pf-cap mono">
+                        <span>FACT +18.4%</span>
+                        <span>PLAN +15.8%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* dot grid */}
+                  <div className="sph-card sph-dots-card">
+                    <p className="sph-lbl mono">FIRST-RUN PASS RATE</p>
+                    <div className="sph-dots" aria-hidden>
+                      {Array.from({ length: DOTS }, (_, i) => (
+                        <i
+                          key={i}
+                          className={i < DOTS_ON ? "on" : ""}
+                          style={{ ["--dl" as string]: `${0.5 + i * 0.03}s` } as React.CSSProperties}
+                        />
+                      ))}
+                    </div>
+                    <div className="sph-dots-foot">
+                      <p className="sph-big">{pass}%</p>
+                      <p className="sph-lbl">of deploys passed on the first run</p>
+                    </div>
+                  </div>
+
+                  {/* lollipop chart */}
+                  <div className="sph-card sph-lolli-card">
+                    <div className="sph-card-top">
+                      <p className="sph-lbl mono">DEPLOYS BY MONTH</p>
+                      <p className="sph-lbl mono">PEAK AUG, 148</p>
+                    </div>
+                    <div className="sph-lolli">
+                      {LOLLI.map((h, i) => (
+                        <div key={i} className={`sph-stem-col${i === PEAK ? " peak" : ""}`}>
+                          <div className="sph-stem-area">
+                            <i
+                              className="sph-stem"
+                              style={{ height: `${h}%`, animationDelay: `${0.7 + i * 0.09}s` }}
+                            />
+                          </div>
+                          <span className="mono">{MONTHS[i]}</span>
+                        </div>
+                      ))}
+                      <div className="sph-tip mono"><b>Aug</b> 148 deploys</div>
+                    </div>
+                  </div>
+                </div>
+                <span className="sph-glare" aria-hidden />
+              </div>
+            </div>
+            <div className="sph-neck" />
+            <div className="sph-foot" />
+          </div>
+
+          {/* ───────── PHONE ───────── */}
+          <div className="sph-phone" aria-hidden>
+            <div className="sph-phone-in sph-phone-brand-screen">
+              <i className="sph-island" />
+              <svg className="sph-phone-lightning" viewBox="0 0 180 220" fill="none" aria-hidden="true">
+                <path d="M42 14 55 54 40 68 66 96 52 116 79 139" />
+                <path d="M137 20 123 53 141 72 112 101 128 124 99 150" />
+                <path d="M19 82 47 91 57 111" />
+                <path d="M162 78 134 91 124 111" />
+              </svg>
+              <div className="sph-phone-brand-lockup">
+                <Image src="/logo-square.png" alt="" width={88} height={88} className="sph-phone-screen-logo" />
+                <span className="sph-phone-wordmark">21Spheres</span>
+                <span className="sph-phone-tagline">Engineering what&rsquo;s next.</span>
+              </div>
+            </div>
           </div>
         </div>
-      </motion.div>
-    </div>
+      </div>
+
+      <style>{CSS}</style>
+    </section>
   );
 }
+
+export default PortfolioHero;
 
 /* =========================================================================
-   PAGE WRAPPER (21Spheres Studio Theme + Apple Scale)
+   SCOPED CSS
    ========================================================================= */
-
-export function PortfolioPage() {
-  return (
-    <main className="relative min-h-screen overflow-hidden bg-white text-[#111114] antialiased">
-
-      {/* Header Section */}
-      <section className="relative z-10 mx-auto max-w-[1380px] px-4 pb-8 pt-8 text-center sm:px-6 sm:pb-10 sm:pt-12 lg:px-8">
-        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#7057D9]">Selected work / 21Spheres</p>
-        <h1 className="text-[42px] font-light leading-[1.02] tracking-[-0.055em] text-[#111114] sm:text-[60px] lg:text-[72px]">
-          Software we’ve shipped.
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-[15px] leading-[1.55] text-[#6E6E73] sm:text-[18px]">
-          AI agents, high-frequency insurance gateways, and mobile platforms engineered for high-conviction scale.
-        </p>
-      </section>
-
-      {/* Bento Showcase */}
-      <section className="relative z-10 mx-auto max-w-[1380px] px-4 pb-24 sm:px-6 lg:px-8">
-        <BentoPortfolioGrid />
-      </section>
-
-      {/* 21Spheres Bottom CTA Banner */}
-      <section className="relative z-10 mx-auto max-w-[1380px] px-4 pb-28 text-center sm:px-6 lg:px-8">
-        <div className="relative mx-auto max-w-3xl rounded-[16px] bg-gradient-to-b from-white to-[#FAF9FE] p-8 sm:p-12 shadow-[0_20px_50px_-20px_rgba(112,87,217,0.12)] border border-[#EBE8F5]">
-          <span className="text-[11px] font-mono font-bold tracking-wider text-[#7057D9] uppercase block mb-2">
-            START ARCHITECTING
-          </span>
-          <h2 className="text-[30px] font-semibold tracking-[-0.035em] text-[#111114] sm:text-[42px] leading-tight">
-            Have a product in mind?
-          </h2>
-          <p className="mt-3 text-[15px] sm:text-[17px] text-[#6E6E73] max-w-lg mx-auto">
-            Let’s engineer and deliver your next platform with high-conviction scale and zero compromise.
-          </p>
-          <div className="mt-7 flex items-center justify-center gap-3">
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 rounded-full bg-[#111114] hover:bg-[#7057D9] px-7 py-3 text-[15px] font-medium text-white shadow-md hover:shadow-[0_6px_24px_rgba(112,87,217,0.35)] transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7057D9]"
-            >
-              <span>Contact Us</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
+const CSS = `
+.sph-root{
+  --bg:#05060A; --ink:#F4F4F6; --mute:rgba(244,244,246,.56);
+  --violet:#7057D9;
+  --pu:#7057D9; --screen:#D3D5D9; --paper:#E6E7EA; --paper-hi:#F0F1F3; --paper-ink:#1A1A1A; --paper-mute:#7D8189; --hair:#BBBEC4; --cell:#CDD0D6; --o:#FF4F00;
+  --noise-w:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --noise-k:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --sans:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  position:relative; isolation:isolate; overflow:hidden;
+  background:var(--bg); color:var(--ink);
+  padding:64px 20px 24px; min-height:100svh;
+  display:flex; flex-direction:column; justify-content:center;
 }
+.sph-root *{box-sizing:border-box}
+.sph-root .mono{font-family:var(--mono)}
 
-export default PortfolioPage;
+/* ambient background */
+.sph-aurora{position:absolute;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(55% 45% at 50% 66%, rgba(112,87,217,.16), transparent 70%);}
+.sph-gridlines{position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.35;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:56px 56px;
+  -webkit-mask-image:radial-gradient(70% 60% at 50% 55%,#000 30%,transparent 80%);
+          mask-image:radial-gradient(70% 60% at 50% 55%,#000 30%,transparent 80%)}
+
+/* copy */
+.sph-copy{max-width:820px;margin:0 auto;text-align:center;animation:sph-rise .9s cubic-bezier(.2,.7,.2,1) both}
+.sph-title{margin:0;white-space:nowrap;font-size:clamp(26px,5vw,60px);line-height:1.05;font-weight:300;letter-spacing:-.055em;text-shadow:0 0 48px rgba(167,139,250,.30)}
+.sph-sub{margin:12px auto 0;max-width:680px;font-size:clamp(13px,1.3vw,15px);line-height:1.5;color:var(--mute)}
+.sph-link{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,.78);text-decoration:none;transition:color .2s,gap .2s}
+.sph-link:hover{color:#fff;gap:12px}
+
+/* stage */
+.sph-wrap{position:relative;width:100%;max-width:1320px;margin:16px auto 0}
+.sph-stage{position:absolute;top:0;width:${STAGE_W}px;height:${STAGE_H}px;transform-origin:top left;
+  animation:sph-stage-in 1.1s cubic-bezier(.2,.7,.2,1) .15s both}
+.sph-floor{position:absolute;left:90px;right:90px;bottom:6px;height:70px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(112,87,217,.55),transparent);filter:blur(24px)}
+
+/* idle float */
+
+/* ───────── MONITOR (minimal light screen) ───────── */
+.sph-monitor{position:absolute;left:290px;top:6px;width:640px}
+.sph-mon-body{padding:8px;border-radius:10px;
+  background:linear-gradient(145deg,#d9dbe2 0%,#5a5e6a 6%,#14161c 18%,#07080b 80%,#6f7480 96%,#1a1c22);
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.07),0 0 80px -6px rgba(112,87,217,.45),0 0 160px -20px rgba(112,87,217,.35)}
+.sph-mon-screen{position:relative;height:404px;overflow:hidden;border-radius:3px;background:var(--screen);
+  font-family:var(--sans);color:var(--paper-ink);padding:14px}
+.sph-glare{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,rgba(255,255,255,.35),transparent 22%,transparent 72%,rgba(255,255,255,.12))}
+.sph-neck{width:96px;height:62px;margin:-1px auto 0;
+  background:linear-gradient(90deg,#2a2d35,#8b909c 45%,#3a3e47);clip-path:polygon(16% 0,84% 0,100% 100%,0 100%)}
+.sph-foot{width:230px;height:9px;margin:0 auto;border-radius:0 0 40px 40px / 0 0 9px 9px;
+  background:linear-gradient(#9aa0ad,#3b3f48);box-shadow:0 18px 30px rgba(0,0,0,.6)}
+
+.sph-dash-grid{height:calc(100% - 26px);display:grid;gap:10px;
+  grid-template-columns:1.15fr 1fr 1fr;grid-template-rows:1.12fr 1fr;
+  grid-template-areas:"heat heat fact" "dots lolli lolli"}
+.sph-card{position:relative;min-width:0;min-height:0;overflow:hidden;padding:10px 11px;
+  border:1px solid var(--hair);background:linear-gradient(180deg,var(--paper-hi),var(--paper))}
+.sph-heat-card{grid-area:heat;display:flex;flex-direction:column}
+.sph-fact-card{grid-area:fact;display:flex;flex-direction:column;justify-content:space-between}
+.sph-dots-card{grid-area:dots;display:flex;flex-direction:column;justify-content:space-between}
+.sph-lolli-card{grid-area:lolli;display:flex;flex-direction:column}
+.sph-card-top{display:flex;justify-content:space-between;align-items:flex-start}
+
+.sph-lbl{margin:0;font-size:8px;line-height:1.35;color:var(--paper-ink)}
+.sph-lbl.mono{font-size:6.5px;letter-spacing:.04em;color:var(--paper-mute)}
+.sph-lbl.muted{color:var(--paper-mute)}
+.sph-big{margin:2px 0 0;font-size:30px;line-height:1;font-weight:400;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
+.sph-huge{margin:0;font-size:38px;line-height:1;font-weight:400;letter-spacing:-.07em;white-space:nowrap}
+
+/* heatmap: GitHub green, fills up in a wave then drains, on a loop */
+.sph-heat-wrap{display:flex;gap:5px;margin-top:8px}
+.sph-days{display:grid;grid-template-rows:repeat(7,1fr);padding-top:11px;font-size:5.5px;color:var(--paper-mute);line-height:1;align-items:center}
+.sph-heat-main{flex:1;min-width:0}
+.sph-heat{position:relative;margin-top:3px;display:grid;gap:3px;
+  grid-template-columns:repeat(${WEEKS},1fr);grid-template-rows:repeat(7,auto)}
+.sph-cell{--dl:calc(.3s + var(--w) * .075s + var(--d) * .02s);aspect-ratio:1}
+.sph-cell,.sph-pc{position:relative;border-radius:2px;background:var(--cell);outline:1px solid rgba(27,31,35,.07);outline-offset:-1px}
+.sph-cell::after,.sph-pc::after,.sph-dots i.on::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--c,transparent);
+  opacity:0;animation:sph-fill 11s cubic-bezier(.3,.7,.2,1) var(--dl,0s) infinite both}
+.l1{--c:#9BE9A8}.l2{--c:#40C463}.l3{--c:#30A14E}.l4{--c:#216E39}
+.l4::after{box-shadow:0 0 6px rgba(33,110,57,.55)}
+.sph-legend .l0{background:var(--cell)}.sph-legend .l1{background:#9BE9A8}.sph-legend .l2{background:#40C463}.sph-legend .l3{background:#30A14E}.sph-legend .l4{background:#216E39}
+.sph-sweep{position:absolute;top:-4px;bottom:-4px;width:56px;left:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(48,161,78,.16),transparent);
+  animation:sph-sweep 5.5s ease-in-out 2.4s infinite}
+.sph-months{display:flex;justify-content:space-between;font-size:6px;color:var(--paper-mute)}
+.sph-legend{display:flex;align-items:center;justify-content:flex-end;gap:3px;font-size:6px;color:var(--paper-mute)}
+.sph-legend i{width:8px;height:8px;border-radius:2px;outline:1px solid rgba(27,31,35,.06);outline-offset:-1px}
+.sph-legend i:first-of-type{margin-left:2px}
+
+/* plan vs fact */
+.sph-pf-track{position:relative;height:13px;background:#B1B4BA}
+.sph-pf-track i{position:absolute;left:0;top:0;bottom:0;width:62%;background:var(--pu);transform-origin:left;
+  animation:sph-loop-x 11s cubic-bezier(.3,.7,.2,1) .9s infinite both}
+.sph-pf-cap{display:flex;justify-content:space-between;margin-top:5px;font-size:6px;color:var(--paper-mute);letter-spacing:.03em}
+.sph-pf-cap span:first-child{color:var(--paper-ink)}
+
+/* dot grid */
+.sph-dots{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;padding:2px 0}
+.sph-dots i{position:relative;aspect-ratio:1;border-radius:1.5px;background:#BFC2C8}
+.sph-dots i.on{--c:var(--pu)}
+.sph-dots-foot{display:flex;align-items:flex-end;gap:8px}
+.sph-dots-foot .sph-big{font-size:26px}
+.sph-dots-foot .sph-lbl{padding-bottom:3px;font-size:6.5px;color:var(--paper-mute);max-width:70px}
+
+/* lollipop chart */
+.sph-lolli{flex:1;min-height:0;display:flex;gap:0;margin-top:8px;
+  background-image:repeating-linear-gradient(to right,#B5B5B5 0 1px,transparent 1px 4px);
+  background-size:100% 1px;background-repeat:no-repeat;background-position:0 0}
+.sph-stem-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center}
+.sph-stem-area{position:relative;flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;border-bottom:1px solid var(--paper-ink)}
+.sph-stem{position:relative;display:block;width:1px;background:var(--pu);transform-origin:bottom;
+  animation:sph-loop-y 11s cubic-bezier(.3,.7,.2,1) infinite both}
+.sph-stem::after{content:"";position:absolute;left:50%;top:0;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:inherit}
+.sph-stem-col.peak .sph-stem{background:var(--o)}
+.sph-stem-col.peak .sph-stem::after{animation:sph-pulse 2.4s ease-in-out infinite;width:8px;height:8px;margin:-4px 0 0 -4px}
+.sph-stem-col span{margin-top:4px;font-size:5.5px;color:var(--paper-mute)}
+.sph-stem-col.peak span{color:var(--o)}
+
+/* ───────── LAPTOP (minimal light screen) ───────── */
+.sph-laptop{position:absolute;left:0;top:268px;width:410px;z-index:3;
+  filter:drop-shadow(0 34px 40px rgba(0,0,0,.65))}
+.sph-lap-lid{padding:8px 8px 10px;border-radius:9px 9px 3px 3px;
+  background:linear-gradient(160deg,#9296a2,#2a2d35 8%,#0b0c10 30%,#0b0c10 85%,#4a4e59);
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),0 0 60px -8px rgba(255,110,40,.30)}
+.sph-lap-screen{position:relative;height:240px;overflow:hidden;border-radius:2px;background:#14161B}
+.sph-lap-base{position:relative;height:14px;margin:0 -26px;border-radius:2px 2px 18px 18px / 2px 2px 14px 14px;
+  background:linear-gradient(#aeb2bd,#6d717c 40%,#2a2d35)}
+.sph-lap-base span{position:absolute;left:50%;top:0;width:84px;height:5px;transform:translateX(-50%);
+  border-radius:0 0 8px 8px;background:#1b1d23}
+.sph-ed-tabs{display:flex;height:20px;background:#0E1013;border-bottom:1px solid #23262D;font-size:8px;color:#8B909A}
+.sph-ed-tabs span{display:flex;align-items:center;gap:5px;padding:0 10px;border-right:1px solid #23262D}
+.sph-ed-tabs span.on{background:#14161B;color:#E6E6E6;box-shadow:inset 0 1px 0 var(--pu)}
+.sph-ed-tabs i{width:6px;height:6px;border-radius:1px;background:#3B82F6}
+.sph-ed-tabs i.js{background:#E5C07B}
+.sph-ed-tabs b{width:5px;height:5px;margin-left:4px;border-radius:50%;background:#8B909A}
+.sph-lap-body{display:flex;height:calc(100% - 20px - 24px - 14px);overflow:hidden}
+.sph-act{width:20px;flex:none;display:flex;flex-direction:column;align-items:center;gap:9px;padding-top:8px;background:#0B0C0F;border-right:1px solid #1B1D23}
+.sph-act i{width:9px;height:9px;border-radius:2px;border:1px solid #5C6270}
+.sph-act i.on{border-color:#E6E6E6;background:rgba(255,255,255,.12)}
+.sph-tree{width:72px;flex:none;padding:7px 0;background:#101216;border-right:1px solid #1B1D23;font:7px var(--mono);color:#9AA0AA}
+.sph-tree p{margin:0 0 5px;padding:0 8px;font-size:6px;letter-spacing:.06em;color:#6B7280}
+.sph-tree span{display:block;padding:2.5px 8px;white-space:nowrap}
+.sph-tree .d{color:#C5C8CF}.sph-tree .f{padding-left:14px}.sph-tree .f2{padding-left:22px}
+.sph-tree .on{background:rgba(112,87,217,.25);color:#fff}
+.sph-code{position:relative;flex:1;min-width:0;padding:6px 6px 0 0;font:9.5px/16px var(--mono);color:#D4D4D4;overflow:hidden}
+.sph-ln{display:flex;height:16px;white-space:pre}
+.sph-ln b{width:26px;flex:none;padding-right:10px;font-weight:400;color:#4B515C;text-align:right}
+.sph-ln-wrap{display:inline-flex;align-items:center}
+.sph-ln-text{display:inline-block;overflow:hidden;white-space:pre;width:0;
+  animation:sph-type var(--du) steps(var(--n),end) var(--dl) forwards}
+.sph-t-k{color:#C586C0}.sph-t-f{color:#DCDCAA}.sph-t-s{color:#CE9178}.sph-t-v{color:#9CDCFE}.sph-t-c{color:#6A9955;font-style:italic}.sph-t-p{color:#D4D4D4}
+.sph-tcaret,.sph-ecaret{display:inline-block;width:1.5px;height:12px;background:#AEAFAD}
+.sph-tcaret{opacity:0;animation:sph-clife calc(var(--du) + .22s) linear var(--dl) forwards}
+.sph-ecaret{visibility:hidden;animation:sph-show 0s linear var(--dl) forwards,sph-blink 1s steps(2) var(--dl) infinite}
+.sph-term{position:absolute;left:0;right:0;bottom:14px;height:24px;border-top:1px solid #23262D;background:#0D0F13;font-size:8px;color:#D4D4D4}
+.sph-term p{position:absolute;inset:0;margin:0;display:flex;align-items:center;gap:6px;padding:0 12px;opacity:0}
+.sph-term .r1{animation:sph-row 1.5s ease calc(var(--t0) + .2s) both}
+.sph-term .r2{animation:sph-row 1.5s ease calc(var(--t0) + 1.5s) both}
+.sph-term .r3{animation:sph-fade .4s ease calc(var(--t0) + 2.8s) both}
+.sph-term i{width:6px;height:6px;border-radius:50%;background:#3FB950}
+.sph-term i.p{background:#A78BFA}
+.sph-term span{margin-left:auto;color:#6B7280}
+.sph-status{position:absolute;left:0;right:0;bottom:0;height:14px;display:flex;align-items:center;justify-content:space-between;padding:0 8px;background:var(--pu);color:#fff;font-size:6.5px}
+.sph-status span{display:flex;gap:10px}
+.sph-status b{font-weight:400}
+
+/* ───────── PHONE (minimal light screen) ───────── */
+.sph-phone{position:absolute;left:880px;top:300px;width:136px;height:282px;z-index:4;padding:4px;border:1px solid rgba(224,220,246,.9);border-radius:27px;
+  background:linear-gradient(145deg,#f4f2ff 0%,#8B879A 5%,#22212A 14%,#101016 78%,#B9B3CC 100%);
+  box-shadow:0 0 0 1px rgba(255,255,255,.34),0 30px 58px -18px rgba(0,0,0,.9),0 0 32px -16px rgba(157,132,255,.72),inset 0 0 0 1px rgba(255,255,255,.42)}
+.sph-phone-in{position:relative;height:100%;overflow:hidden;border-radius:22px;background:var(--screen);
+  font-family:var(--sans);color:var(--paper-ink);padding:32px 13px 12px}
+.sph-phone-brand-screen{display:grid;place-items:center;padding:28px 10px 14px;background:#020204;color:#fff}
+.sph-phone-lightning{position:absolute;inset:18% 8% 16%;width:84%;height:66%;overflow:visible;z-index:1;pointer-events:none}
+.sph-phone-lightning path{stroke:#C9B9FF;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:120;stroke-dashoffset:120;
+  filter:drop-shadow(0 0 5px rgba(145,110,255,.95));animation:sph-phone-lightning-flash 1.35s ease-out both}
+.sph-phone-lightning path:nth-child(2){animation-delay:.12s}
+.sph-phone-lightning path:nth-child(3){animation-delay:.2s}
+.sph-phone-lightning path:nth-child(4){animation-delay:.28s}
+.sph-phone-brand-lockup{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px}
+.sph-phone-screen-logo{display:block;width:84px;height:84px;object-fit:contain;opacity:0;
+  filter:drop-shadow(0 0 14px rgba(112,87,217,.55));clip-path:circle(0 at 50% 50%);animation:sph-phone-logo-reveal .85s cubic-bezier(.16,1,.3,1) 1.05s both}
+.sph-phone-wordmark{color:#F8F7FC;font-size:14px;font-weight:500;letter-spacing:-.045em;opacity:0;clip-path:inset(0 100% 0 0);
+  animation:sph-phone-wordmark-in .72s cubic-bezier(.2,.75,.25,1) 1.72s both}
+.sph-phone-tagline{color:rgba(239,236,248,.68);font-size:7px;letter-spacing:.01em;opacity:0;
+  animation:sph-phone-tagline-in .6s cubic-bezier(.2,.75,.25,1) 2.22s both}
+.sph-island{position:absolute;left:50%;top:8px;width:44px;height:12px;transform:translateX(-50%);border-radius:99px;background:#000}
+.sph-p-lbl{margin:0;font-size:7px;color:var(--paper-mute)}
+.sph-p-big{margin:3px 0 0;font-size:30px;line-height:1;font-weight:400;letter-spacing:-.07em}
+.sph-p-bars{margin-top:14px;display:grid;gap:8px}
+.sph-p-bar-top{display:flex;justify-content:space-between;font-size:7px}
+.sph-p-bar-top b{font:6px var(--mono);font-weight:400;color:var(--paper-mute)}
+.sph-p-line{position:relative;height:1px;margin-top:3px;background:#B1B4BA}
+.sph-p-line i{position:absolute;left:0;top:-1px;height:3px;background:var(--paper-ink);transform-origin:left;
+  animation:sph-loop-x 11s cubic-bezier(.3,.7,.2,1) infinite both}
+.sph-p-line.hot i{background:var(--o)}
+.sph-p-heat{display:grid;grid-template-columns:repeat(9,1fr);gap:3px;margin-top:16px}
+.sph-pc{aspect-ratio:1;border-radius:1px}
+.sph-p-row{display:flex;justify-content:space-between;margin-top:12px;padding-top:7px;border-top:1px solid var(--hair);font-size:7px;color:var(--paper-mute)}
+.sph-p-row b{color:var(--pu);font-weight:500}
+
+/* ───────── FLOATING GLASS ───────── */
+.sph-glass{position:absolute;z-index:2;padding:12px 14px;border-radius:4px;
+  background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.13);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 0 36px -10px rgba(112,87,217,.45)}
+.sph-g1{left:40px;top:70px;width:170px}
+.sph-g2{left:1010px;top:90px;width:156px}
+.sph-g-label{font-size:10px;color:rgba(255,255,255,.55)}
+.sph-g-big{margin-top:4px;font-size:26px;font-weight:300;letter-spacing:-.05em}
+.sph-g-track{position:relative;height:1px;margin-top:10px;background:rgba(255,255,255,.25)}
+.sph-g-track i{position:absolute;left:0;top:-1px;height:3px;width:99%;background:#9B86F2;transform-origin:left;
+  animation:sph-loop-x 11s cubic-bezier(.3,.7,.2,1) 1s infinite both}
+.sph-g-bars{display:flex;align-items:flex-end;gap:5px;height:34px;margin-top:8px}
+.sph-g-bars i{flex:1;border-radius:1px;transform-origin:bottom;background:#8B73F0;
+  animation:sph-loop-y 11s cubic-bezier(.3,.7,.2,1) infinite both}
+
+/* ───────── EXTRA ELEMENTS ───────── */
+.sph-topbar{display:flex;align-items:center;justify-content:space-between;height:18px;margin-bottom:8px;font-size:7.5px;color:var(--paper-mute)}
+.sph-crumb b{font-weight:600;color:var(--paper-ink)}.sph-crumb span{margin:0 5px}
+.sph-tabs{display:flex;gap:12px;font-size:6.5px}
+.sph-tabs span{padding-bottom:2px;border-bottom:1px solid transparent}
+.sph-tabs span.on{color:var(--paper-ink);border-color:var(--pu)}
+.sph-live{display:inline-flex;align-items:center;gap:4px;font-size:6.5px;color:var(--paper-ink)}
+.sph-live i,.sph-p-live i,.sph-g-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:#30A14E;animation:sph-ping 1.8s ease-out infinite}
+.sph-heat-head{display:flex;align-items:flex-end;justify-content:space-between}
+.sph-mini-stats{display:flex;gap:14px}
+.sph-mini-stats b{display:block;font-size:11px;font-weight:500;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.sph-mini-stats span{font-size:6px;color:var(--paper-mute)}
+.sph-spark{width:100%;height:26px;overflow:visible}
+.sph-spark-line{fill:none;stroke:var(--pu);stroke-width:1.6;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;
+  animation:sph-loop-draw 11s cubic-bezier(.3,.7,.2,1) .6s infinite both}
+.sph-spark-fill{fill:rgba(112,87,217,.14);opacity:0;animation:sph-loop-fade 11s ease 1s infinite both}
+.sph-spark-dot{fill:var(--o);opacity:0;animation:sph-loop-fade 11s ease 2s infinite both}
+.sph-lolli{position:relative}
+.sph-tip{position:absolute;left:calc(62.5% + 12px);top:-3px;padding:3px 6px;font-size:6.5px;white-space:nowrap;
+  background:var(--paper-ink);color:#fff;opacity:0;animation:sph-loop-fade 11s ease 2.2s infinite both}
+.sph-tip b{margin-right:4px;font-weight:500;color:#FF8A5C}
+.sph-p-top{display:flex;align-items:center;justify-content:space-between}
+.sph-p-live{display:inline-flex;align-items:center;gap:3px;font-size:6px;color:var(--paper-ink)}
+.sph-p-cap{margin:12px 0 0;font-size:6.5px;color:var(--paper-mute)}
+.sph-p-week{display:flex;align-items:flex-end;gap:4px;height:24px;margin-top:5px;border-bottom:1px solid var(--paper-ink)}
+.sph-p-week i{flex:1;background:#A9ADB4;transform-origin:bottom;animation:sph-loop-y 11s cubic-bezier(.3,.7,.2,1) infinite both}
+.sph-p-week i.hot{background:var(--pu)}
+.sph-g-label em{font-style:normal;margin-left:6px;font-size:8px;color:rgba(255,255,255,.4)}
+.sph-g-big em{font-style:normal;font-size:9px;letter-spacing:0;color:rgba(255,255,255,.5);margin-left:6px}
+
+/* ───────── GLOW + GRAIN ───────── */
+.sph-grain{position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.10;mix-blend-mode:overlay;background-image:var(--noise-w);background-size:160px 160px}
+.sph-halo{position:absolute;left:220px;top:-30px;width:760px;height:520px;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(112,87,217,.40),rgba(112,87,217,.12) 58%,transparent);
+  filter:blur(34px);animation:sph-halo 7s ease-in-out infinite alternate}
+.sph-mon-screen::before,.sph-lap-screen::before,.sph-phone-in::before{content:"";position:absolute;inset:0;z-index:6;pointer-events:none;
+  background-image:var(--noise-k);background-size:160px 160px;opacity:.07;mix-blend-mode:multiply}
+
+/* ───────── KEYFRAMES ───────── */
+@keyframes sph-fill{0%{opacity:0;transform:scale(.3)}5%{opacity:1;transform:scale(1)}84%{opacity:1;transform:scale(1)}94%,100%{opacity:0;transform:scale(.6)}}
+@keyframes sph-loop-x{0%{transform:scaleX(0)}16%,84%{transform:scaleX(1)}100%{transform:scaleX(0)}}
+@keyframes sph-loop-y{0%{transform:scaleY(0)}16%,84%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+@keyframes sph-loop-draw{0%{stroke-dashoffset:1}22%,84%{stroke-dashoffset:0}100%{stroke-dashoffset:-1}}
+@keyframes sph-loop-fade{0%{opacity:0}12%,84%{opacity:1}100%{opacity:0}}
+@keyframes sph-row{0%{opacity:0}15%,85%{opacity:1}100%{opacity:0}}
+@keyframes sph-pulse{0%,100%{box-shadow:0 0 6px 1px rgba(255,79,0,.5)}50%{box-shadow:0 0 14px 4px rgba(255,79,0,.65)}}
+@keyframes sph-halo{from{opacity:.7;transform:scale(1)}to{opacity:1;transform:scale(1.06)}}
+@keyframes sph-phone-lightning-flash{0%,100%{opacity:0;stroke-dashoffset:120}7%{opacity:1;stroke-dashoffset:0}15%{opacity:.08;stroke-dashoffset:0}24%{opacity:.95}34%{opacity:0}48%{opacity:.55}60%{opacity:0;stroke-dashoffset:-120}}
+@keyframes sph-phone-logo-reveal{0%{opacity:0;clip-path:circle(0 at 50% 50%);transform:scale(.82)}65%{opacity:1;clip-path:circle(55% at 50% 50%);transform:scale(1.04)}100%{opacity:1;clip-path:circle(75% at 50% 50%);transform:scale(1)}}
+@keyframes sph-phone-wordmark-in{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
+@keyframes sph-phone-tagline-in{from{opacity:0;transform:translateY(6px);letter-spacing:.08em}to{opacity:1;transform:translateY(0);letter-spacing:.01em}}
+@keyframes sph-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes sph-stage-in{from{opacity:0;margin-top:40px}to{opacity:1;margin-top:0}}
+@keyframes sph-fade{from{opacity:0}to{opacity:1}}
+@keyframes sph-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+@keyframes sph-sweep{0%{left:-12%;opacity:0}12%{opacity:1}88%{opacity:1}100%{left:100%;opacity:0}}
+@keyframes sph-grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes sph-breathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.82)}}
+@keyframes sph-scalex{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes sph-type{to{width:calc(var(--n) * 1ch)}}
+@keyframes sph-clife{0%,99%{opacity:1}100%{opacity:0}}
+@keyframes sph-show{to{visibility:visible}}
+@keyframes sph-blink{50%{opacity:0}}
+
+/* ───────── RESPONSIVE + MOTION ───────── */
+@media (max-width:640px){.sph-root{padding:56px 12px 24px}}
+@media (prefers-reduced-motion:reduce){
+  .sph-root *,.sph-root *::before,.sph-root *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}
+  .sph-ln-text{width:auto!important}
+  .sph-tcaret{display:none}
+  .sph-term .r3{opacity:1!important}
+  .sph-cell::after,.sph-pc::after,.sph-dots i.on::after{opacity:1!important;transform:none!important}
+  .sph-stem,.sph-g-bars i,.sph-pf-track i,.sph-p-line i,.sph-g-track i,.sph-p-week i{transform:none!important}
+  .sph-spark-line{stroke-dashoffset:0!important}
+  .sph-spark-fill,.sph-spark-dot,.sph-tip{opacity:1!important}
+}
+`;
