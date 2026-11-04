@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 const SPACING = 22;
 const RADIUS = 190;
+const BOTTOM_FADE = "linear-gradient(#000 82%, transparent)";
 
 /**
  * Dot grid that lights up around the cursor. The faint base grid is plain CSS;
@@ -132,7 +133,7 @@ export function CursorDotField() {
   }, []);
 
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10" style={{ maskImage: BOTTOM_FADE, WebkitMaskImage: BOTTOM_FADE }}>
       <div
         className="absolute inset-0"
         style={{

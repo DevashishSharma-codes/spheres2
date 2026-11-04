@@ -19,9 +19,10 @@ export type ServiceModelKind =
   | "chat"
   | "website"
   | "imageBoard"
+  | "webPortal"
   | "saas"
   | "board"
-  | "vision"
+  | "aiConnect"
   | "answers"
   | "workflow"
   | "globe";
@@ -54,8 +55,6 @@ export interface ServiceProofStat {
 
 export interface ServiceProof {
   layout: "stepped" | "grid" | "globe";
-  heading: string;
-  statement: string;
   source: string;
   stats: ServiceProofStat[];
 }
@@ -80,8 +79,6 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "mobile",
     proof: {
       layout: "stepped",
-      heading: "Built for real-world scale",
-      statement: "UrbanFlow's cross-platform app coordinates rides and deliveries for drivers and customers across 14 major metros.",
       source: "UrbanFlow Logistics project",
       stats: [
         { value: "450k+", label: "Monthly bookings", detail: "Handled through the mobile platform.", graphic: { kind: "line" } },
@@ -101,11 +98,9 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     lead: "Fast, dependable web applications shaped around your business, from customer portals to the internal tools your teams rely on.",
     sectionTitle: "Web app development services",
     sectionLead: "We plan, design and engineer web applications that stay quick to use and easy to change as your business grows.",
-    model: "imageBoard",
+    model: "webPortal",
     proof: {
       layout: "stepped",
-      heading: "Fast under real load",
-      statement: "Wealth Wisdom's advisors work in a browser-based portfolio terminal that stays smooth while tracking hundreds of thousands of live data points.",
       source: "Wealth Wisdom Global project",
       stats: [
         { value: "120 FPS", label: "Canvas frame rate", detail: "Tested under 500k active points.", graphic: { kind: "frames" } },
@@ -125,11 +120,9 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     lead: "AI built around your data and your decisions, designed to solve a specific business problem rather than to demonstrate a technology.",
     sectionTitle: "Custom AI development services",
     sectionLead: "We start from the outcome you need, then build, test and deploy the model that can reliably deliver it.",
-    model: "vision",
+    model: "aiConnect",
     proof: {
       layout: "grid",
-      heading: "Measured, not assumed",
-      statement: "Kaster's document model checks each submission for forgery and tampering, replacing a manual review queue.",
       source: "Kaster Underwriting project",
       stats: [
         { value: "99.4%", label: "Fraud detection", detail: "Pixel-level tamper checks.", percent: 99.4, legend: ["Detected", "Missed"] },
@@ -152,8 +145,6 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "answers",
     proof: {
       layout: "grid",
-      heading: "Answers people can check",
-      statement: "Hahnnemen's clinical agent searches a curated medical library and cites its sources, so physicians can verify every answer.",
       source: "Clinical Therapeutics Group project",
       stats: [
         { value: "99.4%", label: "Guardrail precision", detail: "No fabricated citations observed.", percent: 99.4, legend: ["Precise", "Not precise"] },
@@ -176,8 +167,6 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "chat",
     proof: {
       layout: "globe",
-      heading: "Assistants people rely on",
-      statement: "Hahnnemen's conversational agent supports licensed physicians in their daily work, answering from a curated knowledge base.",
       source: "Clinical Therapeutics Group project and our chatbot service benchmark",
       stats: [
         { value: "3,400+", label: "Active physicians", detail: "Licensed clinical users." },
@@ -201,8 +190,6 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "workflow",
     proof: {
       layout: "grid",
-      heading: "Less manual work, fewer errors",
-      statement: "Kaster's document verification moved from a 72-hour manual process to an automated check, with people reviewing only the exceptions.",
       source: "Kaster Underwriting project and our automation service benchmark",
       stats: [
         { value: "94%", label: "Manual effort reduced", detail: "Our automation benchmark.", percent: 94, legend: ["Automated", "Still manual"] },
@@ -225,8 +212,6 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "website",
     proof: {
       layout: "stepped",
-      heading: "Our standard on every build",
-      statement: "We treat speed, clarity and ownership as part of the design, so your site launches quickly and stays entirely yours.",
       source: "21Spheres website service standards",
       stats: [
         { value: "100/100", label: "Lighthouse score", detail: "The target we build towards.", graphic: { kind: "gauge" } },
@@ -249,8 +234,6 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "saas",
     proof: {
       layout: "globe",
-      heading: "Platforms that keep running",
-      statement: "Bimakart Connect gives a large partner network one always-on platform, even through peak renewal seasons.",
       source: "Bimakart Technologies project",
       stats: [
         { value: "45,000+", label: "Active network", detail: "Partners on the platform." },
@@ -274,8 +257,6 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "globe",
     proof: {
       layout: "grid",
-      heading: "Reliable at enterprise scale",
-      statement: "Bimakart replaced fragmented insurer systems with one fault-tolerant gateway, and cut quote times from 45 seconds to under 2.4.",
       source: "Bimakart Technologies project",
       stats: [
         { value: "99.99%", label: "Availability", detail: "Verified around the clock.", percent: 99.99, legend: ["Available", "Downtime"] },
@@ -298,8 +279,6 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "board",
     proof: {
       layout: "stepped",
-      heading: "Yours from day one",
-      statement: "Everything we build belongs to you, written by our own team and handed over with the documentation to run it.",
       source: "21Spheres delivery standards",
       stats: [
         { value: "100%", label: "IP ownership", detail: "The code and rights are yours.", graphic: { kind: "ring" } },

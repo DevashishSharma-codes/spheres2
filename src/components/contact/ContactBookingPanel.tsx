@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, ChevronLeft, ChevronRight, Clock, ExternalLink, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, ExternalLink, X } from "lucide-react";
 import Image from "next/image";
+import { PillArrow, pillClassName } from "@/components/ui/PillLink";
 
 const calendarUrl = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ08BaXRCtnGSSZM8qLs5VTV1lhd5j9wOkiBRFFAD8_93kF6yVHFyT8qgGORaV43Mzfm6CMr5Xmo?gv=true";
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -102,7 +103,7 @@ export default function ContactBookingPanel() {
   };
 
   return (
-    <section aria-labelledby="booking-title" className="w-full border border-black/15 bg-white shadow-[0_18px_50px_rgba(0,0,0,.14)] lg:h-full">
+    <section aria-labelledby="booking-title" className="w-full overflow-hidden rounded-[22px] border border-black/15 bg-white shadow-[0_18px_50px_rgba(0,0,0,.14)] lg:h-full">
       <div className="relative flex flex-col justify-between overflow-hidden bg-[#09090b] p-6 text-white sm:p-8 lg:p-10">
         <div className="pointer-events-none absolute -bottom-20 left-1/2 h-52 w-52 -translate-x-1/2 rounded-full bg-violet-600/15 blur-[80px]" />
         <div className="relative">
@@ -120,15 +121,16 @@ export default function ContactBookingPanel() {
             <div className="relative my-5 flex h-2 items-center rounded-full bg-white/10">
               <motion.div className="h-full rounded-full bg-gradient-to-r from-[#d8f28c] via-[#74c0fc] to-[#ff922b]" animate={{ width: `${stepPercent}%` }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} />
               {sliderSteps.map((step, index) => <button key={step} type="button" onClick={() => { setAutoPlaying(false); setStepIndex(index); }} aria-label={`Show ${step} commits per day`} className="absolute z-10 h-2 w-2 -ml-1 cursor-pointer rounded-full bg-white/90 transition-transform hover:scale-150" style={{ left: `${(index / (sliderSteps.length - 1)) * 100}%` }} />)}
-              <motion.div className="absolute z-20 -ml-3 flex h-6 w-6 cursor-pointer items-center justify-center border border-black/20 bg-white outline outline-2 outline-white/15 sm:h-7 sm:w-7 sm:-ml-3.5" animate={{ left: `${stepPercent}%`, rotate: stepIndex * 180 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
+              <motion.div className="absolute z-20 -ml-3 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-black/20 bg-white outline outline-2 outline-white/15 sm:h-7 sm:w-7 sm:-ml-3.5" animate={{ left: `${stepPercent}%`, rotate: stepIndex * 180 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
                 <Image src="/logo-square.png" alt="21Spheres" fill sizes="28px" className="object-contain p-1" />
               </motion.div>
             </div>
             <div className="flex justify-between text-[8px] text-white/45"><span>20</span><span>200</span></div>
           </div>
 
-          <button type="button" onClick={() => setCalendarOpen(true)} disabled={!selectedTime || selectedSlotPast} className="mb-3 inline-flex w-full items-center justify-center gap-2 bg-white px-4 py-2.5 text-xs font-semibold tracking-wide text-black shadow-md transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto">
-            <span>Continue to Google Calendar</span><ArrowRight size={13} />
+          <button type="button" onClick={() => setCalendarOpen(true)} disabled={!selectedTime || selectedSlotPast} className={`group mb-3 w-full justify-between disabled:cursor-not-allowed disabled:opacity-45 sm:w-fit ${pillClassName()}`}>
+            Continue to Google Calendar
+            <PillArrow />
           </button>
         </div>
         <p className="relative border-t border-white/10 pt-3 text-[9px] font-light leading-relaxed text-white/60 sm:text-[10px]">
@@ -152,7 +154,7 @@ export default function ContactBookingPanel() {
             const day = index + 1;
             const selected = selectedDay === day;
             const past = now !== null && isPastDate(year, month, day, now);
-            return <button key={day} type="button" disabled={past} aria-pressed={selected} onClick={() => selectDay(day)} className={`flex min-h-[38px] items-center justify-center border text-xs transition sm:min-h-[44px] ${selected ? "border-violet-500 bg-violet-100 font-semibold text-violet-950 ring-1 ring-violet-300" : "border-black/10 text-black/70 hover:border-violet-300 hover:bg-violet-50"} ${past ? "cursor-not-allowed opacity-30" : ""}`}>{day}</button>;
+            return <button key={day} type="button" disabled={past} aria-pressed={selected} onClick={() => selectDay(day)} className={`flex min-h-[38px] items-center justify-center rounded-xl border text-xs transition sm:min-h-[44px] ${selected ? "border-violet-500 bg-violet-100 font-semibold text-violet-950 ring-1 ring-violet-300" : "border-black/10 text-black/70 hover:border-violet-300 hover:bg-violet-50"} ${past ? "cursor-not-allowed opacity-30" : ""}`}>{day}</button>;
           })}
         </div>
 
@@ -162,12 +164,13 @@ export default function ContactBookingPanel() {
             {timeSlots.map((slot) => {
               const past = now !== null && isPastTime(year, month, selectedDay, slot.time, now);
               const selected = selectedTime === slot.time;
-              return <button key={slot.time} type="button" disabled={past} aria-pressed={selected} onClick={() => setSelectedTime(slot.time)} className={`rounded-none border px-2 py-2.5 text-[9px] font-semibold transition sm:text-[10px] disabled:cursor-not-allowed disabled:opacity-30 ${selected ? slot.selected : `${slot.color} hover:brightness-[0.98]`}`}>{slot.time}</button>;
+              return <button key={slot.time} type="button" disabled={past} aria-pressed={selected} onClick={() => setSelectedTime(slot.time)} className={`rounded-xl border px-2 py-2.5 text-[9px] font-semibold transition sm:text-[10px] disabled:cursor-not-allowed disabled:opacity-30 ${selected ? slot.selected : `${slot.color} hover:brightness-[0.98]`}`}>{slot.time}</button>;
             })}
           </div>
           <p className="mt-3 flex items-center gap-1.5 text-[9px] text-black/65"><Clock size={12} />{selectedTime ? <>Selected: <strong className="font-semibold text-black">{selectedDateLabel} · {selectedTime}</strong></> : "Choose a date and time to continue"}</p>
-          <button type="button" onClick={() => setCalendarOpen(true)} disabled={!selectedTime || selectedSlotPast} aria-label="Reserve an Architecture Call" title="Reserve an Architecture Call" className="ml-auto mt-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#09090b] text-white transition hover:bg-violet-900 disabled:cursor-not-allowed disabled:opacity-40">
-            <ArrowRight size={16} aria-hidden="true" />
+          <button type="button" onClick={() => setCalendarOpen(true)} disabled={!selectedTime || selectedSlotPast} className={`group mt-3 disabled:cursor-not-allowed disabled:opacity-45 ${pillClassName("sm")}`}>
+            Reserve a call
+            <PillArrow size="sm" />
           </button>
         </div>
       </div>

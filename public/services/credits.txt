@@ -24,3 +24,7 @@ road.jpg — https://unsplash.com/photos/black-concrete-road-surrounded-by-brown
 sofa.jpg — https://unsplash.com/photos/black-and-brown-leather-padded-tub-sofa-Uxqlfigh6oE (Inside Weather)
 stairs.jpg — https://unsplash.com/photos/minimalist-concrete-staircase-with-vase-0B7ijYKaKcE (Alesia Kazantceva)
 vases.jpg — https://unsplash.com/photos/minimalist-photography-of-two-white-ceramic-vases-8QIAj5tHDdc (WARION Taipei)
+
+Custom AI hero:
+ai/clouds.jpg — https://unsplash.com/photos/clouds-f-7oWcaVjTY (Jason Zeis)
+ai/*.svg — brand logos from @lobehub/icons-static-svg (MIT licence for the package; each logo remains its owner's trademark)

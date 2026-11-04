@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { PageBackButton } from "@/components/ui/PageBackButton";
 import { PillLink } from "@/components/ui/PillLink";
 import { CursorDotField } from "@/components/ui/CursorDotField";
 import { DotGlobe } from "@/components/ui/DotGlobe";
@@ -21,6 +22,12 @@ const HATCH = {
 
 function SectionLabel({ children }: { children: string }) {
   return <p className="text-xs font-semibold uppercase tracking-[0.19em] text-[#C9BBFF]">{children}</p>;
+}
+
+const RESULTS_TITLE = "View results";
+
+function ResultsTitle() {
+  return <h2 id="service-results" className="text-3xl font-light leading-[1.1] tracking-[-0.04em] sm:text-[44px]">{RESULTS_TITLE}</h2>;
 }
 
 function SourceNote({ children }: { children: string }) {
@@ -62,26 +69,17 @@ function Waffle({ stat }: { stat: ServiceProofStat }) {
 function SteppedProof({ proof }: { proof: ServiceProof }) {
   const heights = ["sm:h-[220px]", "sm:h-[275px]", "sm:h-[330px]"];
   return (
-    <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10">
-      <div className="flex flex-col justify-between gap-4">
-        <SectionLabel>{proof.heading}</SectionLabel>
-        <SourceNote>{proof.source}</SourceNote>
-      </div>
-      <div>
-        <p className="max-w-4xl text-2xl font-light leading-[1.25] tracking-[-0.025em] sm:text-[32px]">{proof.statement}</p>
-        <dl className="mt-9 grid items-start gap-4 sm:grid-cols-3">
-          {proof.stats.map((stat, index) => (
-            <div key={stat.label} className="flex flex-col-reverse">
-              <dt className="mt-3 text-sm leading-relaxed text-white/70"><span className="font-medium text-white">{stat.label}.</span> {stat.detail}</dt>
-              <dd className={`flex h-[210px] flex-col rounded-[18px] p-4 ${heights[index % 3]}`} style={HATCH}>
-                <div className="min-h-0 flex-1">{stat.graphic && <StatGraphic graphic={stat.graphic} />}</div>
-                <p className="mt-3 text-[40px] font-light leading-none tracking-[-0.04em] sm:text-[46px]">{stat.value}</p>
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </div>
-    </div>
+    <dl className="grid items-start gap-4 sm:grid-cols-3">
+      {proof.stats.map((stat, index) => (
+        <div key={stat.label} className="flex flex-col-reverse">
+          <dt className="mt-3 text-sm leading-relaxed text-white/70"><span className="font-medium text-white">{stat.label}.</span> {stat.detail}</dt>
+          <dd className={`flex h-[210px] flex-col rounded-[18px] p-4 ${heights[index % 3]}`} style={HATCH}>
+            <div className="min-h-0 flex-1">{stat.graphic && <StatGraphic graphic={stat.graphic} />}</div>
+            <p className="mt-3 text-[40px] font-light leading-none tracking-[-0.04em] sm:text-[46px]">{stat.value}</p>
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
@@ -103,21 +101,9 @@ function GridStat({ stat }: { stat: ServiceProofStat }) {
 
 function GridProof({ proof }: { proof: ServiceProof }) {
   return (
-    <div>
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
-        <div>
-          <SectionLabel>Results</SectionLabel>
-          <h2 className="mt-3 text-3xl font-light leading-[1.1] tracking-[-0.04em] sm:text-[44px]">{proof.heading}</h2>
-        </div>
-        <div className="max-w-xl lg:justify-self-end">
-          <p className="text-[15px] leading-relaxed text-white/70">{proof.statement}</p>
-          <div className="mt-2"><SourceNote>{proof.source}</SourceNote></div>
-        </div>
-      </div>
-      <dl className="mt-10 grid items-end gap-10 lg:grid-cols-3 lg:gap-6">
+    <dl className="grid items-end gap-10 lg:grid-cols-3 lg:gap-6">
         {proof.stats.map((stat) => <GridStat key={stat.label} stat={stat} />)}
       </dl>
-    </div>
   );
 }
 
@@ -125,10 +111,7 @@ function GlobeProof({ proof }: { proof: ServiceProof }) {
   return (
     <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div>
-        <SectionLabel>Results</SectionLabel>
-        <h2 className="mt-3 text-3xl font-light leading-[1.1] tracking-[-0.04em] sm:text-[44px]">{proof.heading}</h2>
-        <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-white/70">{proof.statement}</p>
-        <dl className="mt-9 grid grid-cols-2 gap-x-6 gap-y-8">
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-8">
           {proof.stats.map((stat) => (
             <div key={stat.label} className="flex flex-col-reverse">
               <dt className="mt-1.5 text-sm leading-snug text-white/65"><span className="block font-medium text-white">{stat.label}</span>{stat.detail}</dt>
@@ -136,7 +119,6 @@ function GlobeProof({ proof }: { proof: ServiceProof }) {
             </div>
           ))}
         </dl>
-        <div className="mt-6"><SourceNote>{proof.source}</SourceNote></div>
       </div>
       <div className="mx-auto w-full max-w-[560px]"><DotGlobe /></div>
     </div>
@@ -155,11 +137,13 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
         className="absolute inset-0 -z-20"
         style={{ background: "radial-gradient(55% 900px at 85% 0%, rgba(112,87,217,.24), transparent 70%), radial-gradient(45% 700px at 0% 45%, rgba(112,87,217,.12), transparent 70%)" }}
       />
+      <div className="relative isolate">
       <CursorDotField />
 
-      <Container wide>
+      <Container wide className="relative">
+        <PageBackButton className="absolute left-4 top-4 z-10 sm:left-6 lg:left-8" />
         {/* Hero */}
-        <section className="grid items-center gap-10 pb-10 pt-12 sm:pt-16 lg:h-[calc(100svh-137px)] lg:min-h-[460px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-12 lg:py-5">
+        <section className="grid items-center gap-10 pb-10 pt-[72px] sm:pt-20 lg:h-[calc(100svh-137px)] lg:min-h-[460px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-12 lg:py-5">
           <div>
             <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-white/65">
               <Link href="/" className="transition-colors hover:text-white">Home</Link>
@@ -184,6 +168,7 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
       </Container>
 
       {SERVICE_TECH[service.id] && <TechMarquee logos={SERVICE_TECH[service.id]} />}
+      </div>
 
       <Container wide>
         {/* What's included: plain ruled columns, no cards */}
@@ -222,12 +207,16 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
           </div>
         </section>
 
-        {/* Real results */}
-        <section aria-label="Results" className="border-t border-white/15 py-14 sm:py-20">
+        {SERVICE_CAPABILITIES[service.id] && <ServiceCapabilitiesSection service={service} content={SERVICE_CAPABILITIES[service.id]} />}
+
+        {/* Results close the page, just before the next step */}
+        <section aria-labelledby="service-results" className="py-14 sm:py-20">
+          <div className="mb-8 flex flex-col justify-between gap-2 sm:mb-10 sm:flex-row sm:items-baseline sm:gap-6">
+            <ResultsTitle />
+            <SourceNote>{detail.proof.source}</SourceNote>
+          </div>
           <Proof proof={detail.proof} />
         </section>
-
-        {SERVICE_CAPABILITIES[service.id] && <ServiceCapabilitiesSection service={service} content={SERVICE_CAPABILITIES[service.id]} />}
 
         {/* Next step */}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-white/15 py-10 sm:py-12">

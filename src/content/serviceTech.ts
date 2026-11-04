@@ -19,3 +19,6 @@ export const SERVICE_TECH: Record<string, TechLogo[]> = {
   "enterprise-software-development": tech(["kubernetes", "Kubernetes"], ["go", "Go"], ["kafka", "Apache Kafka"], ["aws", "AWS"], ["terraform", "Terraform"], ["docker", "Docker"], ["grafana", "Grafana"], ["prometheus", "Prometheus"], ["postgresql", "PostgreSQL"], ["redis", "Redis"]),
   "custom-software-development": tech(["rust", "Rust"], ["python", "Python"], ["typescript", "TypeScript"], ["cplusplus", "C++"], ["graphql", "GraphQL"], ["nodejs", "Node.js"], ["postgresql", "PostgreSQL"], ["docker", "Docker"], ["github", "GitHub"], ["react", "React"]),
 };
+
+/** Technologies named across the published case studies. */
+export const PORTFOLIO_TECH: TechLogo[] = tech(["rust", "Rust"], ["react", "React Native"], ["nextjs", "Next.js"], ["typescript", "TypeScript"], ["fastapi", "FastAPI"], ["kafka", "Apache Kafka"], ["redis", "Redis"], ["aws", "AWS"], ["docker", "Docker"], ["pytorch", "PyTorch"], ["qdrant", "Qdrant"], ["tailwindcss", "Tailwind CSS"]);

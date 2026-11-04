@@ -70,7 +70,7 @@ const CARDS: TestimonialCardData[] = [
     role: "Chief Architect @ Gallea Ai",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
     bgImage: "/card-bgs/user-bg-green-gradient.png",
-    themeVariant: "frost",
+    themeVariant: "slate",
   },
   // Column 4 Top (10X Management) - Purple
   {

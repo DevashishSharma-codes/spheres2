@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Code2, Layers, Rocket, Timer } from "lucide-react";
 import { Container } from "@/components/ui/Container";
+import { PageBackButton } from "@/components/ui/PageBackButton";
 import { SERVICES_CONTENT } from "@/content/services";
 
 const STATS = [
@@ -18,7 +19,8 @@ export function ServicesIntro() {
       <div className="relative isolate overflow-hidden bg-[#141318] text-white">
         <Image src="/about-meeting-bg.png" alt="" fill loading="eager" fetchPriority="high" sizes="100vw" className="-z-20 object-cover object-[50%_40%]" />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-b from-[#120f1f]/80 to-[#120f1f]/65" />
-        <Container wide className="py-12 text-center sm:py-14">
+        <Container wide className="relative pb-12 pt-[68px] text-center sm:py-14">
+          <PageBackButton className="absolute left-4 top-4 sm:left-6 lg:left-8" />
           <nav aria-label="Breadcrumb" className="flex items-center justify-center gap-2 text-sm text-white/75">
             <Link href="/" className="transition-colors hover:text-white">Home</Link>
             <span aria-hidden="true">•</span>

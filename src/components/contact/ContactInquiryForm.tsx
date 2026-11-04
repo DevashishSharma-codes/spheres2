@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { PillArrow, pillClassName } from "@/components/ui/PillLink";
 
 const fieldClass =
-  "mt-1.5 h-11 w-full rounded-[4px] border border-[#c9c9cc] bg-white px-3.5 text-sm text-[#202026] outline-none transition placeholder:text-[#929297] focus:border-[#7057D9] focus:ring-2 focus:ring-[#7057D9]/15";
+  "mt-1.5 h-11 w-full rounded-xl border border-[#c9c9cc] bg-white px-3.5 text-sm text-[#202026] outline-none transition placeholder:text-[#929297] focus:border-[#7057D9] focus:ring-2 focus:ring-[#7057D9]/15";
 const labelClass = "block text-sm leading-5 text-[#626268]";
 
 function RequiredMark() {
@@ -14,7 +15,7 @@ export default function ContactInquiryForm() {
   const [goal, setGoal] = useState("");
 
   return (
-    <div className="flex w-full flex-col bg-white px-6 py-7 shadow-[0_18px_55px_rgba(28,25,37,0.1)] sm:px-8 sm:py-8 lg:h-full lg:px-8 lg:py-8">
+    <div className="flex w-full flex-col rounded-[22px] bg-white px-6 py-7 shadow-[0_18px_55px_rgba(28,25,37,0.1)] sm:px-8 sm:py-8 lg:h-full lg:px-8 lg:py-8">
       <h1 className="text-[26px] font-light leading-tight tracking-[-0.025em] text-[#19191c] sm:text-[32px]">
         Tell us how we can help you
       </h1>
@@ -29,7 +30,7 @@ export default function ContactInquiryForm() {
             maxLength={300}
             value={goal}
             onChange={(event) => setGoal(event.target.value)}
-            className="mt-1.5 block min-h-[57px] w-full resize-y rounded-[4px] border border-[#c9c9cc] bg-white px-3.5 py-3 text-sm text-[#202026] outline-none transition placeholder:text-[#929297] focus:border-[#7057D9] focus:ring-2 focus:ring-[#7057D9]/15"
+            className="mt-1.5 block min-h-[57px] w-full resize-y rounded-xl border border-[#c9c9cc] bg-white px-3.5 py-3 text-sm text-[#202026] outline-none transition placeholder:text-[#929297] focus:border-[#7057D9] focus:ring-2 focus:ring-[#7057D9]/15"
           />
           <p className="mt-1 text-right text-xs text-[#77777d]" aria-live="polite">{goal.length}/300</p>
         </div>
@@ -95,8 +96,9 @@ export default function ContactInquiryForm() {
           <p>Your information will only be used to respond to your inquiry.</p>
         </div>
 
-        <button type="submit" className="min-w-[160px] rounded-full bg-[#7057D9] px-7 py-2.5 text-sm font-semibold text-white transition hover:bg-[#5d43c5] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#7057D9]/25">
+        <button type="submit" className={`group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8] ${pillClassName()}`}>
           Submit
+          <PillArrow />
         </button>
       </form>
     </div>

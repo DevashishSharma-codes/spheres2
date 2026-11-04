@@ -2,11 +2,12 @@
 
 import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bot, Landmark, ShieldCheck, Smartphone, type LucideIcon } from "lucide-react";
 import { FolderTabCard } from "@/components/ui/FolderTabCard";
 import { LaptopFrame } from "@/components/ui/LaptopFrame";
+import { PillLink } from "@/components/ui/PillLink";
+import { DuskBackdrop } from "@/components/services/ServiceModels";
 import {
   DISCIPLINE_TABS,
   PORTFOLIO_CASE_STUDIES,
@@ -20,10 +21,6 @@ const DISCIPLINE_CARD_META: Record<string, { icon: LucideIcon; label: string }> 
   "InsurTech & Cloud Platforms": { icon: ShieldCheck, label: "InsurTech & Cloud" },
   "Mobile & High-Concurrency": { icon: Smartphone, label: "Mobile" },
 };
-
-/* Shared glass surface: dark, translucent, soft top highlight */
-const glass =
-  "border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_30px_80px_-30px_rgba(0,0,0,0.85)]";
 
 /* ------------------------------------------------------------------ */
 /* Laptop mockup: silver frame so it reads clearly on the dark page    */
@@ -80,8 +77,6 @@ function Laptop({ project }: { project: DetailedCaseStudy }) {
 /* One case study: laptop on the left, details on the right            */
 /* ------------------------------------------------------------------ */
 function CaseStudyCard({ project }: { project: DetailedCaseStudy }) {
-  const lead = project.whatChanged.metrics[0];
-
   return (
     <motion.article
       layout
@@ -89,94 +84,52 @@ function CaseStudyCard({ project }: { project: DetailedCaseStudy }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35 }}
-      className={`overflow-hidden rounded-[32px] ${glass}`}
     >
-      <div className="grid lg:grid-cols-2">
-        {/* LEFT: laptop on a soft purple glow panel */}
-        <div className="relative flex items-center justify-center overflow-hidden p-5 sm:p-8">
-          <div
-            aria-hidden
-            className="absolute inset-3 rounded-[24px]"
-            style={{
-              backgroundColor: "#15102b",
-              backgroundImage:
-                "radial-gradient(110% 90% at 15% 10%, rgba(244,172,214,0.35) 0%, transparent 55%), radial-gradient(100% 90% at 90% 90%, rgba(112,87,217,0.75) 0%, transparent 60%), radial-gradient(80% 70% at 60% 30%, rgba(167,139,250,0.35) 0%, transparent 60%)",
-            }}
-          />
-          <div className="relative w-full py-10">
-            <Laptop project={project} />
-
-            {/* floating glass stat, like the reference's output card */}
-            <div className="absolute -bottom-1 right-1 hidden w-[190px] rounded-2xl sm:block lg:hidden xl:block border border-white/20 bg-white/10 p-4 backdrop-blur-xl shadow-[0_20px_40px_-18px_rgba(0,0,0,0.7)] sm:right-3">
-              <p className="text-2xl font-medium tracking-tight text-white">{lead.value}</p>
-              <p className="mt-0.5 text-xs text-white/70">{lead.label}</p>
-              {lead.context && (
-                <p className="mt-1 text-[11px] italic text-white/50">{lead.context}</p>
-              )}
-            </div>
-          </div>
+      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+        {/* Laptop over the dusk image */}
+        <div className="relative isolate flex items-center justify-center overflow-hidden rounded-[26px] border border-white/10 px-6 py-10 sm:px-10 sm:py-14">
+          <div className="absolute inset-0 -z-10"><DuskBackdrop /></div>
+          <div className="w-full"><Laptop project={project} /></div>
         </div>
 
-        {/* RIGHT: details */}
-        <div className="flex flex-col justify-center gap-7 p-8 sm:p-12 lg:pl-6 lg:pr-12">
-          <div className="space-y-4">
-            <p className="text-sm text-white/55">
-              {project.client} · {project.year}
-            </p>
-            <h3 className="text-3xl font-medium leading-[1.1] tracking-tight text-white sm:text-4xl">
-              {project.title}
-            </h3>
-            <p className="max-w-md text-base leading-relaxed text-white/65">
-              {project.headline}
-            </p>
-          </div>
+        {/* Details in ruled rows */}
+        <div className="flex min-w-0 flex-col justify-center">
+          <p className="text-sm text-white/60">{project.client} · {project.year}</p>
+          <h3 className="mt-3 text-3xl font-light leading-[1.1] tracking-[-0.04em] sm:text-[40px]">{project.title}</h3>
+          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/70">{project.headline}</p>
 
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div>
-              <p className="text-sm font-medium text-white">The brief</p>
-              <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-white/55">
-                {project.brief.problemStatement}
-              </p>
+          <dl className="mt-6 border-t border-white/15 text-sm">
+            <div className="grid gap-1 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
+              <dt className="text-white/50">The brief</dt>
+              <dd className="line-clamp-3 leading-relaxed text-white/85">{project.brief.problemStatement}</dd>
             </div>
-            <div>
-              <p className="text-sm font-medium text-white">What changed</p>
-              <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-white/55">
-                {project.whatChanged.empiricalOutcome}
-              </p>
+            <div className="grid gap-1 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
+              <dt className="text-white/50">What changed</dt>
+              <dd className="line-clamp-3 leading-relaxed text-white/85">{project.whatChanged.empiricalOutcome}</dd>
             </div>
-          </div>
+            <div className="grid gap-2 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
+              <dt className="text-white/50">Technology</dt>
+              <dd className="flex flex-wrap gap-1.5">
+                {project.technology.stack.map((tech) => (
+                  <span key={tech} className="rounded-full border border-white/15 bg-white/[.06] px-2.5 py-0.5 text-xs text-white/80">{tech}</span>
+                ))}
+              </dd>
+            </div>
+          </dl>
 
-          <div>
-            <p className="mb-3 text-sm font-medium text-white">Technology</p>
-            <div className="flex flex-wrap gap-2">
-              {project.technology.stack.map((tech) => (
-                <span
-                  key={tech}
-                  className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs text-white/75"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <Link
-              href="/contact"
-              className="text-sm text-[#B9A6FF] underline decoration-[#B9A6FF]/30 underline-offset-4 transition hover:text-white hover:decoration-white"
-            >
-              Talk about a similar project
-            </Link>
-          </div>
+          <div className="mt-6"><PillLink href="/contact">Talk about a similar project</PillLink></div>
         </div>
       </div>
 
-      {/* metrics strip */}
-      <dl className="grid grid-cols-3 divide-x divide-white/10 border-t border-white/10 bg-white/[0.025] px-3 py-7 sm:px-8">
-        {project.whatChanged.metrics.slice(0, 3).map((m) => (
-          <div key={m.label} className="px-3 text-center sm:px-5">
-            <dd className="text-2xl font-normal tracking-tight text-white sm:text-3xl">{m.value}</dd>
-            <dt className="mt-1 text-xs leading-snug text-white/55 sm:text-sm">{m.label}</dt>
+      {/* Results */}
+      <dl className="mt-10 grid gap-8 border-t border-white/15 pt-7 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-white/15">
+        {project.whatChanged.metrics.slice(0, 3).map((metric) => (
+          <div key={metric.label} className="flex flex-col-reverse sm:px-6 sm:first:pl-0 sm:last:pr-0">
+            <dt className="mt-2 text-sm leading-snug text-white/70">
+              <span className="block font-medium text-white">{metric.label}</span>
+              {metric.context && <span className="first-letter:uppercase">{metric.context}</span>}
+            </dt>
+            <dd className="text-[40px] font-light leading-none tracking-[-0.04em] sm:text-[48px]">{metric.value}</dd>
           </div>
         ))}
       </dl>
@@ -213,47 +166,34 @@ export function PortfolioCaseStudiesSection() {
   ];
 
   return (
-    <section
-      id="case-studies"
-      className="relative overflow-hidden border-t border-white/10 py-20 text-white sm:py-24"
-      style={{
-        backgroundColor: "#07060B",
-        backgroundImage:
-          "radial-gradient(60% 45% at 50% 0%, rgba(112,87,217,0.22) 0%, transparent 70%), radial-gradient(45% 40% at 95% 35%, rgba(167,139,250,0.10) 0%, transparent 70%), radial-gradient(50% 40% at 5% 80%, rgba(112,87,217,0.12) 0%, transparent 70%)",
-      }}
-    >
+    <section id="case-studies" className="relative scroll-mt-16 text-white">
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
-        <header className="mb-12 max-w-2xl">
-          <h2 className="w-fit bg-gradient-to-r from-white via-[#E4DCFF] to-[#9D85F2] bg-clip-text pb-1 text-4xl font-light leading-[1.05] tracking-[-0.055em] text-transparent sm:text-5xl lg:text-6xl">
-            Built to make a difference.
-          </h2>
-          <p className="mt-5 text-base leading-relaxed text-white/60">
-            A portfolio of websites, ecommerce stores, custom software platforms and mobile apps we have
-            designed, built and launched. Filter by discipline, or ask us about the work we cannot publish.
+        <div className="border-t border-white/15 py-14 sm:py-20">
+        <header className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.19em] text-[#C9BBFF]">Case studies</p>
+            <h2 className="mt-3 w-fit bg-gradient-to-r from-white via-[#E4DCFF] to-[#9D85F2] bg-clip-text pb-1 text-3xl font-light leading-[1.1] tracking-[-0.04em] text-transparent sm:text-[44px]">
+              Built to make a difference.
+            </h2>
+          </div>
+          <p className="max-w-xl text-[15px] leading-relaxed text-white/70 lg:justify-self-end">
+            Websites, custom software platforms and mobile apps we have designed, built and launched. Filter by discipline, or ask us about the work we cannot publish.
           </p>
         </header>
 
-        {/* stats */}
-        <dl className={`mb-8 grid grid-cols-2 rounded-3xl md:grid-cols-4 md:divide-x md:divide-white/10 ${glass}`}>
-          {stats.map(([value, label], i) => (
-            <div
-              key={label}
-              className={`px-6 py-8 text-center ${i > 1 ? "border-t border-white/10 md:border-t-0" : ""}`}
-            >
-              <dd className={`text-4xl font-light tracking-tight ${i === 3 ? "text-[#B9A6FF]" : "text-white"}`}>
-                {value}
-              </dd>
-              <dt className="mt-2 text-sm text-white/55">{label}</dt>
+        {/* Stats */}
+        <dl className="mt-10 grid grid-cols-2 gap-y-8 border-y border-white/15 py-7 md:grid-cols-4 md:divide-x md:divide-white/15">
+          {stats.map(([value, label]) => (
+            <div key={label} className="flex flex-col-reverse md:px-6 md:first:pl-0 md:last:pr-0">
+              <dt className="mt-2 text-sm text-white/65">{label}</dt>
+              <dd className="text-[40px] font-light leading-none tracking-[-0.04em]">{value}</dd>
             </div>
           ))}
         </dl>
 
-        {/* filter */}
-        <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <nav
-            aria-label="Filter portfolio projects"
-            className="inline-flex max-w-full gap-1 overflow-x-auto rounded-full border border-white/10 bg-white/[0.04] p-1.5 backdrop-blur-xl"
-          >
+        {/* Filter */}
+        <div className="mb-10 mt-8 flex items-end justify-between gap-6 border-b border-white/15">
+          <nav aria-label="Filter portfolio projects" className="flex gap-6 overflow-x-auto overflow-y-hidden [scrollbar-width:none] sm:gap-8">
             {DISCIPLINE_TABS.map((tab) => {
               const on = activeTab === tab.id;
               return (
@@ -262,19 +202,16 @@ export function PortfolioCaseStudiesSection() {
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
                   aria-pressed={on}
-                  className={`shrink-0 rounded-full px-4 py-2 text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8E79E8] ${
-                    on
-                      ? "bg-[#7057D9] text-white shadow-[0_8px_24px_-8px_rgba(112,87,217,0.8)]"
-                      : "text-white/60 hover:text-white"
-                  }`}
+                  className={`relative shrink-0 py-2.5 text-[13px] font-medium transition-colors ${on ? "text-[#C9BBFF]" : "text-white/60 hover:text-white"}`}
                 >
                   {tab.label}
+                  {on && <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[2px] bg-[#9D85F2]" />}
                 </button>
               );
             })}
           </nav>
-          <p className="text-sm text-white/50">
-            Showing {projects.length} {projects.length === 1 ? "project" : "projects"}
+          <p className="hidden shrink-0 pb-2.5 text-sm text-white/55 sm:block">
+            {projects.length} {projects.length === 1 ? "project" : "projects"}
           </p>
         </div>
 
@@ -284,10 +221,9 @@ export function PortfolioCaseStudiesSection() {
           </AnimatePresence>}
         </div>
 
-        <div className="mt-9 sm:mt-12">
-          <div className="mb-5 flex items-baseline justify-between">
-            <h3 className="text-xl font-medium tracking-tight sm:text-2xl">More projects</h3>
-            <span className="text-sm text-white/50">{projects.length} projects</span>
+        <div className="mt-14 sm:mt-20">
+          <div className="mb-6 flex items-baseline justify-between">
+            <h3 className="text-2xl font-light tracking-[-0.03em] sm:text-[28px]">More projects</h3>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {projects.filter((project) => project.id !== featured?.id).map((project) => (
@@ -310,6 +246,7 @@ export function PortfolioCaseStudiesSection() {
               </motion.div>
             ))}
           </div>
+        </div>
         </div>
       </div>
     </section>

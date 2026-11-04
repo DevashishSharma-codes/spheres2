@@ -143,7 +143,7 @@ export function ServiceCapabilitiesSection({ service, content }: { service: Serv
       </section>
 
       {/* Benefits over a tinted photo */}
-      <section aria-labelledby="service-benefits" className="relative isolate mb-4 overflow-hidden rounded-[26px] border border-white/10">
+      <section aria-labelledby="service-benefits" className="relative isolate overflow-hidden rounded-[26px] border border-white/10">
         <Image src={service.cardImage ?? "/portfolio/photos/team.jpg"} alt="" fill sizes="(max-width: 1400px) 100vw, 1316px" style={{ objectPosition: service.cardImagePosition }} className="-z-20 object-cover" />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-br from-[#0c0a18]/[.97] via-[#120e29]/95 to-[#241a55]/90" />
         <div className="grid gap-x-10 gap-y-9 p-7 sm:grid-cols-2 sm:p-10 lg:grid-cols-3 lg:p-12">

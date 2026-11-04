@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { INSIGHTS_CONTENT } from "@/content/insights";
 import { InsightsBentoSection } from "@/components/insights/InsightsBentoSection";
+import { PageBackButton } from "@/components/ui/PageBackButton";
 
 const PAGE_SIZE = 6;
 
@@ -48,7 +49,7 @@ export function InsightsLandingSection({ archive = false }: { archive?: boolean 
         <section aria-label="Insights introduction" className="relative flex min-h-[70svh] items-center overflow-hidden bg-black text-white">
           <iframe aria-hidden="true" title="" tabIndex={-1} className="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 opacity-65" src="https://www.youtube-nocookie.com/embed/uWQ_8CtvzoY?autoplay=1&mute=1&controls=0&loop=1&playlist=uWQ_8CtvzoY&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-black/15" />
-          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-[#efefed] sm:h-40" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-white sm:h-40" />
           <div className="relative mx-auto w-full max-w-[1380px] px-6 py-20 sm:px-10 lg:px-16">
             <p className="mb-6 text-xs font-semibold uppercase tracking-[0.24em] text-white/75">Insights / Points of view</p>
             <div className="mb-7 h-px w-full bg-white/30" />
@@ -67,6 +68,7 @@ export function InsightsLandingSection({ archive = false }: { archive?: boolean 
         <iframe aria-hidden="true" title="" tabIndex={-1} className="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 opacity-65" src="https://www.youtube-nocookie.com/embed/uWQ_8CtvzoY?autoplay=1&mute=1&controls=0&loop=1&playlist=uWQ_8CtvzoY&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-black/15" />
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-[#efefed] sm:h-40" />
+        <div className="absolute inset-x-0 top-4 z-10 mx-auto w-full max-w-[1380px] px-6 sm:px-10 lg:px-16"><PageBackButton /></div>
         <div className="relative mx-auto w-full max-w-[1380px] px-6 py-20 sm:px-10 lg:px-16">
           <p className="mb-6 text-xs font-semibold uppercase tracking-[0.24em] text-white/75">Insights / Points of view</p>
           <div className="mb-7 h-px w-full bg-white/30" />

@@ -62,7 +62,7 @@ export function AllServicesCatalog({ services }: AllServicesCatalogProps) {
       className="relative z-10 overflow-hidden bg-transparent pt-2 pb-12 text-[#24232A] sm:pb-16"
     >
       <Container wide>
-        <nav aria-label="Filter services by category" className="mb-4 flex gap-6 overflow-x-auto border-b border-[#E7E5EB] sm:gap-8">
+        <nav aria-label="Filter services by category" className="mb-4 flex gap-6 overflow-x-auto overflow-y-hidden [scrollbar-width:none] border-b border-[#E7E5EB] sm:gap-8">
           {categories.map((category) => (
             <button
               key={category}
@@ -77,7 +77,7 @@ export function AllServicesCatalog({ services }: AllServicesCatalogProps) {
             >
               {category}
               {selectedCategory === category && (
-                <span aria-hidden="true" className="absolute inset-x-0 bottom-[-1px] h-[2px] bg-[#7057D9]" />
+                <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[2px] bg-[#7057D9]" />
               )}
             </button>
           ))}

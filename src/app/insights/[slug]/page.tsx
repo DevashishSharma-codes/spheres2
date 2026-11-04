@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { INSIGHTS_CONTENT } from "@/content/insights";
+import { PageBackButton } from "@/components/ui/PageBackButton";
 
 export function generateStaticParams() {
   return INSIGHTS_CONTENT.items.map(({ slug }) => ({ slug }));
@@ -47,8 +48,8 @@ export default async function InsightArticlePage({ params }: { params: Promise<{
     <section className="relative flex min-h-screen items-end overflow-hidden bg-[#171717] text-white">
       <div aria-hidden="true" className="insight-article-hero-image absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url("${articleImage}")` }} />
       <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-black/10" />
+      <div className="absolute inset-x-0 top-4 z-10 mx-auto w-full max-w-[1380px] px-6 sm:px-10 lg:px-16"><PageBackButton /></div>
       <div className="relative mx-auto w-full max-w-[1380px] px-6 pb-14 pt-28 sm:px-10 sm:pb-20 lg:px-16">
-        <Link href="/insights" className="mb-12 inline-flex items-center gap-2 text-sm text-white/80 transition hover:text-white">← All insights</Link>
         <p className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white/80">Insights <span className="px-2">/</span> {article.category}</p>
         <h1 className="max-w-5xl text-4xl font-light leading-[1.08] tracking-[-0.045em] sm:text-6xl lg:text-[72px]">{article.title}</h1>
         <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/35 pt-5 text-sm text-white/75"><span>{article.date}</span><span>{article.readTime}</span><span>21Spheres Insights</span></div>

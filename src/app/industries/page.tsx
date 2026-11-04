@@ -1,4 +1,5 @@
 import { IndustriesLandingSection } from "@/components/industries/IndustriesLandingSection";
+import { PageBackButton } from "@/components/ui/PageBackButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function IndustriesPage() {
   return (
     <main className="min-h-screen bg-[#040308] text-white">
-      <IndustriesLandingSection />
+      <IndustriesLandingSection withBackButton />
     </main>
   );
 }

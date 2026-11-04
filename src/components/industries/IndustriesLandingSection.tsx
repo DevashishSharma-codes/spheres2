@@ -1,5 +1,6 @@
 "use client";
 
+import { PageBackButton } from "@/components/ui/PageBackButton";
 import React, { useState, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,7 +11,7 @@ import {
 } from "lucide-react";
 import { INDUSTRIES_CONTENT } from "@/content/industries";
 
-export function IndustriesLandingSection() {
+export function IndustriesLandingSection({ withBackButton = false }: { withBackButton?: boolean }) {
   const industries = INDUSTRIES_CONTENT.items;
   const [activeIdx, setActiveIdx] = useState(0);
 
@@ -55,13 +56,16 @@ export function IndustriesLandingSection() {
       style={sectionBackground}
     >
       <header className="relative z-20 mx-auto flex w-full max-w-[1380px] shrink-0 flex-col gap-2 border-b border-white/10 bg-transparent px-4 py-3.5 sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:px-6 sm:py-4 lg:px-8">
-        <div className="shrink-0">
+        <div className="flex shrink-0 items-center gap-4">
+        {withBackButton && <PageBackButton />}
+        <div>
           <p className="mb-1 text-[12px] font-bold uppercase tracking-[0.18em] text-[#C8B4FF] sm:text-[13px]">
             Our expertise
           </p>
           <h2 className="whitespace-nowrap text-3xl font-light leading-none tracking-[-0.04em] text-white sm:text-4xl md:text-5xl lg:text-[52px]">
             Industries
           </h2>
+        </div>
         </div>
         <p className="max-w-lg pb-0.5 text-xs leading-relaxed text-white/65 sm:text-right sm:text-[13px]">
           Purpose-built systems for the sectors moving the world forward.

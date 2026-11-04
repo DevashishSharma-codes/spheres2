@@ -35,7 +35,7 @@ export function StaticTestimonialCard({ card }: StaticTestimonialCardProps) {
         };
       case "slate":
         return {
-          imgFilter: "grayscale(0.72) contrast(1.08) brightness(1.02)",
+          imgFilter: "grayscale(1) contrast(1.08) brightness(1.02)",
           overlayGradient: "linear-gradient(135deg, rgba(218, 218, 218, 0.62) 0%, rgba(194, 194, 194, 0.58) 54%, rgba(174, 174, 174, 0.66) 100%)",
           tintBg: "rgba(248, 248, 248, 0.06)",
           frameBg: "rgba(232, 232, 234, 0.88)",
@@ -77,11 +77,11 @@ export function StaticTestimonialCard({ card }: StaticTestimonialCardProps) {
 
   return (
     <div
-      className="relative p-2 sm:p-2.5 backdrop-blur-md rounded-none shadow-none transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(112,87,217,0.12)] group"
+      className="relative p-2 sm:p-2.5 backdrop-blur-md rounded-[22px] shadow-none transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(112,87,217,0.12)] group"
       style={{ backgroundColor: theme.frameBg }}
     >
       {/* Inner Card Body with Color-Graded Watercolor Background */}
-      <div className="relative w-full min-h-[340px] sm:min-h-[370px] lg:min-h-[390px] p-6 sm:p-7 rounded-none flex flex-col justify-between overflow-hidden">
+      <div className="relative w-full min-h-[340px] sm:min-h-[370px] lg:min-h-[390px] p-6 sm:p-7 rounded-[15px] flex flex-col justify-between overflow-hidden">
         
         {/* Soft Background Watercolor Image with Purple / Grayish / White / Black Grading */}
         <img
