@@ -67,6 +67,10 @@ export interface InsightItem {
   readTime: string;
   category: string;
   excerpt: string;
+  image: string;
+  assetType: string;
+  industry: string;
+  topic: string;
 }
 
 export interface TestimonialItem {

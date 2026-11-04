@@ -139,6 +139,20 @@ body {
   }
 }
 
+@keyframes insight-hero-zoom-out {
+  from { transform: scale(1.38); }
+  to { transform: scale(1); }
+}
+
+.insight-article-hero-image {
+  animation: insight-hero-zoom-out 2.8s cubic-bezier(0.2, 0.7, 0.25, 1) both;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .insight-article-hero-image { animation: none; }
+}
+
 @keyframes hww-process-stem-rise {
   from { scale: 1 0; opacity: 0.35; }
   to { scale: 1 1; opacity: 1; }

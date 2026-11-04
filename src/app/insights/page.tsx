@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function InsightsPage() {
-  return <InsightsLandingSection />;
+  return <InsightsLandingSection archive />;
 }
