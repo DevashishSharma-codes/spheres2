@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { PillLink } from "@/components/ui/PillLink";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAVIGATION_ITEMS } from "@/content/navigation";
@@ -57,12 +58,12 @@ const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
     ctaText: "Explore all technical capabilities",
     ctaHref: "/services",
     links: [
-      { title: "Mobile Application Development", tag: "120Hz Native iOS & Android", href: "/services#mobile-application-development" },
-      { title: "Web Application Development", tag: "Next.js & Sub-20ms Edge", href: "/services#web-application-development" },
-      { title: "Custom AI & Multi-Agent Loops", tag: "LoRA & TensorRT Pipelines", href: "/services#custom-ai-development" },
-      { title: "LLM Integration & Hybrid RAG", tag: "Zero-Hallucination Guardrails", href: "/services#llm-integration" },
-      { title: "SaaS & Multi-Tenant Systems", tag: "Enterprise SSO & Billing Engine", href: "/services#saas-development" },
-      { title: "Enterprise Software & Cloud Mesh", tag: "Kubernetes & 99.999% SLA", href: "/services#enterprise-software-development" },
+      { title: "Mobile Application Development", tag: "120Hz Native iOS & Android", href: "/services/mobile-application-development" },
+      { title: "Web Application Development", tag: "Next.js & Sub-20ms Edge", href: "/services/web-application-development" },
+      { title: "Custom AI & Multi-Agent Loops", tag: "LoRA & TensorRT Pipelines", href: "/services/custom-ai-development" },
+      { title: "LLM Integration & Hybrid RAG", tag: "Zero-Hallucination Guardrails", href: "/services/llm-integration" },
+      { title: "SaaS & Multi-Tenant Systems", tag: "Enterprise SSO & Billing Engine", href: "/services/saas-development" },
+      { title: "Enterprise Software & Cloud Mesh", tag: "Kubernetes & 99.999% SLA", href: "/services/enterprise-software-development" },
     ],
   },
   portfolio: {
@@ -119,6 +120,9 @@ const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
   },
 };
 
+/** Pages that are dark from the top down, where the navbar becomes dark glass. */
+const DARK_PAGES = ["/services/", "/portfolio", "/industries", "/how-we-work"];
+
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -128,7 +132,8 @@ export function Navbar() {
   const pathname = usePathname();
 
   const isHomePage = pathname === "/";
-  const isDarkHero = isHomePage && !scrolled;
+  const isDarkPage = DARK_PAGES.some((page) => pathname.startsWith(page));
+  const isDarkHero = (isHomePage && !scrolled) || isDarkPage;
 
   const handleMouseEnter = (key: string) => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
@@ -243,8 +248,9 @@ export function Navbar() {
   };
 
   return (
+    <>
     <header
-      className={`z-50 w-full transition-all duration-300 ease-out ${
+      className={`z-50 w-full transition-all duration-300 ease-out ${isDarkPage ? "-mb-[57px] sm:-mb-[65px]" : ""} ${
         isHomePage
           ? `fixed top-0 left-0 right-0 ${
               isDarkHero
@@ -254,7 +260,9 @@ export function Navbar() {
                 : "bg-white/80 backdrop-blur-xl border-b border-[#DADADD]/70 shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
             }`
           : `sticky top-0 ${
-              scrolled
+              isDarkPage
+                ? "bg-[rgba(18,18,22,0.55)] backdrop-blur-xl backdrop-saturate-150 border-b border-white/[0.10]"
+                : scrolled
                 ? "bg-white/80 backdrop-blur-xl border-b border-[#DADADD]/70 shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
                 : "bg-white border-b border-[#DADADD]/60"
             }`
@@ -328,18 +336,7 @@ export function Navbar() {
 
         {/* Right Action: CTA Button Only */}
         <div className="hidden sm:flex items-center">
-          <Link
-            href="/contact"
-            className={`inline-flex items-center justify-center px-4 py-1.5 sm:py-2 text-[13px] font-normal tracking-[-0.01em] transition-all duration-300 ${
-              pathname === "/contact"
-                ? "text-white bg-[#7057D9] border-[#7057D9]"
-                : isDarkHero
-                  ? "text-white bg-white/[0.08] hover:bg-white/[0.18] border border-white/25 hover:border-white/50 backdrop-blur-md rounded-full shadow-[0_2px_12px_rgba(0,0,0,0.3)]"
-                  : "text-[#2A2A2E] bg-white hover:bg-[#FAF9F7] border border-[#DADADD] rounded-none shadow-none"
-            }`}
-          >
-            <span>Contact Us</span>
-          </Link>
+          <PillLink href="/contact" size="sm">Contact Us</PillLink>
         </div>
 
         {/* Mobile Hamburger Trigger */}
@@ -368,7 +365,7 @@ export function Navbar() {
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.16, ease: "easeOut" }}
             className={`hidden lg:block absolute top-full left-0 w-full text-white z-50 overflow-hidden transition-colors duration-200 ${
-              isDarkHero
+              isDarkHero && !isDarkPage
                 ? "bg-[rgba(18,18,22,0.48)] backdrop-blur-2xl backdrop-saturate-180 border-b border-white/[0.12] shadow-[0_24px_60px_rgba(0,0,0,0.45),inset_0_1px_0_0_rgba(255,255,255,0.18)]"
                 : "bg-[#0C0C10]/95 backdrop-blur-3xl backdrop-saturate-150 border-b border-white/[0.10] shadow-[0_30px_90px_rgba(0,0,0,0.7),inset_0_1px_0_0_rgba(255,255,255,0.12)]"
             }`}
@@ -460,17 +457,16 @@ export function Navbar() {
           </div>
 
           <div className="pt-2 border-t border-[#DADADD] flex flex-col gap-2">
-            <Link
-              href="/contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2.5 text-xs font-medium text-white bg-[#7057D9] hover:bg-[#573EBF] transition-colors"
-            >
+            <PillLink href="/contact" size="sm" onClick={() => setMobileMenuOpen(false)} className="w-full justify-between">
               Contact Us
-            </Link>
+            </PillLink>
           </div>
         </div>
       )}
     </header>
+    {/* Dark backing, so the glass bar reads dark at the top of the page instead of showing the white body. */}
+    {isDarkPage && <div aria-hidden="true" className="h-[57px] bg-[#08070e] sm:h-[65px]" />}
+    </>
   );
 }
 

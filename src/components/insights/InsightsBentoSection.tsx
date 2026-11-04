@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PillLink } from "@/components/ui/PillLink";
 import { INSIGHTS_CONTENT } from "@/content/insights";
 
 const landingInsights = INSIGHTS_CONTENT.items.slice(0, 5);
@@ -117,9 +118,7 @@ export function InsightsBentoSection() {
         </div>
 
         <div className="mt-7 flex justify-center">
-          <Link href="/insights" className="inline-flex items-center gap-3 rounded-full border border-black bg-black px-6 py-3 text-sm font-medium text-white shadow-[0_8px_22px_rgba(0,0,0,.16)] transition hover:border-[#7057D9] hover:bg-[#7057D9]">
-            See all insights <span aria-hidden="true">↗</span>
-          </Link>
+          <PillLink href="/insights">See all insights</PillLink>
         </div>
       </div>
     </section>

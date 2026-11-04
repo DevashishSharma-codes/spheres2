@@ -20,8 +20,6 @@ import {
 
 interface AllServicesCatalogProps {
   services: ServiceItem[];
-  onSelectService: (service: ServiceItem) => void;
-  onOpenMobileSimulator: () => void;
 }
 
 const SERVICE_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -37,11 +35,7 @@ const SERVICE_ICON_MAP: Record<string, React.ComponentType<{ className?: string 
   Terminal,
 };
 
-export function AllServicesCatalog({
-  services,
-  onSelectService,
-  onOpenMobileSimulator,
-}: AllServicesCatalogProps) {
+export function AllServicesCatalog({ services }: AllServicesCatalogProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -93,7 +87,6 @@ export function AllServicesCatalog({
           onMouseLeave={() => setHoveredId(null)}
         >
           {filteredServices.map((service) => {
-            const isMobile = service.id === "mobile-application-development";
             const isHovered = hoveredId === service.id;
 
             return (
@@ -126,14 +119,7 @@ export function AllServicesCatalog({
                   image={service.cardImage}
                   imagePosition={service.cardImagePosition}
                   icon={SERVICE_ICON_MAP[service.icon || "Cpu"] || Cpu}
-                  ctaLabel={isMobile ? "Try simulator" : "Know more"}
-                  onClick={() => {
-                    if (isMobile) {
-                      onOpenMobileSimulator();
-                    } else {
-                      onSelectService(service);
-                    }
-                  }}
+                  href={`/services/${service.id}`}
                 />
               </motion.div>
             );

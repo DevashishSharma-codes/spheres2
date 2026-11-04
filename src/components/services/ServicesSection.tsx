@@ -1,14 +1,11 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import { SERVICES_CONTENT } from "@/content/services";
 import { OpenBoxServicesVisual } from "./OpenBoxServicesVisual";
-import { IPhoneSimulatorModal } from "./IPhoneSimulatorModal";
-import { ServiceDetailDrawer } from "./ServiceDetailDrawer";
-import { ServiceItem } from "@/types";
-import { ArrowRight } from "lucide-react";
+import { PillLink } from "@/components/ui/PillLink";
 import { AllServicesCatalog } from "./AllServicesCatalog";
 import { ServicesIntro } from "./ServicesIntro";
 import { Container } from "@/components/ui/Container";
@@ -19,9 +16,7 @@ interface ServicesSectionProps {
 }
 
 export function ServicesSection({ embedded = false, showAllCatalog = false }: ServicesSectionProps) {
-  const [simulatorOpen, setSimulatorOpen] = useState(false);
-  const [initialPhoneServiceId, setInitialPhoneServiceId] = useState<string>("mobile-application-development");
-  const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
+  const router = useRouter();
   const [offset, setOffset] = useState<number>(0);
 
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -62,11 +57,6 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
   }, []);
 
   const services = SERVICES_CONTENT.services;
-
-  const handleOpenSimulator = (serviceId = "mobile-application-development") => {
-    setInitialPhoneServiceId(serviceId);
-    setSimulatorOpen(true);
-  };
 
   // Scroll the desktop section to the target squad; let scroll progress own
   // the visible offset so the cards never jump forward and then snap back.
@@ -134,22 +124,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
             </p>
           </div>
         </Container>
-        <AllServicesCatalog
-          services={services}
-          onSelectService={(s) => setSelectedService(s)}
-          onOpenMobileSimulator={() => handleOpenSimulator("mobile-application-development")}
-        />
-        <IPhoneSimulatorModal
-          isOpen={simulatorOpen}
-          onClose={() => setSimulatorOpen(false)}
-          services={services}
-          initialServiceId={initialPhoneServiceId}
-        />
-        <ServiceDetailDrawer
-          service={selectedService}
-          onClose={() => setSelectedService(null)}
-          onOpenInPhone={(serviceId) => handleOpenSimulator(serviceId)}
-        />
+        <AllServicesCatalog services={services} />
       </section>
       </div>
     );
@@ -192,8 +167,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
               <OpenBoxServicesVisual
                 services={services}
                 offset={offset}
-                onSelectService={(s) => setSelectedService(s)}
-                onOpenMobileSimulator={() => handleOpenSimulator("mobile-application-development")}
+                onSelectService={(s) => router.push(`/services/${s.id}`)}
                 onPrevSquad={handlePrevSquad}
                 onNextSquad={handleNextSquad}
                 canPrevSquad={offset > 0}
@@ -223,36 +197,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
 
               {/* CTA: EXPLORE ALL SERVICES */}
               <div>
-                <Link 
-                  href="/services#all-services"
-                  className="
-                    group relative inline-flex items-center justify-center gap-2.5
-                    px-5 py-2.5 sm:px-6 sm:py-3 rounded-full
-                    bg-gradient-to-b from-white/[0.14] via-white/[0.07] to-white/[0.03]
-                    hover:from-white/[0.22] hover:via-white/[0.12] hover:to-white/[0.06]
-                    backdrop-blur-2xl backdrop-saturate-150
-                    border border-white/30 hover:border-white/60
-                    shadow-[0_8px_32px_rgba(0,0,0,0.36),inset_0_1px_1px_rgba(255,255,255,0.5),inset_0_0_12px_rgba(255,255,255,0.05)]
-                    hover:shadow-[0_12px_40px_rgba(0,0,0,0.45),0_0_24px_rgba(255,255,255,0.15),inset_0_1.5px_1.5px_rgba(255,255,255,0.7)]
-                    hover:scale-[1.02] active:scale-[0.98]
-                    transition-all duration-300
-                    w-fit select-none cursor-pointer overflow-hidden
-                  "
-                >
-                  <div 
-                    className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out bg-gradient-to-r from-transparent via-white/[0.15] to-transparent pointer-events-none" 
-                    aria-hidden="true"
-                  />
-
-                  <span className="relative z-10 font-medium text-white text-[14px] sm:text-[15px] tracking-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
-                    Explore all services
-                  </span>
-                  
-                  <ArrowRight 
-                    className="relative z-10 w-4 h-4 text-white/95 group-hover:text-white group-hover:translate-x-1.5 transition-all duration-200 shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]" 
-                    strokeWidth={2} 
-                  />
-                </Link>
+                <PillLink href="/services#all-services">Explore all services</PillLink>
               </div>
 
             </div>
@@ -260,21 +205,6 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
           </div>
         </div>
       </section>
-
-      {/* iPhone Simulator Modal */}
-      <IPhoneSimulatorModal
-        isOpen={simulatorOpen}
-        onClose={() => setSimulatorOpen(false)}
-        services={services}
-        initialServiceId={initialPhoneServiceId}
-      />
-
-      {/* Service Detail Drawer */}
-      <ServiceDetailDrawer
-        service={selectedService}
-        onClose={() => setSelectedService(null)}
-        onOpenInPhone={(serviceId) => handleOpenSimulator(serviceId)}
-      />
     </div>
   );
 }

@@ -24,7 +24,6 @@ interface OpenBoxServicesVisualProps {
   services: ServiceItem[];
   offset?: number;
   onSelectService: (service: ServiceItem) => void;
-  onOpenMobileSimulator: () => void;
   onPrevSquad?: () => void;
   onNextSquad?: () => void;
   canPrevSquad?: boolean;
@@ -37,7 +36,6 @@ interface ServiceVisualData {
   subtitle: string;
   actionText: string;
   icon: React.ComponentType<{ className?: string }>;
-  isMobile?: boolean;
 }
 
 const ALL_SERVICES_DATA: ServiceVisualData[] = [
@@ -45,9 +43,8 @@ const ALL_SERVICES_DATA: ServiceVisualData[] = [
     id: "mobile-application-development",
     title: "Mobile Application development",
     subtitle: "120Hz ProMotion & Action Button Haptics",
-    actionText: "Click to launch 3D model →",
+    actionText: "Native iOS & Android apps",
     icon: Smartphone,
-    isMobile: true,
   },
   {
     id: "web-application-development",
@@ -142,7 +139,6 @@ export function OpenBoxServicesVisual({
   services,
   offset = 0,
   onSelectService,
-  onOpenMobileSimulator,
   onPrevSquad,
   onNextSquad,
   canPrevSquad = false,
@@ -220,12 +216,8 @@ export function OpenBoxServicesVisual({
   const isLightActive = lightOn || safeOffset > 0;
 
   const handleCardClick = (card: ServiceVisualData) => {
-    if (card.isMobile) {
-      onOpenMobileSimulator();
-    } else {
-      const fullService = services.find((s) => s.id === card.id);
-      if (fullService) onSelectService(fullService);
-    }
+    const fullService = services.find((s) => s.id === card.id);
+    if (fullService) onSelectService(fullService);
   };
 
   // Target pose for a card given its slot relative to the visible window.
@@ -507,24 +499,15 @@ export function OpenBoxServicesVisual({
                       <span className="text-[12px] sm:text-[14px] font-semibold text-[#18181B] tracking-tight leading-snug truncate">
                         {card.title}
                       </span>
-                      {card.isMobile ? (
-                        <span className="text-[9px] sm:text-[11px] font-mono font-medium text-[#7C3AED] flex items-center gap-1 mt-0.5">
-                          {card.actionText}
-                        </span>
-                      ) : (
-                        <span className="text-[9.5px] sm:text-[11px] text-[#71717A] font-light truncate mt-0.5">
+                      <span className="text-[9.5px] sm:text-[11px] text-[#71717A] font-light truncate mt-0.5">
                           {card.subtitle}
                         </span>
-                      )}
                     </div>
                   </div>
 
                   {/* Right Interactive Arrow */}
                   <div className="relative z-10 shrink-0">
-                    <div className={`w-6 h-6 sm:w-7.5 sm:h-7.5 rounded-full flex items-center justify-center shrink-0 transition-all shadow-sm ${card.isMobile
-                        ? "bg-[#7C3AED] text-white shadow-[0_2px_8px_rgba(124,58,237,0.35)]"
-                        : "bg-[#EDE4FF] text-[#7C3AED] border border-[#7C3AED]/20 group-hover:bg-[#7C3AED] group-hover:text-white"
-                      }`}>
+                    <div className={`w-6 h-6 sm:w-7.5 sm:h-7.5 rounded-full flex items-center justify-center shrink-0 transition-all shadow-sm bg-[#EDE4FF] text-[#7C3AED] border border-[#7C3AED]/20 group-hover:bg-[#7C3AED] group-hover:text-white`}>
                       <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4" />
                     </div>
                   </div>

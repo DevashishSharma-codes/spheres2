@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { PillArrow, pillClassName } from "@/components/ui/PillLink";
 
 export interface FolderTabCardProps {
   id: string;
@@ -15,7 +16,9 @@ export interface FolderTabCardProps {
   imagePosition?: string;
   icon: React.ComponentType<{ className?: string }>;
   ctaLabel?: string;
-  onClick: () => void;
+  /** Navigates as a real link. Use this or onClick. */
+  href?: string;
+  onClick?: () => void;
 }
 
 /**
@@ -32,22 +35,27 @@ export function FolderTabCard({
   imagePosition,
   icon: Icon,
   ctaLabel = "Know more",
+  href,
   onClick,
 }: FolderTabCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
-      role="button"
-      tabIndex={0}
-      aria-label={`${title}: ${ctaLabel}`}
-      onClick={onClick}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onClick();
-        }
-      }}
+      {...(href
+        ? {}
+        : {
+            role: "button",
+            tabIndex: 0,
+            "aria-label": `${title}: ${ctaLabel}`,
+            onClick,
+            onKeyDown: (event: React.KeyboardEvent) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onClick?.();
+              }
+            },
+          })}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`
@@ -60,6 +68,14 @@ export function FolderTabCard({
         }
       `}
     >
+      {href && (
+        <Link
+          href={href}
+          aria-label={`${title}: ${ctaLabel}`}
+          className="absolute inset-0 z-30 rounded-[22px] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#8E79E8]"
+        />
+      )}
+
       {/* 1. Static Border Outline (visible when not hovered) */}
       <div 
         className={`absolute inset-0 rounded-[22px] border border-white/25 transition-opacity duration-300 pointer-events-none ${
@@ -186,11 +202,9 @@ export function FolderTabCard({
                 </p>
 
                 <div className="mt-auto flex justify-end pt-2">
-                  <span className="inline-flex h-10 items-center gap-4 rounded-full bg-gradient-to-r from-[#2a2a2e] to-[#6a6a70] pl-4 pr-1 text-[12.5px] text-white">
+                  <span className={pillClassName("sm")}>
                     {ctaLabel}
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black">
-                      <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-px group-hover:translate-x-px motion-reduce:transition-none" />
-                    </span>
+                    <PillArrow size="sm" />
                   </span>
                 </div>
               </div>

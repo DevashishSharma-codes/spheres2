@@ -3,7 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { PillLink } from "@/components/ui/PillLink";
+import { ArrowUpRight } from "lucide-react";
 
 export interface LandingProjectItem {
   id: string;
@@ -138,22 +139,7 @@ export function PortfolioLandingSection() {
             - Refined, clean pill button with comfortable breathing room
             ========================================================= */}
         <div className="flex justify-center items-center shrink-0 pt-4 sm:pt-6 pb-1 sm:pb-2">
-          <Link
-            href="/portfolio"
-            className="
-              group inline-flex items-center justify-center gap-2
-              px-5 py-2.5 sm:px-6 sm:py-3 rounded-full
-              bg-[#111114] text-white hover:bg-[#7C3AED]
-              border border-[#111114] hover:border-[#7C3AED]
-              text-xs sm:text-[13px] font-medium tracking-tight
-              shadow-[0_2px_10px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(124,58,237,0.25)]
-              hover:scale-[1.02] active:scale-[0.98]
-              transition-all duration-300 cursor-pointer select-none
-            "
-          >
-            <span>See full portfolio</span>
-            <ArrowRight className="w-3.5 h-3.5 text-white/90 group-hover:text-white group-hover:translate-x-1 transition-transform duration-200" />
-          </Link>
+          <PillLink href="/portfolio">See full portfolio</PillLink>
         </div>
 
       </div>
