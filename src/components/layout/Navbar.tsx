@@ -260,7 +260,7 @@ export function Navbar() {
         
         {/* Brand / Logo */}
         <Link href="/" className="shrink-0 flex items-center" onClick={() => setHoveredKey(null)}>
-          <Logo size={28} textColor={isDarkHero ? "text-white" : "text-[#2A2A2E]"} />
+          <Logo height={44} onDark={isDarkHero} />
         </Link>
 
         {/* Desktop Navigation Links (Left Side with Mega Dropdowns) */}

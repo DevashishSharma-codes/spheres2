@@ -7,6 +7,7 @@ import { PortfolioLandingSection } from "@/components/portfolio/PortfolioLanding
 import { IndustriesLandingSection } from "@/components/industries/IndustriesLandingSection";
 import { TestimonialsLandingSection } from "@/components/testimonials/TestimonialsLandingSection";
 import { InsightsLandingSection } from "@/components/insights/InsightsLandingSection";
+import { JourneySection } from "@/components/home/JourneySection";
 
 export default function HomePage() {
   return (
@@ -37,6 +38,9 @@ export default function HomePage() {
 
       {/* Testimonials */}
       <TestimonialsLandingSection />
+
+      {/* "Let's take this journey together" sign-off, leads into the footer */}
+      <JourneySection />
     </div>
   );
 }
