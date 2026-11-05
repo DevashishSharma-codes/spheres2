@@ -31,7 +31,7 @@ const FEATURED_3_PROJECTS: LandingProjectItem[] = [
     category: "InsurTech Gateway",
     client: "Bimakart Technologies",
     title: "Bimakart Connect API Gateway",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+    image: "/portfolio/photos/landing-bimakart-connect.jpg",
     description1: "Real-time streaming platform querying 100+ carriers with automated underwriting reconciliation.",
     description2: "Reduced quote lookup times to under 2.4s, scaling to 2.5M+ daily risk queries with enterprise reliability.",
   },
@@ -41,7 +41,7 @@ const FEATURED_3_PROJECTS: LandingProjectItem[] = [
     category: "Mobile Ecosystem",
     client: "UrbanFlow Logistics",
     title: "On-Demand Logistics & Service App",
-    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1200&q=80",
+    image: "/portfolio/photos/landing-on-demand-mobile.jpg",
     description1: "Cross-platform mobile application with real-time geospatial dispatch and offline-first data sync.",
     description2: "Engineered sub-16ms touch responsiveness, powering 450,000+ monthly bookings across 14 metropolitan hubs.",
   },
@@ -51,7 +51,7 @@ const FEATURED_3_PROJECTS: LandingProjectItem[] = [
     category: "Autonomous AI Agent",
     client: "Clinical Therapeutics Group",
     title: "Hahnnemen Clinical & Support AI",
-    image: "https://i.pinimg.com/1200x/66/ba/3e/66ba3e1d2797e5926917697d2432f77f.jpg",
+    image: "/portfolio/photos/landing-hahnnemen-ai.jpg",
     description1: "Autonomous intelligence agent utilizing deterministic RAG to resolve multi-tier customer workflows.",
     description2: "Achieved 99.4% guardrail accuracy and 68% first-contact resolution, cutting ticket turnaround by 4.8x.",
   },
@@ -60,7 +60,7 @@ const FEATURED_3_PROJECTS: LandingProjectItem[] = [
 export function PortfolioLandingSection() {
   return (
     <section 
-      id="portfolio" 
+      id="case-studies" 
       className="relative w-full min-h-[calc(100vh-64px)] lg:min-h-[calc(100vh-64px)] flex flex-col justify-between text-[#1D1D1F] py-8 sm:py-10 lg:py-12 overflow-hidden border-b border-[#E5E5EA]"
       style={{ background: "#FFFFFF" }}
     >
@@ -75,7 +75,7 @@ export function PortfolioLandingSection() {
               OUR WORK
             </span>
             <h2 className="select-none whitespace-nowrap text-3xl font-light leading-none tracking-[-0.04em] text-black sm:text-4xl md:text-5xl lg:text-[52px]">
-              Portfolio
+              Case Studies
             </h2>
           </div>
 
@@ -101,7 +101,7 @@ export function PortfolioLandingSection() {
           {FEATURED_3_PROJECTS.map((project) => (
             <Link
               key={project.id}
-              href={`/portfolio#${CASE_STUDY_IDS[project.id] ?? ""}`}
+              href={`/case-studies#${CASE_STUDY_IDS[project.id] ?? ""}`}
               className="group flex flex-col text-left select-none cursor-pointer h-full"
             >
               {/* Image thumbnail with crisp subtle rounded edges */}
@@ -142,11 +142,11 @@ export function PortfolioLandingSection() {
         </div>
 
         {/* =========================================================
-            3. "SEE FULL PORTFOLIO" CTA BUTTON
+            3. "SEE ALL CASE STUDIES" CTA BUTTON
             - Refined, clean pill button with comfortable breathing room
             ========================================================= */}
         <div className="flex justify-center items-center shrink-0 pt-4 sm:pt-6 pb-1 sm:pb-2">
-          <PillLink href="/portfolio">See full portfolio</PillLink>
+          <PillLink href="/case-studies">See all case studies</PillLink>
         </div>
 
       </div>

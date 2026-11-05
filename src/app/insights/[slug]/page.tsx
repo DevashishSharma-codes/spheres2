@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { INSIGHTS_CONTENT } from "@/content/insights";
 import { PageBackButton } from "@/components/ui/PageBackButton";
+import { NOT_INDEXED, pageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
   return INSIGHTS_CONTENT.items.map(({ slug }) => ({ slug }));
@@ -13,7 +14,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const article = INSIGHTS_CONTENT.items.find((item) => item.slug === slug);
   const title = article?.title ?? slug.split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
-  return { title: `${title} — 21Spheres Insights`, description: article?.excerpt ?? `A practical 21Spheres perspective on ${title.toLowerCase()}.` };
+  // Any other slug still renders a generic article, so it's kept out of search results.
+  if (!article) {
+    return { title, description: `A practical 21 Spheres perspective on ${title.toLowerCase()}.`, robots: NOT_INDEXED };
+  }
+  return pageMetadata({
+    title: article.title,
+    description: article.excerpt,
+    path: `/insights/${slug}`,
+    type: "article",
+    image: article.image ? { url: article.image, alt: article.title } : undefined,
+  });
 }
 
 async function InsightArticleContent({ params }: { params: Promise<{ slug: string }> }) {
@@ -45,7 +56,7 @@ async function InsightArticleContent({ params }: { params: Promise<{ slug: strin
     { heading: "Bring people along", body: `Good change is collaborative. Include business, design, engineering, and operations early so that the solution fits the way people work. Document decisions in plain language and give teams a clear path to maintain what they launch.` },
   ];
 
-  return <main className="min-h-screen bg-white text-[#171717]">
+  return <div className="min-h-screen bg-white text-[#171717]">
     <section className="relative flex min-h-screen items-end overflow-hidden bg-[#171717] text-white">
       <div aria-hidden="true" className="insight-article-hero-image absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url("${articleImage}")` }} />
       <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-black/10" />
@@ -82,7 +93,7 @@ async function InsightArticleContent({ params }: { params: Promise<{ slug: strin
         </Link>)}</div>
       </div>
     </section>
-  </main>;
+  </div>;
 }
 
 export default function InsightArticlePage({ params }: { params: Promise<{ slug: string }> }) {

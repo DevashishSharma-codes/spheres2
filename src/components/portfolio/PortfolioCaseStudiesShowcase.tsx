@@ -159,7 +159,7 @@ export function PortfolioCaseStudiesSection() {
   // Each project has its own address, so Back and Forward step through them.
   function openProject(id: string) {
     setFeaturedId(id);
-    router.push(`/portfolio#${id}`, { scroll: false });
+    router.push(`/case-studies#${id}`, { scroll: false });
     featuredRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -212,7 +212,7 @@ export function PortfolioCaseStudiesSection() {
 
         {/* Filter */}
         <div className="mb-10 mt-8 flex items-end justify-between gap-6 border-b border-white/15">
-          <nav aria-label="Filter portfolio projects" className="flex gap-6 overflow-x-auto overflow-y-hidden [scrollbar-width:none] sm:gap-8">
+          <nav aria-label="Filter case studies" className="flex gap-6 overflow-x-auto overflow-y-hidden [scrollbar-width:none] sm:gap-8">
             {DISCIPLINE_TABS.map((tab) => {
               const on = activeTab === tab.id;
               return (

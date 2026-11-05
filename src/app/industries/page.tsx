@@ -3,14 +3,14 @@ import { PageBackButton } from "@/components/ui/PageBackButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Industries & Verticals — 21Spheres",
+  title: "Industries",
   description: "Deep vertical engineering across latency-sensitive and mission-critical domains: Healthcare, SaaS, Fintech, eCommerce, GCC, Travel, and Hospitality.",
 };
 
 export default function IndustriesPage() {
   return (
-    <main className="min-h-screen bg-[#040308] text-white">
+    <div className="min-h-screen bg-[#040308] text-white">
       <IndustriesLandingSection withBackButton />
-    </main>
+    </div>
   );
 }

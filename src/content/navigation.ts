@@ -3,7 +3,7 @@ import { NavItem } from "@/types";
 export const NAVIGATION_ITEMS: NavItem[] = [
   { label: "About Us", href: "/#about", description: "Who we are and our engineering principles" },
   { label: "How We Work", href: "/#how-we-work", description: "Our 4-stage sprint methodology" },
-  { label: "Portfolio", href: "/portfolio", description: "Production systems and platforms" },
+  { label: "Case Studies", href: "/case-studies", description: "Production systems and platforms" },
   { label: "Services", href: "/services", description: "Core technical capabilities and squads" },
   { label: "Insights", href: "/insights", description: "Engineering memos, RFCs and architecture notes" },
   { label: "Industries", href: "/#industries", description: "Vertical domains and sector expertise" },

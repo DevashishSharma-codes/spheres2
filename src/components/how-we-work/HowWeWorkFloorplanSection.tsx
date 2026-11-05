@@ -1,18 +1,9 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import {
-  CalendarDays,
-  Check,
-  FolderOpen,
-  Layers,
-  Presentation,
-  Rocket,
-  UsersRound,
-  X,
-} from "lucide-react";
+import { Check, X } from "lucide-react";
 import { HOW_WE_WORK_CONTENT, WORK_FLOORPLAN_STEPS } from "@/content/howWeWork";
 import { useHashLink } from "@/lib/useHashLink";
 
@@ -38,11 +29,9 @@ const STAGE_DELIVERABLES = [
   ["Production launch", "Monitoring", "Support plan"],
 ];
 
-const STAGE_ICONS = [CalendarDays, UsersRound, FolderOpen, Presentation, Layers, Rocket];
-
 /* ------------------------------------------------------------------ *
  * Desktop geometry. The track fills all the space under the title.
- * Pills sit on one baseline at the bottom; beam heights climb stage by
+ * Markers sit on one timeline at the bottom; beam heights climb stage by
  * stage and are scaled to the measured track height.
  *
  * Every card is centred on its own beam, so the stem always meets the
@@ -51,20 +40,38 @@ const STAGE_ICONS = [CalendarDays, UsersRound, FolderOpen, Presentation, Layers,
  * cards never leave the screen), and the card height is measured from
  * the real content (so text is never clipped, whatever the width).
  * ------------------------------------------------------------------ */
-const PILL_BOTTOM = 28;
-const PILL_H = 40;
 const TOTAL = WORK_FLOORPLAN_STEPS.length;
-const STEM_BOTTOM = PILL_BOTTOM + PILL_H - 2;
+const STEM_BOTTOM = 46; // height of the timeline above the bottom of the track
+const MARKER = 9; // timeline marker size
+const CHECK_SIZE = 18; // tick closing a finished beam
 const MIN_BODY_H = 150; // fallback body height before measuring
 const STUB_H = 24; // short connector between the beam tip and the card
-const CARD_R = 20; // card corner radius
+const CARD_R = 10; // card corner radius
 const CARD_MAX_W = 380;
 const CARD_MIN_W = 240;
 const EDGE_GAP = 12; // breathing room kept between a card and the screen edge
 const LABEL_W = 140; // width of the stage title label above each beam
+const LABEL_H = 64; // room for the number and a two-line title above a beam
 const LABEL_GAP = 12; // clear space kept between an open card and the neighbouring labels
-const CHECK_SIZE = 20;
 const TRACK_MIN_H = 520;
+
+const SECTION_BG = `
+  radial-gradient(ellipse 88% 90% at 78% 5%, rgba(112, 72, 194, 0.42) 0%, rgba(72, 43, 123, 0.28) 36%, transparent 76%),
+  radial-gradient(ellipse 70% 70% at 18% 100%, rgba(74, 43, 125, 0.26) 0%, transparent 72%),
+  linear-gradient(118deg, #050408 0%, #0D0817 52%, #160B24 100%)
+`;
+const MARKER_FILL = "#0F0A1A"; // hides the timeline behind a hollow marker
+const CARD_BG = "linear-gradient(150deg, #21163B 0%, #140E24 72%)";
+const BEAM_COLOR = "#B79CFF";
+const BEAM_GLOW = "drop-shadow(0 0 3px #C8B4FF) drop-shadow(0 0 8px #8D66FF)";
+const BEAM_HEAD = 34; // length of the bright head of light travelling along a line
+
+// Shared with the hidden ruler below, so the measured card height matches the real card.
+const CARD_PADDING_CLASS = "flex flex-col px-5 py-4";
+const CARD_COUNT_CLASS = "text-[11px] tabular-nums tracking-[0.04em] text-[#C8B4FF]";
+const CARD_TITLE_CLASS = "text-base font-medium leading-snug tracking-[-0.01em] text-white";
+const CARD_SUMMARY_CLASS = "mb-3 mt-1.5 text-[13px] leading-relaxed text-white/65";
+const CARD_DELIVERABLES_CLASS = "mt-auto border-t border-white/10 pt-3 text-xs leading-relaxed text-white/50";
 
 const stemHeight = (index: number, trackH: number, cardH: number) => {
   const maxH = Math.max(150, trackH - STEM_BOTTOM - cardH - 16);
@@ -74,11 +81,50 @@ const stemHeight = (index: number, trackH: number, cardH: number) => {
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
 
+/* How long the light takes to run along each line, in seconds. */
+const LINK_DRAW = 0.36;
+const STEM_DRAW = 0.42;
+
 /* Typing speed in the cards, in ms per character. */
 const TITLE_TYPE_MS = 10;
 const SUMMARY_TYPE_MS = 5;
-const CARD_TEXT_DELAY_MS = 430;
+const CARD_TEXT_DELAY_MS = 560;
 const AFTER_TITLE_MS = 50;
+
+/* The head of light that runs along a line while it draws, then fades out at the end. */
+function BeamPulse({
+  direction,
+  distance,
+  duration,
+  style,
+}: {
+  direction: "up" | "right";
+  distance: number;
+  duration: number;
+  style: CSSProperties;
+}) {
+  const up = direction === "up";
+  return (
+    <motion.span
+      aria-hidden="true"
+      className="pointer-events-none absolute z-20 block rounded-full"
+      style={{
+        ...style,
+        width: up ? 2 : BEAM_HEAD,
+        height: up ? BEAM_HEAD : 2,
+        background: `linear-gradient(${up ? "to top" : "to right"}, transparent, #FFFFFF)`,
+        filter: BEAM_GLOW,
+      }}
+      initial={{ x: 0, y: 0, opacity: 1 }}
+      animate={{
+        x: up ? 0 : distance - BEAM_HEAD,
+        y: up ? -(distance - BEAM_HEAD) : 0,
+        opacity: [1, 1, 0],
+      }}
+      transition={{ duration, ease: "easeInOut", opacity: { duration, times: [0, 0.85, 1] } }}
+    />
+  );
+}
 
 function TypewriterText({
   text,
@@ -116,7 +162,7 @@ function TypewriterText({
       {visible > 0 && visible < text.length && (
         <span
           aria-hidden="true"
-          className="ml-0.5 inline-block h-[1em] w-px translate-y-0.5 animate-pulse bg-[#C8B4FF]"
+          className="ml-0.5 inline-block h-[1em] w-px translate-y-0.5 animate-pulse bg-white/60"
         />
       )}
     </span>
@@ -124,11 +170,11 @@ function TypewriterText({
 }
 
 /* The card is *drawn* by the beam. The beam reaches its tip, extends a
- * short stub, then splits in two. Each half races around the rounded
- * outline (with a bright comet head) and they meet at the top. A liquid
- * fill spreads out from the junction right behind the lines, then the
- * text is typed. Closing plays it all in reverse: text, fill, then the
- * outline retracts back down into the beam.
+ * short stub, then splits in two. Each half runs around the rounded
+ * outline behind a head of light, and they meet at the top. The surface spreads out from the
+ * junction right behind the lines, then the text is typed. Closing plays
+ * it all in reverse: text, surface, then the outline retracts down into
+ * the beam.
  *
  * The stem always sits at the horizontal middle of the card, so both
  * halves are perfectly symmetric. */
@@ -147,8 +193,7 @@ function StageCard({
 }) {
   const step = WORK_FLOORPLAN_STEPS[index];
   const summary = STAGE_SUMMARIES[index];
-  const chips = STAGE_DELIVERABLES[index];
-  const Icon = STAGE_ICONS[index];
+  const deliverables = STAGE_DELIVERABLES[index];
 
   const W = cardW;
   const H = cardH;
@@ -167,26 +212,25 @@ function StageCard({
 
   const stubT = reduced ? 0 : 0.08;
   const drawDelay = stubT;
-  const drawDur = reduced ? 0 : 0.4;
-  const fillDelay = reduced ? 0 : drawDelay + 0.1;
-  const fillDur = reduced ? 0 : 0.45;
-  const contentDelay = reduced ? 0 : drawDelay + 0.25;
+  const drawDur = reduced ? 0 : 0.6;
+  const fillDelay = reduced ? 0 : drawDelay + 0.2;
+  const fillDur = reduced ? 0 : 0.5;
+  const contentDelay = reduced ? 0 : drawDelay + 0.38;
   const ease = [0.5, 0.05, 0.25, 1] as const;
-  const COMET = 34;
   const reach = Math.hypot(W, B) + 24;
 
   const titleDelay = CARD_TEXT_DELAY_MS;
   const summaryDelay = titleDelay + step.title.length * TITLE_TYPE_MS + AFTER_TITLE_MS;
-  const chipsDelay = (summaryDelay + summary.length * SUMMARY_TYPE_MS + 30) / 1000;
+  const deliverablesDelay = (summaryDelay + summary.length * SUMMARY_TYPE_MS + 30) / 1000;
 
   const outline = (d: string, len: number, key: string) => (
-    <React.Fragment key={key}>
-      {/* the outline itself */}
+    <g key={key}>
       <motion.path
         d={d}
         fill="none"
-        stroke="#B79CFF"
-        strokeWidth={1.5}
+        stroke={BEAM_COLOR}
+        strokeOpacity={0.6}
+        strokeWidth={1}
         strokeLinecap="round"
         strokeDasharray={len}
         initial={{ strokeDashoffset: len }}
@@ -194,125 +238,89 @@ function StageCard({
         exit={{ strokeDashoffset: len, transition: { duration: reduced ? 0 : 0.28, delay: reduced ? 0 : 0.05, ease } }}
         transition={{ duration: drawDur, delay: drawDelay, ease }}
       />
-      {/* bright comet head riding the leading edge */}
+      {/* head of light on the leading edge */}
       <motion.path
         d={d}
         fill="none"
         stroke="#FFFFFF"
-        strokeWidth={2.5}
+        strokeWidth={1.5}
         strokeLinecap="round"
-        strokeDasharray={`${COMET} ${len * 2}`}
-        style={{ filter: "drop-shadow(0 0 6px #C8B4FF) drop-shadow(0 0 12px #8D66FF)" }}
-        initial={{ strokeDashoffset: COMET, opacity: reduced ? 0 : 1 }}
-        animate={{ strokeDashoffset: COMET - len, opacity: reduced ? 0 : [1, 1, 0] }}
+        strokeDasharray={`${BEAM_HEAD} ${len * 2}`}
+        style={{ filter: BEAM_GLOW }}
+        initial={{ strokeDashoffset: BEAM_HEAD, opacity: reduced ? 0 : 1 }}
+        animate={{ strokeDashoffset: BEAM_HEAD - len, opacity: reduced ? 0 : [1, 1, 0] }}
         exit={{ opacity: 0, transition: { duration: 0 } }}
         transition={{
           strokeDashoffset: { duration: drawDur, delay: drawDelay, ease },
           opacity: { duration: drawDur, delay: drawDelay, times: [0, 0.9, 1] },
         }}
       />
-    </React.Fragment>
+    </g>
   );
 
   return (
     <div className="absolute z-40" style={{ left: 0, bottom: 0, width: cardW, height: cardH }}>
-      {/* soft halo, appears once the card is formed */}
-      <motion.div
-        aria-hidden="true"
-        className="absolute left-0 top-0"
-        style={{ width: W, height: B, borderRadius: R }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0, transition: { duration: reduced ? 0 : 0.15 } }}
-        transition={{ duration: reduced ? 0 : 0.3, delay: reduced ? 0 : drawDelay + drawDur }}
-      >
-        <div
-          className="h-full w-full"
-          style={{ borderRadius: R, boxShadow: "0 0 44px rgba(128,87,232,.38), 0 18px 40px rgba(60,30,120,.35)" }}
-        />
-      </motion.div>
-
-      {/* liquid fill, spreading from the junction of stub and card */}
+      {/* the surface spreads out from the junction of stub and card */}
       <motion.article
         aria-label={`Stage ${step.step}: ${step.title}`}
         className="absolute left-0 top-0 overflow-hidden text-left"
-        style={{
-          width: W,
-          height: B,
-          borderRadius: R,
-          background:
-            "radial-gradient(ellipse 70% 90% at 100% 0%, rgba(128,87,232,.42) 0%, transparent 70%), radial-gradient(ellipse 60% 70% at 0% 100%, rgba(95,60,180,.28) 0%, transparent 70%), linear-gradient(135deg, #261848 0%, #150E26 65%)",
-        }}
+        style={{ width: W, height: B, borderRadius: R, background: CARD_BG }}
         initial={{ clipPath: `circle(0px at ${tipX}px ${B}px)` }}
         animate={{ clipPath: `circle(${reach}px at ${tipX}px ${B}px)` }}
         exit={{ clipPath: `circle(0px at ${tipX}px ${B}px)`, transition: { duration: reduced ? 0 : 0.25, ease } }}
         transition={{ duration: fillDur, delay: fillDelay, ease: EASE_OUT }}
       >
-        <Icon
-          aria-hidden="true"
-          className="absolute -right-3 -top-3 h-28 w-28 text-[#B79CFF]/15"
-          strokeWidth={1}
-        />
         <motion.div
-          className="relative z-10 flex h-full flex-col px-5 pb-3.5 pt-4"
+          className={`relative z-10 h-full ${CARD_PADDING_CLASS}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: reduced ? 0 : 0.1 } }}
           transition={{ duration: reduced ? 0 : 0.2, delay: contentDelay }}
         >
-          <div className="mb-2 flex items-center gap-2">
-            <span className="font-mono text-[10px] tracking-[0.18em] text-[#C8B4FF]">{step.step} / 06</span>
-            <span className="h-px flex-1 bg-white/15" />
+          <div className="mb-3 flex h-5 items-center justify-between">
+            <span className={CARD_COUNT_CLASS}>{step.step} / 06</span>
             {onClose && (
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Close stage card"
-                className="-mr-1 flex h-6 w-6 items-center justify-center rounded-full text-white/60 transition hover:bg-white/10 hover:text-white"
+                className="-mr-1 flex h-6 w-6 items-center justify-center text-white/50 transition-colors hover:text-white"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
-          <h3 className="text-[17px] font-semibold leading-snug tracking-[-0.02em] text-white">
+          <h3 className={CARD_TITLE_CLASS}>
             {reduced ? step.title : <TypewriterText text={step.title} speed={TITLE_TYPE_MS} delay={titleDelay} />}
           </h3>
-          <p className="mt-1 text-xs leading-relaxed text-white/75">
+          <p className={CARD_SUMMARY_CLASS}>
             {reduced ? summary : <TypewriterText text={summary} speed={SUMMARY_TYPE_MS} delay={summaryDelay} />}
           </p>
-          <motion.div
-            initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: reduced ? 0 : 0.2, delay: reduced ? 0 : chipsDelay }}
-            className="mt-auto flex flex-wrap gap-1.5 pt-2.5"
+          <motion.p
+            initial={{ opacity: reduced ? 1 : 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: reduced ? 0 : 0.2, delay: reduced ? 0 : deliverablesDelay }}
+            className={CARD_DELIVERABLES_CLASS}
           >
-            {chips.map((chip) => (
-              <span
-                key={chip}
-                className="rounded-full border border-[#C8B4FF]/30 bg-white/[0.07] px-2.5 py-0.5 text-[10px] font-medium text-[#E4D9FF]"
-              >
-                {chip}
-              </span>
-            ))}
-          </motion.div>
+            {deliverables.join(" \u00b7 ")}
+          </motion.p>
         </motion.div>
       </motion.article>
 
-      {/* beam outline: stub + two halves racing around the card */}
+      {/* beam outline: stub + two halves drawing around the card */}
       <svg
         aria-hidden="true"
         width={W}
         height={H}
         className="pointer-events-none absolute left-0 top-0 z-20 overflow-visible"
-        style={{ filter: "drop-shadow(0 0 4px rgba(169,138,255,.65))" }}
       >
         <motion.line
           x1={tipX}
           y1={H}
           x2={tipX}
           y2={B}
-          stroke="#D9C9FF"
-          strokeWidth={2}
+          stroke={BEAM_COLOR}
+          strokeWidth={1.5}
           strokeDasharray={STUB_H + 1}
           initial={{ strokeDashoffset: STUB_H + 1 }}
           animate={{ strokeDashoffset: 0 }}
@@ -495,7 +503,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
 
     const t = prefersReducedMotion
       ? { link: 120, pill: 160, stem: 160, card: 160, hold: 900, close: 160, title: 120, check: 160, gap: 120 }
-      : { link: 240, pill: 220, stem: 280, card: 0, hold: 600, close: 350, title: 80, check: 120, gap: 60 };
+      : { link: 380, pill: 180, stem: 440, card: 0, hold: 600, close: 350, title: 80, check: 160, gap: 80 };
 
     let cancelled = false;
     const timers = new Set<number>();
@@ -565,13 +573,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
       id="how-we-work"
       data-embedded={embedded ? "true" : undefined}
       className="how-we-work-process relative scroll-mt-14 sm:scroll-mt-16 min-h-[calc(100svh-5rem)] w-full overflow-hidden text-white"
-      style={{
-        background: `
-          radial-gradient(ellipse 88% 90% at 78% 5%, rgba(112, 72, 194, 0.42) 0%, rgba(72, 43, 123, 0.28) 36%, transparent 76%),
-          radial-gradient(ellipse 70% 70% at 18% 100%, rgba(74, 43, 125, 0.26) 0%, transparent 72%),
-          linear-gradient(118deg, #050408 0%, #0D0817 52%, #160B24 100%)
-        `,
-      }}
+      style={{ background: SECTION_BG }}
     >
       {/* Link targets for each stage, so /#stage-id lands on this section */}
       {WORK_FLOORPLAN_STEPS.map((step) => (
@@ -581,7 +583,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
         {/* ------------------------------- header (top) ------------------------------- */}
         <header className="mb-6 flex shrink-0 flex-col gap-3 sm:mb-8 lg:mb-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
           <div>
-            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.19em] text-[#C8B4FF] sm:text-xs">
+            <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-[#C8B4FF]">
               Our process
             </p>
             <h2 className="text-[clamp(2.8rem,6vw,4.75rem)] font-light leading-[0.98] tracking-[-0.055em] text-white/90 lg:text-[clamp(2.8rem,4vw,4rem)]">
@@ -609,23 +611,13 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
               style={{ width: cardW }}
             >
               {WORK_FLOORPLAN_STEPS.map((step, i) => (
-                <div
-                  key={step.id}
-                  className="flex flex-col px-5 pb-3.5 pt-4"
-                  style={{ width: cardW }}
-                >
-                  <div className="mb-2 flex h-6 items-center gap-2">
-                    <span className="font-mono text-[10px] tracking-[0.18em]">{step.step} / 06</span>
+                <div key={step.id} className={CARD_PADDING_CLASS} style={{ width: cardW }}>
+                  <div className="mb-3 flex h-5 items-center">
+                    <span className={CARD_COUNT_CLASS}>{step.step} / 06</span>
                   </div>
-                  <h3 className="text-[17px] font-semibold leading-snug tracking-[-0.02em]">{step.title}</h3>
-                  <p className="mt-1 text-xs leading-relaxed">{STAGE_SUMMARIES[i]}</p>
-                  <div className="flex flex-wrap gap-1.5 pt-2.5">
-                    {STAGE_DELIVERABLES[i].map((chip) => (
-                      <span key={chip} className="rounded-full border px-2.5 py-0.5 text-[10px] font-medium">
-                        {chip}
-                      </span>
-                    ))}
-                  </div>
+                  <h3 className={CARD_TITLE_CLASS}>{step.title}</h3>
+                  <p className={CARD_SUMMARY_CLASS}>{STAGE_SUMMARIES[i]}</p>
+                  <p className={CARD_DELIVERABLES_CLASS}>{STAGE_DELIVERABLES[i].join(" \u00b7 ")}</p>
                 </div>
               ))}
             </div>
@@ -641,81 +633,98 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
               const isActive = activeIndex === index;
               const isExpanded = expandedIndex === index;
               const duration = HOW_WE_WORK_CONTENT.steps[index]?.duration;
-              const StageIcon = STAGE_ICONS[index];
               const stemH = stemHeight(index, trackH, cardH);
               const stemTop = STEM_BOTTOM + stemH;
 
               return (
                 <div key={step.id} className="relative h-full min-w-0 text-center">
-                  {/* dashed line from this pill to the next slot */}
-                  {hasLink && (
-                    <motion.div
+                  {/* the whole stage opens its card: beam, tick and title.
+                      Keyboard and screen readers use the marker button below. */}
+                  {hasStem && (
+                    <button
+                      type="button"
+                      tabIndex={-1}
                       aria-hidden="true"
-                      className="absolute z-0 h-[2px] origin-left"
-                      initial={{ scaleX: reduced ? 1 : 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: reduced ? 0 : 0.22, ease: "easeInOut" }}
+                      onClick={() => togglePill(index)}
+                      className="peer absolute left-1/2 z-[25] -translate-x-1/2 cursor-pointer"
                       style={{
-                        left: "50%",
-                        width: "100%",
-                        bottom: PILL_BOTTOM + PILL_H / 2 - 1,
-                        backgroundImage:
-                          "repeating-linear-gradient(to right, rgba(255,255,255,0.45) 0 5px, transparent 5px 10px)",
+                        bottom: STEM_BOTTOM + MARKER / 2,
+                        width: `min(${LABEL_W}px, 100%)`,
+                        height: stemH - MARKER / 2 + (hasTitle && !isExpanded ? CHECK_SIZE + 8 + LABEL_H : 0),
                       }}
                     />
                   )}
 
-                  {/* glassmorphic pill forms at the bottom */}
+                  {/* timeline segment from this marker to the next */}
+                  {hasLink && (
+                    <motion.div
+                      aria-hidden="true"
+                      className="absolute z-0 h-px origin-left bg-[#B79CFF]/40"
+                      initial={{ scaleX: reduced ? 1 : 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: reduced ? 0 : LINK_DRAW, ease: "easeInOut" }}
+                      style={{ left: "50%", width: "100%", bottom: STEM_BOTTOM }}
+                    />
+                  )}
+                  {hasLink && !reduced && (
+                    <BeamPulse
+                      direction="right"
+                      distance={colW}
+                      duration={LINK_DRAW}
+                      style={{ left: "50%", bottom: STEM_BOTTOM - 0.5 }}
+                    />
+                  )}
+
+                  {/* marker on the timeline, with its duration below */}
                   {hasPill && (
-                    <div
-                      className="pointer-events-none absolute left-0 right-0 z-30 flex justify-center"
-                      style={{ bottom: PILL_BOTTOM }}
-                    >
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex justify-center">
                       <motion.button
                         type="button"
                         onClick={() => togglePill(index)}
                         aria-label={`Show ${step.title} card`}
-                        initial={{ opacity: 0, scaleX: reduced ? 1 : 0.2, scaleY: reduced ? 1 : 0.55 }}
-                        animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
+                        initial={{ opacity: 0, scale: reduced ? 1 : 0.6 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: reduced ? 0 : 0.2, ease: EASE_OUT }}
-                        className={`pointer-events-auto inline-flex items-center gap-2 whitespace-nowrap rounded-full border py-1 pl-3.5 pr-1 text-[10px] font-medium tracking-wide backdrop-blur-xl transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2C1FF] disabled:cursor-default ${isActive
-                          ? "border-[#C8B4FF]/50 bg-[#8057E8]/35 text-white shadow-[0_8px_28px_rgba(128,87,232,.45),inset_0_1px_0_rgba(255,255,255,.35)]"
-                          : "border-white/20 bg-white/[0.07] text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,.18)] enabled:hover:border-white/40 enabled:hover:bg-white/[0.12]"
-                          }`}
-                        style={{ height: PILL_H }}
+                        className="group pointer-events-auto flex flex-col items-center px-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+                        style={{ height: STEM_BOTTOM + MARKER / 2 }}
                       >
-                        {duration}
                         <span
-                          className={`flex h-8 w-8 items-center justify-center rounded-full border backdrop-blur-md ${isActive ? "border-white/40 bg-white/20" : "border-white/25 bg-white/10"
-                            }`}
+                          className={`block shrink-0 rounded-full border transition-colors ${isActive ? "border-[#C8B4FF] bg-[#C8B4FF]" : "border-[#B79CFF]/60 group-hover:border-[#C8B4FF]"}`}
+                          style={{ width: MARKER, height: MARKER, backgroundColor: isActive ? undefined : MARKER_FILL }}
+                        />
+                        <span
+                          className={`mt-3 whitespace-nowrap text-[11px] tabular-nums tracking-[0.04em] transition-colors ${isActive ? "text-[#C8B4FF]" : "text-white/55 group-hover:text-white"}`}
                         >
-                          <StageIcon className="h-3.5 w-3.5" strokeWidth={1.8} />
+                          {duration}
                         </span>
                       </motion.button>
                     </div>
                   )}
 
-                  {/* beam rising from the pill */}
+                  {/* beam rising from the marker */}
                   {hasStem && (
                     <motion.div
                       aria-hidden="true"
-                      className="absolute z-10 w-[2px] origin-bottom"
+                      className="absolute z-10 w-[1.5px] origin-bottom peer-hover:bg-[#C8B4FF]!"
                       initial={{ scaleY: reduced ? 1 : 0 }}
                       animate={{ scaleY: 1 }}
-                      transition={{ duration: reduced ? 0 : 0.26, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: reduced ? 0 : STEM_DRAW, ease: "easeInOut" }}
                       style={{
                         left: "50%",
-                        marginLeft: -1,
+                        marginLeft: -0.75,
                         bottom: STEM_BOTTOM,
                         height: stemH,
-                        background: isExpanded
-                          ? "linear-gradient(to top, #A98AFF, #EFE7FF)"
-                          : isComplete
-                            ? "rgba(156,115,255,.75)"
-                            : "rgba(255,255,255,.3)",
-                        boxShadow: isExpanded ? "0 0 14px 3px rgba(174,126,255,.9)" : "none",
-                        transition: "background .4s, box-shadow .4s",
+                        backgroundColor: isExpanded ? BEAM_COLOR : isComplete ? "rgba(183,156,255,.6)" : "rgba(183,156,255,.35)",
+                        transition: "background-color .4s",
                       }}
+                    />
+                  )}
+                  {hasStem && !reduced && (
+                    <BeamPulse
+                      direction="up"
+                      distance={stemH}
+                      duration={STEM_DRAW}
+                      style={{ left: "50%", marginLeft: -1, bottom: STEM_BOTTOM }}
                     />
                   )}
 
@@ -742,19 +751,14 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                   {hasTitle && !isExpanded && (
                     <>
                       <div
-                        className="absolute left-1/2 z-20 -translate-x-1/2 text-center"
+                        className="absolute left-1/2 z-20 -translate-x-1/2 text-center peer-hover:[&_p:last-child]:text-white"
                         style={{
                           bottom: stemTop + CHECK_SIZE + 8,
                           width: `min(${LABEL_W}px, calc(100% - 8px))`,
                         }}
                       >
-                        <p className={`font-mono text-[9px] tracking-[0.16em] ${isActive ? "text-[#C8B4FF]" : "text-white/60"}`}>
-                          {step.step} / 06
-                        </p>
-                        <p
-                          className={`mt-1 text-[12px] font-medium leading-[1.2] xl:text-[13px] ${isActive ? "text-[#C8B4FF]" : "text-white/90"
-                            }`}
-                        >
+                        <p className="text-[11px] tabular-nums tracking-[0.04em] text-[#C8B4FF]/80">{step.step}</p>
+                        <p className={`mt-1 text-[13px] leading-[1.25] transition-colors ${isActive ? "text-[#C8B4FF]" : "text-white/85"}`}>
                           {step.title}
                         </p>
                       </div>
@@ -764,8 +768,8 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                           aria-label="Completed"
                           initial={{ scale: reduced ? 1 : 0, opacity: reduced ? 1 : 0 }}
                           animate={{ scale: 1, opacity: 1 }}
-                          transition={{ type: "spring", stiffness: 420, damping: 18 }}
-                          className="absolute left-1/2 z-20 flex items-center justify-center rounded-full bg-[#A98AFF] text-[#170E29] shadow-[0_0_14px_rgba(169,138,255,.55)]"
+                          transition={{ type: "spring", stiffness: 420, damping: 24 }}
+                          className="absolute left-1/2 z-20 flex items-center justify-center rounded-full bg-[#B79CFF] text-[#170E29]"
                           style={{
                             width: CHECK_SIZE,
                             height: CHECK_SIZE,
@@ -773,7 +777,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                             bottom: stemTop,
                           }}
                         >
-                          <Check className="h-3 w-3" strokeWidth={2.8} />
+                          <Check className="h-2.5 w-2.5" strokeWidth={3} />
                         </motion.span>
                       )}
                     </>
@@ -795,47 +799,45 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
             const isExpanded = expandedIndex === index;
             const hasLink = index < TOTAL - 1 && linkCount > index;
             const duration = HOW_WE_WORK_CONTENT.steps[index]?.duration;
-            const StageIcon = STAGE_ICONS[index];
 
             return (
-              <div key={step.id} className="relative grid min-h-[96px] grid-cols-[28px_minmax(0,1fr)] gap-4 pb-6">
-                <div className="relative flex justify-center">
+              <div key={step.id} className="relative grid min-h-[76px] grid-cols-[9px_minmax(0,1fr)] gap-4 pb-6">
+                <div className="relative">
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    aria-hidden="true"
+                    onClick={() => togglePill(index)}
+                    className="absolute -inset-x-3 inset-y-0 z-10"
+                  />
                   {hasLink && (
                     <motion.span
                       aria-hidden="true"
-                      className="absolute bottom-[-14px] left-1/2 top-7 w-px origin-top bg-white/35"
+                      className="absolute -bottom-1.5 left-1/2 top-2 w-px origin-top bg-[#B79CFF]/40"
                       initial={{ scaleY: reduced ? 1 : 0 }}
                       animate={{ scaleY: 1 }}
                       transition={{ duration: reduced ? 0 : 0.22, ease: "easeInOut" }}
                     />
                   )}
-                  <span
-                    className={`relative z-10 mt-2.5 font-mono text-[9px] tracking-[0.14em] ${isActive ? "text-[#D2C1FF]" : "text-white/45"
-                      }`}
-                  >
-                    {step.step}
-                  </span>
+                  <motion.span
+                    aria-hidden="true"
+                    initial={{ opacity: 0, scale: reduced ? 1 : 0.4 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: reduced ? 0 : 0.2, ease: EASE_OUT }}
+                    className={`relative mt-1 block h-[9px] w-[9px] rounded-full border ${isActive ? "border-[#C8B4FF] bg-[#C8B4FF]" : "border-[#B79CFF]/60"}`}
+                    style={isActive ? undefined : { backgroundColor: MARKER_FILL }}
+                  />
                 </div>
 
                 <div className="flex min-w-0 flex-col items-start">
-                  <motion.button
+                  <button
                     type="button"
                     onClick={() => togglePill(index)}
                     aria-label={`Show ${step.title} card`}
-                    initial={{ opacity: 0, scaleX: reduced ? 1 : 0.3 }}
-                    animate={{ opacity: 1, scaleX: 1 }}
-                    transition={{ duration: reduced ? 0 : 0.2, ease: EASE_OUT }}
-                    style={{ transformOrigin: "left center" }}
-                    className={`mt-1 inline-flex items-center gap-2 rounded-full border py-1 pl-3 pr-1 text-[10px] backdrop-blur-xl disabled:cursor-default ${isActive
-                      ? "border-[#C8B4FF]/50 bg-[#8057E8]/35 text-white shadow-[inset_0_1px_0_rgba(255,255,255,.3)]"
-                      : "border-white/20 bg-white/[0.07] text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,.18)]"
-                      }`}
+                    className={`text-[11px] tabular-nums tracking-[0.04em] ${isActive ? "text-[#C8B4FF]" : "text-white/55"}`}
                   >
-                    {duration}
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full border border-white/30 bg-white/10">
-                      <StageIcon className="h-3 w-3" />
-                    </span>
-                  </motion.button>
+                    {step.step} &middot; {duration}
+                  </button>
 
                   <AnimatePresence key={skipped ? "skipped" : "playing"} initial={false}>
                     {isExpanded && (
@@ -847,21 +849,21 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                         transition={{ duration: reduced ? 0 : 0.28, ease: EASE_OUT }}
                         className="mt-3 w-full overflow-hidden"
                       >
-                        <div className="relative rounded-xl border border-[#A98AFF]/65 bg-[#171020] p-3.5 pr-10 shadow-[0_0_28px_rgba(128,87,232,.4)]">
+                        <div className="relative rounded-lg border border-[#B79CFF]/40 p-4 pr-10" style={{ background: CARD_BG }}>
                           {finished && (
                             <button
                               type="button"
                               onClick={closeFromCard}
                               aria-label="Close stage card"
-                              className="absolute right-2 top-2 rounded-full p-1 text-white/55 hover:bg-white/10 hover:text-white"
+                              className="absolute right-2 top-2 p-1 text-white/50 hover:text-white"
                             >
                               <X className="h-3.5 w-3.5" />
                             </button>
                           )}
-                          <h3 className="mb-1.5 text-sm font-semibold text-white">
+                          <h3 className={CARD_TITLE_CLASS}>
                             {reduced ? step.title : <TypewriterText text={step.title} speed={TITLE_TYPE_MS} delay={200} />}
                           </h3>
-                          <p className="text-xs leading-relaxed text-white/75">
+                          <p className={CARD_SUMMARY_CLASS}>
                             {reduced ? (
                               STAGE_SUMMARIES[index]
                             ) : (
@@ -872,38 +874,33 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                               />
                             )}
                           </p>
-                          <div className="mt-2.5 flex flex-wrap gap-1.5">
-                            {STAGE_DELIVERABLES[index].map((chip) => (
-                              <span
-                                key={chip}
-                                className="rounded-full border border-[#C8B4FF]/30 bg-white/[0.07] px-2 py-0.5 text-[10px] text-[#E4D9FF]"
-                              >
-                                {chip}
-                              </span>
-                            ))}
-                          </div>
+                          <p className={CARD_DELIVERABLES_CLASS}>{STAGE_DELIVERABLES[index].join(" \u00b7 ")}</p>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
                   {hasTitle && !isExpanded && (
-                    <div className="mt-3 flex items-center gap-2">
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      aria-hidden="true"
+                      onClick={() => togglePill(index)}
+                      className="mt-1.5 flex items-center gap-2 py-0.5 text-left"
+                    >
                       {isComplete && (
                         <motion.span
                           aria-label="Completed"
                           initial={{ scale: reduced ? 1 : 0 }}
                           animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 420, damping: 18 }}
-                          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#A98AFF] text-[#170E29]"
+                          transition={{ type: "spring", stiffness: 420, damping: 24 }}
+                          className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#B79CFF] text-[#170E29]"
                         >
-                          <Check className="h-3 w-3" strokeWidth={2.8} />
+                          <Check className="h-2.5 w-2.5" strokeWidth={3} />
                         </motion.span>
                       )}
-                      <p className="text-[13px] font-medium text-white/90">
-                        {step.title}
-                      </p>
-                    </div>
+                      <span className="text-sm text-white/90">{step.title}</span>
+                    </button>
                   )}
                 </div>
               </div>

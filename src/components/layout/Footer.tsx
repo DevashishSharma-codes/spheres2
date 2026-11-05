@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { COMPANY_SOCIALS } from "@/content/company";
 import { PillLink } from "@/components/ui/PillLink";
 import { FooterLogoReveal } from "./FooterLogoReveal";
 import { SOCIAL_ICON_PATHS } from "./socialIconPaths";
@@ -21,7 +22,7 @@ const LINK_GROUPS = [
     className: "",
     listClassName: "",
     links: [
-      { label: "Portfolio", href: "/portfolio" },
+      { label: "Case Studies", href: "/case-studies" },
       { label: "Industries", href: "/#industries" },
       { label: "Insights", href: "/insights" },
     ],
@@ -40,14 +41,13 @@ const LINK_GROUPS = [
   },
 ];
 
-// Profiles as listed on 21spheres.com.
 const SOCIALS = [
-  { label: "LinkedIn", href: "https://www.linkedin.com/company/21spheres", icon: "linkedin", fill: "#0A66C2" },
-  { label: "Instagram", href: "https://instagram.com/21_spheres", icon: "instagram", fill: "url(#footer-instagram)" },
-  { label: "X", href: "https://x.com/21Spheres", icon: "x", fill: "#000000" },
+  { label: "LinkedIn", href: COMPANY_SOCIALS.linkedin, icon: "linkedin", fill: "#0A66C2" },
+  { label: "Instagram", href: COMPANY_SOCIALS.instagram, icon: "instagram", fill: "url(#footer-instagram)" },
+  { label: "X", href: COMPANY_SOCIALS.x, icon: "x", fill: "#000000" },
   {
     label: "Facebook",
-    href: "https://www.facebook.com/profile.php?id=61570321127336",
+    href: COMPANY_SOCIALS.facebook,
     icon: "facebook",
     fill: "#1877F2",
   },

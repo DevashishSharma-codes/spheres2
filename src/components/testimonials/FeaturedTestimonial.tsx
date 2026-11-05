@@ -74,7 +74,7 @@ export function FeaturedTestimonial() {
             <div className="flex items-center gap-3.5 pt-6 sm:pt-8 md:pt-10">
               <div className="relative p-[2px] rounded-full bg-gradient-to-r from-white/90 via-[#C084FC] to-[#7057D9] shadow-md">
                 <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
+                  src="/testimonials/avatars/avatar-01.jpg"
                   alt="Keshav Malpani - CEO of Wealth Wisdom"
                   className="w-11 h-11 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-white shadow-md"
                 />

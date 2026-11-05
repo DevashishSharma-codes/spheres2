@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Layers3 } from "lucide-react";
 import { PageBackButton } from "@/components/ui/PageBackButton";
 import { INDUSTRIES_CONTENT } from "@/content/industries";
+import { NOT_INDEXED, pageMetadata } from "@/lib/seo";
 
 interface IndustryPageProps {
   params: Promise<{ slug: string }>;
@@ -19,12 +20,13 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: IndustryPageProps): Promise<Metadata> {
   const { slug } = await params;
   const industry = industries.find((item) => item.id === slug);
-  if (!industry) return { title: "Industry not found — 21Spheres" };
+  if (!industry) return { title: "Industry not found", robots: NOT_INDEXED };
 
-  return {
-    title: `${industry.name} Systems — 21Spheres`,
-    description: industry.subhead ?? industry.description,
-  };
+  return pageMetadata({
+    title: `${industry.name} Software Development`,
+    description: industry.seoDescription ?? industry.description,
+    path: `/industries/${slug}`,
+  });
 }
 
 async function IndustryDetailContent({ params }: IndustryPageProps) {
@@ -40,7 +42,7 @@ async function IndustryDetailContent({ params }: IndustryPageProps) {
   const next = industries[(industryIndex + 1) % industries.length];
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-[#F7F7F9] pb-16 text-[#19171F] sm:pb-20">
+    <div className="relative isolate min-h-screen overflow-hidden bg-[#F7F7F9] pb-16 text-[#19171F] sm:pb-20">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[760px] bg-[radial-gradient(ellipse_75%_60%_at_70%_0%,rgba(112,72,194,0.12),transparent_72%),linear-gradient(180deg,#FFFFFF_0%,#F7F7F9_78%)]"
@@ -227,7 +229,7 @@ async function IndustryDetailContent({ params }: IndustryPageProps) {
           ))}
         </nav>
       </div>
-    </main>
+    </div>
   );
 }
 

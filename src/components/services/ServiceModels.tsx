@@ -744,7 +744,7 @@ const LLM_SCRIPT: ChatScript = {
 const STUDIO_SCRIPT: ChatScript = {
   question: "What can 21Spheres build for us?",
   answer: "Websites, web and mobile apps, custom AI and enterprise software. One team designs and builds it, then hands over the full code and documentation.".split(" "),
-  sources: ["Services", "Portfolio"],
+  sources: ["Services", "Case studies"],
   listLabel: "Explore",
   list: ["Our services", "Case studies", "Industries", "Start a project"],
   chip: "21Spheres",

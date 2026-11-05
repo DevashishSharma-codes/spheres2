@@ -52,6 +52,8 @@ export interface IndustryItem {
   id: string;
   name: string;
   description: string;
+  /** Shown in search results and link previews. */
+  seoDescription?: string;
   impactMetric?: string;
   capabilities: string[];
   subhead?: string;

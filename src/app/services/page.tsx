@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
 import { ServicesSection } from "@/components/services/ServicesSection";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Services — 21Spheres",
-  description: "Core technical capabilities, autonomous AI systems, and engineering squads at 21Spheres.",
-};
+export const metadata = pageMetadata({
+  title: "Our Services",
+  description: "Custom AI, web and mobile applications, LLM integration, chatbots, workflow automation, SaaS and enterprise software built by 21 Spheres.",
+  path: "/services",
+});
 
 export default function ServicesPage() {
   return (

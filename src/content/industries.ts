@@ -8,10 +8,11 @@ export const INDUSTRIES_CONTENT = {
     {
       id: "healthcare",
       name: "Healthcare",
+      seoDescription: "Healthcare software from 21 Spheres: clinical AI, telehealth platforms and HIPAA-compliant data infrastructure with full audit trails.",
       category: "Healthcare",
       subhead: "Clinical AI, Telehealth & HIPAA Compliant Data Infrastructure.",
       description: "HIPAA-compliant clinical reasoning engines and telemetry architectures. Powering diagnostic vector search across millions of medical records with end-to-end cryptographic audit trails.",
-      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1920&q=85",
+      image: "/industries/healthcare.jpg",
       capabilities: [
         "HIPAA & FHIR Compliance",
         "Diagnostic Vector Search",
@@ -28,10 +29,11 @@ export const INDUSTRIES_CONTENT = {
     {
       id: "saas",
       name: "SaaS",
+      seoDescription: "Multi-tenant B2B SaaS platforms from 21 Spheres, with automated billing pipelines and global edge routing built for daily scale.",
       category: "SaaS",
       subhead: "Multi-Tenant Cloud Platforms & Enterprise Systems.",
       description: "High-velocity B2B SaaS platforms engineered for millions of daily operations. Deterministic multi-tenancy, automated billing pipelines, and global Edge routing with zero downtime.",
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1920&q=85",
+      image: "/industries/saas.jpg",
       capabilities: [
         "Multi-Tenant Isolation",
         "Usage-Based Metering & Billing",
@@ -48,10 +50,11 @@ export const INDUSTRIES_CONTENT = {
     {
       id: "fintech",
       name: "Fintech",
+      seoDescription: "Financial software from 21 Spheres covering trade routing, real-time risk calculations and double-entry ledgers for transaction-heavy teams.",
       category: "Fintech",
       subhead: "High-Frequency Trading, WealthTech & Quantitative Finance.",
       description: "Mission-critical financial infrastructure handling institutional-scale transactions. High-frequency trade routing, real-time VaR & Monte Carlo risk calculations, and double-entry cryptographic ledgers.",
-      image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1920&q=85",
+      image: "/industries/fintech.jpg",
       capabilities: [
         "Sub-Millisecond Order Routing",
         "Real-Time VaR & Risk Models",
@@ -68,10 +71,11 @@ export const INDUSTRIES_CONTENT = {
     {
       id: "ecommerce",
       name: "eCommerce",
+      seoDescription: "Headless commerce systems from 21 Spheres, built for flash-sale traffic with inventory sync, fast search and personalized recommendations.",
       category: "eCommerce",
       subhead: "High-Concurrency Headless Commerce & Checkout Engines.",
       description: "Headless commerce architectures engineered to handle extreme flash-sale concurrency. Dynamic inventory synchronization, zero-latency search, and AI-driven personalized recommendation pipelines.",
-      image: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1920&q=85",
+      image: "/industries/ecommerce.jpg",
       capabilities: [
         "Sub-Second Edge Checkout",
         "Real-Time Flash Inventory Sync",
@@ -88,10 +92,11 @@ export const INDUSTRIES_CONTENT = {
     {
       id: "gcc",
       name: "GCC",
+      seoDescription: "Software and engineering support from 21 Spheres for Global Capability Centers, covering data sovereignty, compliance and shared services.",
       category: "GCC",
       subhead: "Global Capability Centers & Enterprise Transformation.",
       description: "Next-generation software and engineering hubs for Global Capability Centers. Providing regional data sovereignty, automated regulatory compliance, and cross-border shared services operations.",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=85",
+      image: "/industries/gcc.jpg",
       capabilities: [
         "Sovereign Cloud Architectures",
         "Autonomous Workflow Automation",
@@ -108,10 +113,11 @@ export const INDUSTRIES_CONTENT = {
     {
       id: "travel",
       name: "Travel",
+      seoDescription: "Booking platforms from 21 Spheres connecting flight, hotel and mobility APIs, with distributed search caching for fast results.",
       category: "Travel",
       subhead: "Dynamic Flight & Hospitality Booking Aggregators.",
       description: "High-speed booking infrastructure connecting global flight, hotel, and mobility APIs. Distributed search caches reducing third-party GDS lookup costs by 85% while delivering sub-second search results.",
-      image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=85",
+      image: "/industries/travel.jpg",
       capabilities: [
         "GDS & NDC Protocol Ingestion",
         "Sub-Second Multi-Supplier Cache",
@@ -128,10 +134,11 @@ export const INDUSTRIES_CONTENT = {
     {
       id: "hospitality",
       name: "Hospitality",
+      seoDescription: "Hospitality systems from 21 Spheres: contactless check-in, in-room IoT, property operations and conversational AI concierges.",
       category: "Hospitality",
       subhead: "Smart Hotel Management, Concierge AI & Guest Experiences.",
       description: "End-to-end guest experience and property operations ecosystem. Frictionless contactless check-in, real-time room IoT telemetry, and conversational AI concierges driving guest satisfaction.",
-      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=85",
+      image: "/industries/hospitality.jpg",
       capabilities: [
         "Contactless Keyless Check-in",
         "Automated Property Management (PMS)",

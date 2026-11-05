@@ -4,6 +4,9 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollMemory } from "@/components/layout/ScrollMemory";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { COMPANY_SOCIALS } from "@/content/company";
+import { ORGANIZATION_ID, SHARED_OPEN_GRAPH, SHARED_TWITTER, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,25 +20,46 @@ const caveat = Caveat({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "21Spheres — Next-Gen Software Architecture & Product Studio",
-  description: "21Spheres is a niche engineering studio architecting autonomous AI agents, high-frequency digital platforms, and resilient software infrastructure.",
-  keywords: [
-    "21Spheres",
-    "Software Architecture",
-    "Product Studio",
-    "Autonomous AI Agents",
-    "Next.js Engineering",
-    "Digital Platforms",
-    "InsurTech",
-    "Fintech",
+const ORGANIZATION_SCHEMA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": ORGANIZATION_ID,
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: `${SITE_URL}/logo-square.png`,
+      description: SITE_DESCRIPTION,
+      sameAs: Object.values(COMPANY_SOCIALS),
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      publisher: { "@id": ORGANIZATION_ID },
+    },
   ],
+};
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
   openGraph: {
-    title: "21Spheres — Next-Gen Software Architecture & Product Studio",
-    description: "Niche engineering studio architecting autonomous AI agents and high-scale software platforms.",
-    siteName: "21Spheres",
-    locale: "en_US",
+    ...SHARED_OPEN_GRAPH,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
     type: "website",
+  },
+  twitter: {
+    ...SHARED_TWITTER,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
   },
   icons: {
     icon: [
@@ -57,6 +81,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${caveat.variable} scroll-smooth`}>
       <body className="min-h-screen bg-white text-[#2A2A2E] font-sans selection:bg-[#7057D9]/15 selection:text-[#7057D9] flex flex-col">
+        <JsonLd data={ORGANIZATION_SCHEMA} />
         <ScrollMemory />
         <Navbar />
         <main className="flex-1">{children}</main>

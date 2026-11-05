@@ -131,7 +131,7 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
   const Proof = PROOF_LAYOUTS[detail.proof.layout];
 
   return (
-    <main className="relative isolate overflow-hidden bg-[#0A0910] text-white">
+    <div className="relative isolate overflow-hidden bg-[#0A0910] text-white">
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-20"
@@ -158,7 +158,7 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
             <p className="mt-5 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">{detail.lead}</p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <PillLink href="/contact">Start a project</PillLink>
-              <Link href="/portfolio" className="inline-flex h-12 items-center rounded-full border border-white/20 px-6 text-sm text-white/85 transition-colors hover:border-white/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8]">
+              <Link href="/case-studies" className="inline-flex h-12 items-center rounded-full border border-white/20 px-6 text-sm text-white/85 transition-colors hover:border-white/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8]">
                 See our work
               </Link>
             </div>
@@ -224,6 +224,6 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
           <Link href="/services" className="text-sm text-[#C9BBFF] underline decoration-[#C9BBFF]/30 underline-offset-4 transition hover:text-white hover:decoration-white">View all services</Link>
         </div>
       </Container>
-    </main>
+    </div>
   );
 }

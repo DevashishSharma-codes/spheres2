@@ -66,17 +66,17 @@ const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
       { title: "Enterprise Software & Cloud Mesh", tag: "Kubernetes & 99.999% SLA", href: "/services/enterprise-software-development" },
     ],
   },
-  portfolio: {
+  "case-studies": {
     headline: "High-Conviction Systems",
     narrative: "A curated selection of mission-critical platforms engineered by 21Spheres, operating in production at scale with verified performance benchmarks and zero downtime.",
     ctaText: "View full production case studies",
-    ctaHref: "/portfolio",
+    ctaHref: "/case-studies",
     links: [
-      { title: "Bimakart Connect", tag: "InsurTech • Sub-2.4s Gateway", href: "/portfolio#bimakart-connect" },
-      { title: "Wealth Wisdom Terminal", tag: "FinTech • $1.4B+ AUM", href: "/portfolio#wealth-wisdom" },
-      { title: "Kaster Underwriting Lab", tag: "Vision AI • 420ms Verify", href: "/portfolio#kaster-underwriting-lab" },
-      { title: "UrbanFlow Dispatch", tag: "Mobile • 450k+ Monthly Bookings", href: "/portfolio#urbanflow-dispatch" },
-      { title: "Hahnnemen Clinical AI", tag: "AI Agents • Sub-180ms Lookup", href: "/portfolio#hahnnemen-clinical-ai" },
+      { title: "Bimakart Connect", tag: "InsurTech • Sub-2.4s Gateway", href: "/case-studies#bimakart-connect" },
+      { title: "Wealth Wisdom Terminal", tag: "FinTech • $1.4B+ AUM", href: "/case-studies#wealth-wisdom" },
+      { title: "Kaster Underwriting Lab", tag: "Vision AI • 420ms Verify", href: "/case-studies#kaster-underwriting-lab" },
+      { title: "UrbanFlow Dispatch", tag: "Mobile • 450k+ Monthly Bookings", href: "/case-studies#urbanflow-dispatch" },
+      { title: "Hahnnemen Clinical AI", tag: "AI Agents • Sub-180ms Lookup", href: "/case-studies#hahnnemen-clinical-ai" },
     ],
   },
   industries: {
@@ -109,7 +109,7 @@ const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
 };
 
 /** Pages that are dark from the top down, where the navbar becomes dark glass. */
-const DARK_PAGES = ["/services/", "/portfolio"];
+const DARK_PAGES = ["/services/", "/case-studies"];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -166,7 +166,7 @@ export function Navbar() {
         const trackedSections = [
           { id: "about", key: "about" },
           { id: "how-we-work", key: "how-we-work" },
-          { id: "portfolio", key: "portfolio" },
+          { id: "case-studies", key: "case-studies" },
           { id: "services", key: "services" },
           { id: "insights", key: "insights" },
           { id: "industries", key: "industries" },
@@ -212,7 +212,7 @@ export function Navbar() {
   const primaryNav = [
     { label: "About Us", href: "/#about", key: "about" },
     { label: "How We Work", href: "/#how-we-work", key: "how-we-work" },
-    { label: "Portfolio", href: "/portfolio", key: "portfolio" },
+    { label: "Case Studies", href: "/case-studies", key: "case-studies" },
     { label: "Services", href: "/services", key: "services" },
     { label: "Insights", href: "/insights", key: "insights" },
     { label: "Industries", href: "/#industries", key: "industries" },
@@ -228,7 +228,7 @@ export function Navbar() {
     if (cleanPath === "/" && activeSection === "about" && cleanHref === "/#about") return true;
     if (cleanPath === "/" && activeSection === "how-we-work" && cleanHref === "/#how-we-work") return true;
     if (cleanPath === "/" && activeSection === "services" && cleanHref === "/services") return true;
-    if (cleanPath === "/" && activeSection === "portfolio" && cleanHref === "/portfolio") return true;
+    if (cleanPath === "/" && activeSection === "case-studies" && cleanHref === "/case-studies") return true;
     if (cleanPath === "/" && activeSection === "insights" && cleanHref === "/insights") return true;
     if (cleanHref === "/#industries" && (activeSection === "industries" || cleanPath.startsWith("/industries"))) return true;
     if (cleanPath === "/" && activeSection === "testimonials" && cleanHref.startsWith("/#testimonials")) return true;

@@ -8,10 +8,21 @@ import { IndustriesLandingSection } from "@/components/industries/IndustriesLand
 import { TestimonialsLandingSection } from "@/components/testimonials/TestimonialsLandingSection";
 import { InsightsLandingSection } from "@/components/insights/InsightsLandingSection";
 import { JourneySection } from "@/components/home/JourneySection";
+import { SectionMetadata } from "@/components/seo/SectionMetadata";
+import { HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: HOME_TITLE,
+  absoluteTitle: true,
+  description: HOME_DESCRIPTION,
+  path: "/",
+});
 
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
+      <SectionMetadata />
+
       {/* Hero Section matching exact reference screenshot & purple wave video */}
       <HeroSection />
 
@@ -24,7 +35,7 @@ export default function HomePage() {
       {/* Second Section: How We Work (Interactive Architectural Floorplan Map) */}
       <HowWeWorkFloorplanSection />
 
-      {/* Portfolio */}
+      {/* Case Studies */}
       <PortfolioLandingSection />
 
       {/* Services */}

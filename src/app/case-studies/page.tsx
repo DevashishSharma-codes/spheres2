@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { FitToHeight } from "@/components/services/FitToHeight";
 import { PortfolioDevices } from "@/components/services/ServiceModels";
@@ -9,11 +8,13 @@ import { CursorDotField } from "@/components/ui/CursorDotField";
 import { PageBackButton } from "@/components/ui/PageBackButton";
 import { PillLink } from "@/components/ui/PillLink";
 import { PORTFOLIO_TECH } from "@/content/serviceTech";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Portfolio & Deliverables — 21Spheres",
-  description: "Production software systems, empirical statistics, and enterprise platforms delivered by 21Spheres.",
-};
+export const metadata = pageMetadata({
+  title: "Case Studies",
+  description: "Explore case studies of products 21 Spheres has shipped across AI systems, web platforms and mobile applications.",
+  path: "/case-studies",
+});
 
 export default function Page() {
   return (
@@ -33,7 +34,7 @@ export default function Page() {
             <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-white/65">
               <Link href="/" className="transition-colors hover:text-white">Home</Link>
               <span aria-hidden="true">/</span>
-              <span aria-current="page" className="text-[#C9BBFF]">Portfolio</span>
+              <span aria-current="page" className="text-[#C9BBFF]">Case Studies</span>
             </nav>
             <h1 className="mt-5 w-fit bg-gradient-to-r from-white via-[#E4DCFF] to-[#9D85F2] bg-clip-text pb-1 text-[42px] font-light leading-[1.06] tracking-[-0.05em] text-transparent sm:text-6xl xl:text-[68px]">
               Products we&rsquo;ve shipped.

@@ -23,7 +23,7 @@ export interface FolderTabCardProps {
 
 /**
  * Rounded folder-tab card with a photo on top. Shared by the /services catalog
- * and the portfolio's "More projects" row so the two stay identical.
+ * and the case studies "More projects" row so the two stay identical.
  */
 export function FolderTabCard({
   id,

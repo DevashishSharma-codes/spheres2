@@ -11,23 +11,8 @@ const nextConfig: NextConfig = {
       { source: "/how-we-work", destination: "/#how-we-work", permanent: false },
       { source: "/industries", destination: "/#industries", permanent: false },
       { source: "/testimonials", destination: "/#testimonials", permanent: false },
+      { source: "/portfolio", destination: "/case-studies", permanent: true },
     ];
-  },
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "i.pinimg.com",
-      },
-      {
-        protocol: "https",
-        hostname: "*.pinimg.com",
-      },
-    ],
   },
   turbopack: {
     rules: {
