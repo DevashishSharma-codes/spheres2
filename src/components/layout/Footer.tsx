@@ -74,10 +74,10 @@ export function Footer() {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#2A2A2E]/60 gap-4">
           <p>© {currentYear} 21Spheres Studio. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <Link href="/about" className="hover:text-[#7057D9] transition-colors">
+            <Link href="/#about" className="hover:text-[#7057D9] transition-colors">
               Privacy Notice
             </Link>
-            <Link href="/about" className="hover:text-[#7057D9] transition-colors">
+            <Link href="/#about" className="hover:text-[#7057D9] transition-colors">
               Terms of Engagement
             </Link>
             <Link href="/contact" className="hover:text-[#7057D9] transition-colors">

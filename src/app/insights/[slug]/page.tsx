@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { INSIGHTS_CONTENT } from "@/content/insights";
@@ -15,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: `${title} — 21Spheres Insights`, description: article?.excerpt ?? `A practical 21Spheres perspective on ${title.toLowerCase()}.` };
 }
 
-export default async function InsightArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+async function InsightArticleContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const matchedArticle = INSIGHTS_CONTENT.items.find((item) => item.slug === slug);
   const article = matchedArticle ?? {
@@ -82,4 +83,13 @@ export default async function InsightArticlePage({ params }: { params: Promise<{
       </div>
     </section>
   </main>;
+}
+
+export default function InsightArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  return (
+    // Plain placeholder so a navigation paints straight away.
+    <Suspense fallback={<div className="min-h-screen bg-[#171717]" />}>
+      <InsightArticleContent params={params} />
+    </Suspense>
+  );
 }

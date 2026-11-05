@@ -28,28 +28,28 @@ const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
     headline: "Infrastructure to Intelligence",
     narrative: "Navigate the AI era with confidence. 21Spheres turns modern software architecture and autonomous intelligence into a strategic partner that empowers talent, reimagines processes, and accelerates business transformation.",
     ctaText: "Unlock enterprise intelligence",
-    ctaHref: "/about",
+    ctaHref: "/#about",
     links: [
-      { title: "Seamless Integration", tag: "Effortless Connectivity", href: "/about#seamless-integration" },
-      { title: "Exceptional Security", tag: "Deterministic Guardrails", href: "/about#exceptional-security" },
-      { title: "High Performance", tag: "Sub-Second Latency", href: "/about#high-performance" },
-      { title: "Intelligent Automation", tag: "Self-Healing Workflows", href: "/about#intelligent-automation" },
-      { title: "Multi-Agent Swarms", tag: "Autonomous Swarms", href: "/about#multi-agent-swarms" },
-      { title: "Production Track Record & Metrics", tag: "20+ Automations • 15+ AI Models", href: "/about#statistics" },
+      { title: "Seamless Integration", tag: "Effortless Connectivity", href: "/#seamless-integration" },
+      { title: "Exceptional Security", tag: "Deterministic Guardrails", href: "/#exceptional-security" },
+      { title: "High Performance", tag: "Sub-Second Latency", href: "/#high-performance" },
+      { title: "Intelligent Automation", tag: "Self-Healing Workflows", href: "/#intelligent-automation" },
+      { title: "Multi-Agent Swarms", tag: "Autonomous Swarms", href: "/#multi-agent-swarms" },
+      { title: "Production Track Record & Metrics", tag: "20+ Automations • 15+ AI Models", href: "/#statistics" },
     ],
   },
   "how-we-work": {
     headline: "Deterministic Sprint Cadence",
     narrative: "From discovery and architectural design to full-scale edge deployment and 24/7 SLAs, our 6-stage engineering sprint methodology eliminates surprises and accelerates time-to-market with disciplined execution.",
     ctaText: "Explore our sprint methodology",
-    ctaHref: "/how-we-work",
+    ctaHref: "/#how-we-work",
     links: [
-      { title: "Discovery & SRS Design", tag: "Week 1", href: "/how-we-work#discovery-srs" },
-      { title: "Architecture & Tech Stack", tag: "Week 1–2", href: "/how-we-work#architecture-stack" },
-      { title: "UI/UX Design & Prototyping", tag: "Week 2–3", href: "/how-we-work#ui-ux-prototyping" },
-      { title: "Agile Development & Integration", tag: "Week 3–5", href: "/how-we-work#agile-development" },
-      { title: "QA, Security & Testing", tag: "Week 5–6", href: "/how-we-work#qa-security-testing" },
-      { title: "Deployment, Launch & Support", tag: "Week 6+", href: "/how-we-work#deployment-launch-support" },
+      { title: "Discovery & SRS Design", tag: "Week 1", href: "/#discovery-srs" },
+      { title: "Architecture & Tech Stack", tag: "Week 1–2", href: "/#architecture-stack" },
+      { title: "UI/UX Design & Prototyping", tag: "Week 2–3", href: "/#ui-ux-prototyping" },
+      { title: "Agile Development & Integration", tag: "Week 3–5", href: "/#agile-development" },
+      { title: "QA, Security & Testing", tag: "Week 5–6", href: "/#qa-security-testing" },
+      { title: "Deployment, Launch & Support", tag: "Week 6+", href: "/#deployment-launch-support" },
     ],
   },
   services: {
@@ -74,24 +74,24 @@ const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
     links: [
       { title: "Bimakart Connect", tag: "InsurTech • Sub-2.4s Gateway", href: "/portfolio#bimakart-connect" },
       { title: "Wealth Wisdom Terminal", tag: "FinTech • $1.4B+ AUM", href: "/portfolio#wealth-wisdom" },
-      { title: "Kaster Underwriting Lab", tag: "Vision AI • 420ms Verify", href: "/portfolio#kaster-lab" },
-      { title: "Apex Logistics Telemetry", tag: "Fleet DAG • 10k Events/s", href: "/portfolio#apex-telemetry" },
-      { title: "Homeopathic Repertory AI", tag: "HealthTech • Wasm Core", href: "/portfolio#homeo-repertory" },
+      { title: "Kaster Underwriting Lab", tag: "Vision AI • 420ms Verify", href: "/portfolio#kaster-underwriting-lab" },
+      { title: "UrbanFlow Dispatch", tag: "Mobile • 450k+ Monthly Bookings", href: "/portfolio#urbanflow-dispatch" },
+      { title: "Hahnnemen Clinical AI", tag: "AI Agents • Sub-180ms Lookup", href: "/portfolio#hahnnemen-clinical-ai" },
     ],
   },
   industries: {
     headline: "Mission-Critical Verticals",
     narrative: "Deep vertical expertise across regulated, latency-sensitive, and high-concurrency industries where reliability, data integrity, and compliance cannot be compromised.",
     ctaText: "Explore our industry solutions",
-    ctaHref: "/industries",
+    ctaHref: "/#industries",
     links: [
-      { title: "Healthcare", tag: "HIPAA • Clinical AI", href: "/industries#healthcare" },
-      { title: "SaaS", tag: "Multi-Tenant • 99.999% SLA", href: "/industries#saas" },
-      { title: "Fintech", tag: "$1.4B+ AUM • Sub-12ms", href: "/industries#fintech" },
-      { title: "eCommerce", tag: "Headless • 250k Concurrency", href: "/industries#ecommerce" },
-      { title: "GCC", tag: "Global Capability Centers", href: "/industries#gcc" },
-      { title: "Travel", tag: "GDS • Sub-400ms Search", href: "/industries#travel" },
-      { title: "Hospitality", tag: "PMS • Keyless IoT", href: "/industries#hospitality" },
+      { title: "Healthcare", tag: "HIPAA • Clinical AI", href: "/industries/healthcare" },
+      { title: "SaaS", tag: "Multi-Tenant • 99.999% SLA", href: "/industries/saas" },
+      { title: "Fintech", tag: "$1.4B+ AUM • Sub-12ms", href: "/industries/fintech" },
+      { title: "eCommerce", tag: "Headless • 250k Concurrency", href: "/industries/ecommerce" },
+      { title: "GCC", tag: "Global Capability Centers", href: "/industries/gcc" },
+      { title: "Travel", tag: "GDS • Sub-400ms Search", href: "/industries/travel" },
+      { title: "Hospitality", tag: "PMS • Keyless IoT", href: "/industries/hospitality" },
     ],
   },
   insights: {
@@ -100,28 +100,16 @@ const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
     ctaText: "Browse all architecture RFCs",
     ctaHref: "/insights",
     links: [
-      { title: "Scaling Multi-Carrier Gateways", tag: "Oct 2026 • Distributed Systems", href: "/insights" },
-      { title: "Zero-Hallucination Agent Graphs", tag: "Sep 2026 • AI Architecture", href: "/insights" },
-      { title: "120 FPS React Financial Dashboards", tag: "Aug 2026 • Frontend Latency", href: "/insights" },
-      { title: "Resilient Event Sourcing with Kafka", tag: "Jul 2026 • Event-Driven DAG", href: "/insights" },
-    ],
-  },
-  testimonials: {
-    headline: "Founder & CTO Endorsements",
-    narrative: "Verified reviews and performance metrics from engineering leaders and founders whose production applications and infrastructure were shipped by 21Spheres.",
-    ctaText: "Read all verified client reviews",
-    ctaHref: "/testimonials",
-    links: [
-      { title: "Bimakart Technologies", tag: "VP Eng • 4,500 Queries/min", href: "/testimonials" },
-      { title: "Wealth Wisdom Global", tag: "CEO • 120 FPS Portfolio Engine", href: "/testimonials" },
-      { title: "Kaster Underwriting Lab", tag: "CTO • 99.4% Fraud Eradication", href: "/testimonials" },
-      { title: "Deterministic SLA Commitment", tag: "99.95% Guaranteed Uptime", href: "/testimonials" },
+      { title: "Connecting complex systems", tag: "Oct 2026 • Engineering", href: "/insights/architecting-multi-carrier-gateways" },
+      { title: "Building AI systems people can trust", tag: "Nov 2026 • AI Architecture", href: "/insights/zero-hallucination-multi-agent-graphs" },
+      { title: "Keeping data rich experiences responsive", tag: "Oct 2026 • Product Experience", href: "/insights/120-fps-react-19-financial-dashboards" },
+      { title: "Designing cloud services that recover", tag: "Jul 2026 • Cloud", href: "/insights/designing-resilient-cloud-services" },
     ],
   },
 };
 
 /** Pages that are dark from the top down, where the navbar becomes dark glass. */
-const DARK_PAGES = ["/services/", "/portfolio", "/industries", "/how-we-work"];
+const DARK_PAGES = ["/services/", "/portfolio"];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -222,13 +210,13 @@ export function Navbar() {
 
   // Primary links on the left side
   const primaryNav = [
-    { label: "About Us", href: "/about", key: "about" },
-    { label: "How We Work", href: "/how-we-work", key: "how-we-work" },
+    { label: "About Us", href: "/#about", key: "about" },
+    { label: "How We Work", href: "/#how-we-work", key: "how-we-work" },
     { label: "Portfolio", href: "/portfolio", key: "portfolio" },
     { label: "Services", href: "/services", key: "services" },
     { label: "Insights", href: "/insights", key: "insights" },
-    { label: "Industries", href: "/industries/healthcare", key: "industries" },
-    { label: "Testimonials", href: "/testimonials", key: "testimonials" },
+    { label: "Industries", href: "/#industries", key: "industries" },
+    { label: "Testimonials", href: "/#testimonials", key: "testimonials" },
   ];
 
   const isItemActive = (href: string) => {
@@ -237,13 +225,13 @@ export function Navbar() {
 
     if (cleanPath === cleanHref) return true;
     if (cleanHref !== "/" && cleanPath.startsWith(cleanHref)) return true;
-    if (cleanPath === "/" && activeSection === "about" && cleanHref === "/about") return true;
-    if (cleanPath === "/" && activeSection === "how-we-work" && cleanHref === "/how-we-work") return true;
+    if (cleanPath === "/" && activeSection === "about" && cleanHref === "/#about") return true;
+    if (cleanPath === "/" && activeSection === "how-we-work" && cleanHref === "/#how-we-work") return true;
     if (cleanPath === "/" && activeSection === "services" && cleanHref === "/services") return true;
     if (cleanPath === "/" && activeSection === "portfolio" && cleanHref === "/portfolio") return true;
     if (cleanPath === "/" && activeSection === "insights" && cleanHref === "/insights") return true;
-    if (cleanPath === "/" && activeSection === "industries" && cleanHref.startsWith("/industries")) return true;
-    if (cleanPath === "/" && activeSection === "testimonials" && cleanHref.startsWith("/testimonials")) return true;
+    if (cleanHref === "/#industries" && (activeSection === "industries" || cleanPath.startsWith("/industries"))) return true;
+    if (cleanPath === "/" && activeSection === "testimonials" && cleanHref.startsWith("/#testimonials")) return true;
     return false;
   };
 
@@ -285,15 +273,8 @@ export function Navbar() {
               <div
                 key={item.label}
                 className="relative py-1 flex items-center"
-                onMouseEnter={() => {
-                  if (item.key === "industries") {
-                    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-                    setHoveredKey(null);
-                  } else {
-                    handleMouseEnter(item.key);
-                  }
-                }}
-                onMouseLeave={() => item.key !== "industries" && handleMouseLeave()}
+                onMouseEnter={() => (NAVBAR_DROPDOWNS[item.key] ? handleMouseEnter(item.key) : setHoveredKey(null))}
+                onMouseLeave={handleMouseLeave}
               >
                 <Link
                   href={item.href}
@@ -319,15 +300,13 @@ export function Navbar() {
                       />
                     )}
                   </span>
-                  {item.key !== "industries" && (
-                    <ChevronDown
+                  {NAVBAR_DROPDOWNS[item.key] && (<ChevronDown
                       className={`w-3.5 h-3.5 pb-0.5 transition-transform duration-200 ${
                         isHovered
                           ? isDarkHero ? "rotate-180 text-[#D8B4FE]" : "rotate-180 text-[#7057D9]"
                           : isDarkHero ? "text-white/60" : "opacity-60"
                       }`}
-                    />
-                  )}
+                    />)}
                 </Link>
               </div>
             );

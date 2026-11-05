@@ -17,6 +17,13 @@ export interface LandingProjectItem {
   description2: string;
 }
 
+/** Which published case study each landing card opens. */
+const CASE_STUDY_IDS: Record<string, string> = {
+  "bimakart-connect": "bimakart-connect",
+  "on-demand-mobile": "urbanflow-dispatch",
+  "hahnnemen-ai": "hahnnemen-clinical-ai",
+};
+
 const FEATURED_3_PROJECTS: LandingProjectItem[] = [
   {
     id: "bimakart-connect",
@@ -94,7 +101,7 @@ export function PortfolioLandingSection() {
           {FEATURED_3_PROJECTS.map((project) => (
             <Link
               key={project.id}
-              href="/portfolio"
+              href={`/portfolio#${CASE_STUDY_IDS[project.id] ?? ""}`}
               className="group flex flex-col text-left select-none cursor-pointer h-full"
             >
               {/* Image thumbnail with crisp subtle rounded edges */}

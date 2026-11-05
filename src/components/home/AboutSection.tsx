@@ -17,6 +17,8 @@ import {
   Users
 } from "lucide-react";
 import { CompanyStatisticsSection } from "@/components/about/CompanyStatisticsSection";
+import { useHashLink } from "@/lib/useHashLink";
+import { useRouter } from "next/navigation";
 
 export interface CardStat {
   value: string;
@@ -126,6 +128,20 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
   const [isHovered, setIsHovered] = useState(false);
   const [withTransition, setWithTransition] = useState(true);
   const [selectedCard, setSelectedCard] = useState<AboutCardItem | null>(null);
+  const router = useRouter();
+
+  // Each card's detail has its own address, so Back and Forward open and close it.
+  const openCard = useCallback((card: AboutCardItem) => {
+    setSelectedCard(card);
+    router.push(`/#${card.id}`, { scroll: false });
+  }, [router]);
+
+  const closeCard = useCallback(() => {
+    setSelectedCard(null);
+    if (BASE_CARDS.some((card) => `#${card.id}` === window.location.hash)) {
+      router.replace("/#about", { scroll: false });
+    }
+  }, [router]);
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [trackTranslateX, setTrackTranslateX] = useState(0);
@@ -188,7 +204,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
     if (isDismissingRef.current) return;
     isDismissingRef.current = true;
 
-    setSelectedCard(null);
+    closeCard();
 
     const startY = window.scrollY;
     let targetDistance = isDown 
@@ -226,7 +242,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
     };
 
     requestAnimationFrame(step);
-  }, []);
+  }, [closeCard]);
 
   // When modal is open: ESC closes it, and scrolling (wheel or touch) closes it and continues scrolling down
   useEffect(() => {
@@ -239,7 +255,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setSelectedCard(null);
+        closeCard();
       }
     };
 
@@ -275,7 +291,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
     };
-  }, [selectedCard, smoothDismissAndScroll]);
+  }, [closeCard, selectedCard, smoothDismissAndScroll]);
 
   // Auto-play timer (pauses on hover or when modal is open)
   useEffect(() => {
@@ -286,22 +302,16 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
     return () => clearInterval(interval);
   }, [isHovered, selectedCard, handleNext]);
 
-  // Handle URL hash navigation (e.g. from navbar clicks) to focus targeted card
-  useEffect(() => {
-    const handleHash = () => {
-      if (typeof window === "undefined") return;
-      const hash = window.location.hash.replace("#", "");
-      if (!hash) return;
-      const foundIdx = BASE_CARDS.findIndex((c) => c.id === hash);
-      if (foundIdx !== -1) {
-        handleDotClick(foundIdx);
-      }
-    };
-
-    handleHash();
-    window.addEventListener("hashchange", handleHash);
-    return () => window.removeEventListener("hashchange", handleHash);
-  }, [handleDotClick]);
+  // The address decides which card's detail is open
+  useHashLink((hash) => {
+    const foundIdx = BASE_CARDS.findIndex((c) => `#${c.id}` === hash);
+    if (foundIdx === -1) {
+      setSelectedCard(null);
+      return;
+    }
+    handleDotClick(foundIdx);
+    setSelectedCard(BASE_CARDS[foundIdx]);
+  });
 
   // Calculate track position to center active card horizontally
   const updateTrackPosition = useCallback(() => {
@@ -361,8 +371,12 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
           ========================================================= */}
       <section 
         id="about" 
-        className="relative z-10 w-full min-h-[calc(100vh-64px)] lg:h-[calc(100vh-64px)] lg:max-h-[890px] flex flex-col justify-between pt-5 sm:pt-6 lg:pt-7 pb-4 sm:pb-5 lg:pb-6 overflow-hidden"
+        className="scroll-mt-14 sm:scroll-mt-16 relative z-10 w-full min-h-[calc(100vh-64px)] lg:h-[calc(100vh-64px)] lg:max-h-[890px] flex flex-col justify-between pt-5 sm:pt-6 lg:pt-7 pb-4 sm:pb-5 lg:pb-6 overflow-hidden"
       >
+        {/* Link targets for each card, so /#card-id lands on this section */}
+        {BASE_CARDS.map((card) => (
+          <span key={card.id} id={card.id} aria-hidden="true" className="absolute left-0 top-0 scroll-mt-14 sm:scroll-mt-16" />
+        ))}
         {/* Clearly Visible Background Photo with higher opacity */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <Image
@@ -472,10 +486,9 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                   return (
                     <div
                       key={`${card.id}-${index}`}
-                      id={isActive ? card.id : undefined}
                       onClick={() => {
                         if (isActive) {
-                          setSelectedCard(card);
+                          openCard(card);
                         } else {
                           setWithTransition(true);
                           setCurrentIndex(index);
@@ -530,7 +543,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                             <div 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setSelectedCard(card);
+                                openCard(card);
                               }}
                               className="mt-auto w-full px-3.5 py-1.5 rounded-full bg-[#F6F5FA] border border-[#E5E2F0] shadow-xs flex items-center justify-between group/pill hover:bg-purple-50/80 hover:border-purple-200 transition-all duration-300 cursor-pointer"
                             >
@@ -582,7 +595,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                             <div 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setSelectedCard(card);
+                                openCard(card);
                               }}
                               className="mt-auto w-full px-3 py-1.5 rounded-full bg-[#F6F5FA] border border-[#E5E2F0] shadow-xs flex items-center justify-between cursor-pointer hover:bg-purple-50/80 hover:border-purple-200 transition-all"
                             >
@@ -632,7 +645,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
         {mounted && selectedCard && createPortal(
           <div 
             className="fixed inset-0 z-[9999] bg-black/65 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-hidden cursor-pointer"
-            onClick={() => setSelectedCard(null)}
+            onClick={closeCard}
             onWheel={(e) => {
               if (Math.abs(e.deltaY) > 5) {
                 smoothDismissAndScroll(e.deltaY > 0);
@@ -648,7 +661,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
               {/* Top Right Close (Cross) Button */}
               <button
                 type="button"
-                onClick={() => setSelectedCard(null)}
+                onClick={closeCard}
                 className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-gray-500 hover:text-gray-900 shadow-[0_2px_8px_rgba(0,0,0,0.12)] border border-gray-200/80 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-md"
                 aria-label="Close dialog"
               >

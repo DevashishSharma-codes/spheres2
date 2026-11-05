@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Layers3 } from "lucide-react";
+import { PageBackButton } from "@/components/ui/PageBackButton";
 import { INDUSTRIES_CONTENT } from "@/content/industries";
 
 interface IndustryPageProps {
@@ -25,7 +27,7 @@ export async function generateMetadata({ params }: IndustryPageProps): Promise<M
   };
 }
 
-export default async function IndustryDetailPage({ params }: IndustryPageProps) {
+async function IndustryDetailContent({ params }: IndustryPageProps) {
   const { slug } = await params;
   const industryIndex = industries.findIndex((item) => item.id === slug);
   const industry = industries[industryIndex];
@@ -46,13 +48,7 @@ export default async function IndustryDetailPage({ params }: IndustryPageProps) 
 
       <div className="mx-auto max-w-[1320px] px-5 pt-7 sm:px-8 sm:pt-10 lg:px-12">
         <div className="mb-8 flex items-center justify-between gap-4 border-b border-[#DAD8E0] pb-4 sm:mb-10">
-          <Link
-            href="/#industries"
-            className="group inline-flex items-center gap-2 text-xs font-medium text-[#625D69] transition hover:text-[#7057D9] sm:text-sm"
-          >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Back to industries
-          </Link>
+          <PageBackButton />
           <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#817B88] sm:text-[10px]">
             21SPHERES / SECTOR SYSTEMS / {String(industryIndex + 1).padStart(2, "0")}
           </span>
@@ -232,5 +228,14 @@ export default async function IndustryDetailPage({ params }: IndustryPageProps) 
         </nav>
       </div>
     </main>
+  );
+}
+
+export default function IndustryDetailPage({ params }: IndustryPageProps) {
+  return (
+    // Plain placeholder so a navigation paints straight away.
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <IndustryDetailContent params={params} />
+    </Suspense>
   );
 }

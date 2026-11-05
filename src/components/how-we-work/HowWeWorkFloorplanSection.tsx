@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import {
   CalendarDays,
   Check,
@@ -13,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { HOW_WE_WORK_CONTENT, WORK_FLOORPLAN_STEPS } from "@/content/howWeWork";
+import { useHashLink } from "@/lib/useHashLink";
 
 interface HowWeWorkFloorplanSectionProps {
   embedded?: boolean;
@@ -71,6 +73,12 @@ const stemHeight = (index: number, trackH: number, cardH: number) => {
 };
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
+
+/* Typing speed in the cards, in ms per character. */
+const TITLE_TYPE_MS = 10;
+const SUMMARY_TYPE_MS = 5;
+const CARD_TEXT_DELAY_MS = 430;
+const AFTER_TITLE_MS = 50;
 
 function TypewriterText({
   text,
@@ -157,19 +165,19 @@ function StageCard({
   const dL = `M ${tipX} ${B} L ${R} ${B} A ${R} ${R} 0 0 1 0 ${B - R} L 0 ${R} A ${R} ${R} 0 0 1 ${R} 0 L ${mid} 0`;
   const dR = `M ${tipX} ${B} L ${W - R} ${B} A ${R} ${R} 0 0 0 ${W} ${B - R} L ${W} ${R} A ${R} ${R} 0 0 0 ${W - R} 0 L ${mid} 0`;
 
-  const stubT = reduced ? 0 : 0.18;
+  const stubT = reduced ? 0 : 0.08;
   const drawDelay = stubT;
-  const drawDur = reduced ? 0 : 0.85;
-  const fillDelay = reduced ? 0 : drawDelay + 0.2;
-  const fillDur = reduced ? 0 : 0.9;
-  const contentDelay = reduced ? 0 : drawDelay + 0.55;
+  const drawDur = reduced ? 0 : 0.4;
+  const fillDelay = reduced ? 0 : drawDelay + 0.1;
+  const fillDur = reduced ? 0 : 0.45;
+  const contentDelay = reduced ? 0 : drawDelay + 0.25;
   const ease = [0.5, 0.05, 0.25, 1] as const;
   const COMET = 34;
   const reach = Math.hypot(W, B) + 24;
 
-  const titleDelay = (contentDelay + 0.25) * 1000;
-  const summaryDelay = titleDelay + step.title.length * 28 + 100;
-  const chipsDelay = (summaryDelay + summary.length * 16 + 60) / 1000;
+  const titleDelay = CARD_TEXT_DELAY_MS;
+  const summaryDelay = titleDelay + step.title.length * TITLE_TYPE_MS + AFTER_TITLE_MS;
+  const chipsDelay = (summaryDelay + summary.length * SUMMARY_TYPE_MS + 30) / 1000;
 
   const outline = (d: string, len: number, key: string) => (
     <React.Fragment key={key}>
@@ -183,7 +191,7 @@ function StageCard({
         strokeDasharray={len}
         initial={{ strokeDashoffset: len }}
         animate={{ strokeDashoffset: 0 }}
-        exit={{ strokeDashoffset: len, transition: { duration: reduced ? 0 : 0.6, delay: reduced ? 0 : 0.12, ease } }}
+        exit={{ strokeDashoffset: len, transition: { duration: reduced ? 0 : 0.28, delay: reduced ? 0 : 0.05, ease } }}
         transition={{ duration: drawDur, delay: drawDelay, ease }}
       />
       {/* bright comet head riding the leading edge */}
@@ -215,8 +223,8 @@ function StageCard({
         style={{ width: W, height: B, borderRadius: R }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0, transition: { duration: 0.2 } }}
-        transition={{ duration: reduced ? 0 : 0.7, delay: reduced ? 0 : drawDelay + drawDur }}
+        exit={{ opacity: 0, transition: { duration: reduced ? 0 : 0.15 } }}
+        transition={{ duration: reduced ? 0 : 0.3, delay: reduced ? 0 : drawDelay + drawDur }}
       >
         <div
           className="h-full w-full"
@@ -237,7 +245,7 @@ function StageCard({
         }}
         initial={{ clipPath: `circle(0px at ${tipX}px ${B}px)` }}
         animate={{ clipPath: `circle(${reach}px at ${tipX}px ${B}px)` }}
-        exit={{ clipPath: `circle(0px at ${tipX}px ${B}px)`, transition: { duration: reduced ? 0 : 0.5, ease } }}
+        exit={{ clipPath: `circle(0px at ${tipX}px ${B}px)`, transition: { duration: reduced ? 0 : 0.25, ease } }}
         transition={{ duration: fillDur, delay: fillDelay, ease: EASE_OUT }}
       >
         <Icon
@@ -249,8 +257,8 @@ function StageCard({
           className="relative z-10 flex h-full flex-col px-5 pb-3.5 pt-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.15 } }}
-          transition={{ duration: reduced ? 0 : 0.35, delay: contentDelay }}
+          exit={{ opacity: 0, transition: { duration: reduced ? 0 : 0.1 } }}
+          transition={{ duration: reduced ? 0 : 0.2, delay: contentDelay }}
         >
           <div className="mb-2 flex items-center gap-2">
             <span className="font-mono text-[10px] tracking-[0.18em] text-[#C8B4FF]">{step.step} / 06</span>
@@ -266,16 +274,16 @@ function StageCard({
               </button>
             )}
           </div>
-          <h3 id={step.id} className="text-[17px] font-semibold leading-snug tracking-[-0.02em] text-white">
-            {reduced ? step.title : <TypewriterText text={step.title} speed={28} delay={titleDelay} />}
+          <h3 className="text-[17px] font-semibold leading-snug tracking-[-0.02em] text-white">
+            {reduced ? step.title : <TypewriterText text={step.title} speed={TITLE_TYPE_MS} delay={titleDelay} />}
           </h3>
           <p className="mt-1 text-xs leading-relaxed text-white/75">
-            {reduced ? summary : <TypewriterText text={summary} speed={16} delay={summaryDelay} />}
+            {reduced ? summary : <TypewriterText text={summary} speed={SUMMARY_TYPE_MS} delay={summaryDelay} />}
           </p>
           <motion.div
             initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 5 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: reduced ? 0 : chipsDelay }}
+            transition={{ duration: reduced ? 0 : 0.2, delay: reduced ? 0 : chipsDelay }}
             className="mt-auto flex flex-wrap gap-1.5 pt-2.5"
           >
             {chips.map((chip) => (
@@ -308,7 +316,7 @@ function StageCard({
           strokeDasharray={STUB_H + 1}
           initial={{ strokeDashoffset: STUB_H + 1 }}
           animate={{ strokeDashoffset: 0 }}
-          exit={{ strokeDashoffset: STUB_H + 1, transition: { duration: reduced ? 0 : 0.15, delay: reduced ? 0 : 0.62 } }}
+          exit={{ strokeDashoffset: STUB_H + 1, transition: { duration: reduced ? 0 : 0.08, delay: reduced ? 0 : 0.28 } }}
           transition={{ duration: stubT }}
         />
         {outline(dL, lenL, "l")}
@@ -319,9 +327,12 @@ function StageCard({
 }
 
 export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorplanSectionProps) {
-  const prefersReducedMotion = useReducedMotion();
-  const reduced = !!prefersReducedMotion;
+  const prefersReducedMotion = !!useReducedMotion();
+  // Set once the visitor jumps ahead: from then on everything appears without animating.
+  const [skipped, setSkipped] = useState(false);
+  const reduced = prefersReducedMotion || skipped;
 
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [hasEntered, setHasEntered] = useState(false);
@@ -342,45 +353,21 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
   const sectionRef = useRef<HTMLElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const measureRef = useRef<HTMLDivElement | null>(null);
-  const skipIntro = useRef(false);
-  const manualCloseTimer = useRef<number | null>(null);
+  // Read by the sequence directly: a stale render must never start it after a jump ahead.
+  const introSkipped = useRef(false);
 
-  /* ---------- manual open / close (only once the intro has played) ---------- */
-  const clearManualTimer = () => {
-    if (manualCloseTimer.current !== null) window.clearTimeout(manualCloseTimer.current);
-    manualCloseTimer.current = null;
-  };
-
-  const closeStageCard = useCallback(() => {
-    clearManualTimer();
-    setExpandedIndex(null);
-  }, []);
+  /* ---------- open / close ---------- */
+  const closeStageCard = useCallback(() => setExpandedIndex(null), []);
 
   const showStageCard = useCallback((index: number) => {
-    clearManualTimer();
     setActiveIndex(index);
     setExpandedIndex(index);
-    manualCloseTimer.current = window.setTimeout(() => {
-      manualCloseTimer.current = null;
-      setExpandedIndex(null);
-    }, 8000);
   }, []);
 
-  const togglePill = useCallback(
-    (index: number) => {
-      if (expandedIndex === index) closeStageCard();
-      else showStageCard(index);
-    },
-    [closeStageCard, expandedIndex, showStageCard]
-  );
-
-  useEffect(() => () => clearManualTimer(), []);
-
-  /* ---------- deep link (#stage-id): skip the intro and open that card ---------- */
-  useEffect(() => {
-    const requested = WORK_FLOORPLAN_STEPS.findIndex((s) => `#${s.id}` === window.location.hash);
-    if (requested < 0) return;
-    skipIntro.current = true;
+  /* Finish the whole sequence at once: every stage done, nothing left animating. */
+  const completeIntro = useCallback(() => {
+    introSkipped.current = true;
+    setSkipped(true);
     setHasEntered(true);
     setLinkCount(TOTAL);
     setPillCount(TOTAL);
@@ -388,8 +375,38 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
     setTitleCount(TOTAL);
     setCompletedCount(TOTAL);
     setFinished(true);
+  }, []);
+
+  /* Each open card has its own address, so Back and Forward step through them. */
+  const togglePill = useCallback(
+    (index: number) => {
+      if (finished && expandedIndex === index) {
+        closeStageCard();
+        router.replace("/#how-we-work", { scroll: false });
+        return;
+      }
+      if (!finished) completeIntro();
+      showStageCard(index);
+      router.push(`/#${WORK_FLOORPLAN_STEPS[index].id}`, { scroll: false });
+    },
+    [closeStageCard, completeIntro, expandedIndex, finished, router, showStageCard]
+  );
+
+  const closeFromCard = useCallback(() => {
+    closeStageCard();
+    router.replace("/#how-we-work", { scroll: false });
+  }, [closeStageCard, router]);
+
+  /* ---------- the address decides which card is open ---------- */
+  useHashLink((hash) => {
+    const requested = WORK_FLOORPLAN_STEPS.findIndex((s) => `#${s.id}` === hash);
+    if (requested < 0) {
+      if (introSkipped.current) closeStageCard();
+      return;
+    }
+    completeIntro();
     showStageCard(requested);
-  }, [showStageCard]);
+  });
 
   /* ---------- start when scrolled into view ---------- */
   useEffect(() => {
@@ -474,11 +491,11 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
    *   7. the tick forms, then we move on to the next stage
    */
   useEffect(() => {
-    if (!hasEntered || skipIntro.current) return;
+    if (!hasEntered || skipped || finished || introSkipped.current) return;
 
-    const t = reduced
-      ? { link: 120, pill: 160, stem: 160, card: 160, hold: 900, close: 160, check: 160, gap: 120 }
-      : { link: 650, pill: 650, stem: 800, card: 300, hold: 1800, close: 1000, check: 600, gap: 250 };
+    const t = prefersReducedMotion
+      ? { link: 120, pill: 160, stem: 160, card: 160, hold: 900, close: 160, title: 120, check: 160, gap: 120 }
+      : { link: 240, pill: 220, stem: 280, card: 0, hold: 600, close: 350, title: 80, check: 120, gap: 60 };
 
     let cancelled = false;
     const timers = new Set<number>();
@@ -513,7 +530,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
         if (cancelled) return;
 
         setExpandedIndex(i);
-        const typing = reduced ? 0 : 1100 + step.title.length * 28 + 100 + summary.length * 16 + 500;
+        const typing = prefersReducedMotion ? 0 : CARD_TEXT_DELAY_MS + step.title.length * TITLE_TYPE_MS + AFTER_TITLE_MS + summary.length * SUMMARY_TYPE_MS + 200;
         await wait(t.card + typing + t.hold);
         if (cancelled) return;
 
@@ -522,7 +539,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
         if (cancelled) return;
 
         setTitleCount(i + 1);
-        await wait(reduced ? 120 : 300);
+        await wait(t.title);
         if (cancelled) return;
 
         setCompletedCount(i + 1);
@@ -535,7 +552,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
       cancelled = true;
       timers.forEach((id) => window.clearTimeout(id));
     };
-  }, [hasEntered, reduced]);
+  }, [hasEntered, skipped, finished, prefersReducedMotion]);
 
   const activeStep = WORK_FLOORPLAN_STEPS[activeIndex];
 
@@ -547,7 +564,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
       ref={sectionRef}
       id="how-we-work"
       data-embedded={embedded ? "true" : undefined}
-      className="how-we-work-process relative min-h-[calc(100svh-5rem)] w-full overflow-hidden text-white"
+      className="how-we-work-process relative scroll-mt-14 sm:scroll-mt-16 min-h-[calc(100svh-5rem)] w-full overflow-hidden text-white"
       style={{
         background: `
           radial-gradient(ellipse 88% 90% at 78% 5%, rgba(112, 72, 194, 0.42) 0%, rgba(72, 43, 123, 0.28) 36%, transparent 76%),
@@ -556,6 +573,10 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
         `,
       }}
     >
+      {/* Link targets for each stage, so /#stage-id lands on this section */}
+      {WORK_FLOORPLAN_STEPS.map((step) => (
+        <span key={step.id} id={step.id} aria-hidden="true" className="absolute left-0 top-0 scroll-mt-14 sm:scroll-mt-16" />
+      ))}
       <div className="relative mx-auto flex min-h-[calc(100svh-5.5rem)] w-full max-w-[1600px] flex-col px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:pb-8 lg:pt-12">
         {/* ------------------------------- header (top) ------------------------------- */}
         <header className="mb-6 flex shrink-0 flex-col gap-3 sm:mb-8 lg:mb-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
@@ -633,7 +654,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                       className="absolute z-0 h-[2px] origin-left"
                       initial={{ scaleX: reduced ? 1 : 0 }}
                       animate={{ scaleX: 1 }}
-                      transition={{ duration: reduced ? 0 : 0.6, ease: "easeInOut" }}
+                      transition={{ duration: reduced ? 0 : 0.22, ease: "easeInOut" }}
                       style={{
                         left: "50%",
                         width: "100%",
@@ -652,12 +673,11 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                     >
                       <motion.button
                         type="button"
-                        disabled={!finished}
                         onClick={() => togglePill(index)}
                         aria-label={`Show ${step.title} card`}
                         initial={{ opacity: 0, scaleX: reduced ? 1 : 0.2, scaleY: reduced ? 1 : 0.55 }}
                         animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
-                        transition={{ duration: reduced ? 0 : 0.55, ease: EASE_OUT }}
+                        transition={{ duration: reduced ? 0 : 0.2, ease: EASE_OUT }}
                         className={`pointer-events-auto inline-flex items-center gap-2 whitespace-nowrap rounded-full border py-1 pl-3.5 pr-1 text-[10px] font-medium tracking-wide backdrop-blur-xl transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2C1FF] disabled:cursor-default ${isActive
                           ? "border-[#C8B4FF]/50 bg-[#8057E8]/35 text-white shadow-[0_8px_28px_rgba(128,87,232,.45),inset_0_1px_0_rgba(255,255,255,.35)]"
                           : "border-white/20 bg-white/[0.07] text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,.18)] enabled:hover:border-white/40 enabled:hover:bg-white/[0.12]"
@@ -682,7 +702,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                       className="absolute z-10 w-[2px] origin-bottom"
                       initial={{ scaleY: reduced ? 1 : 0 }}
                       animate={{ scaleY: 1 }}
-                      transition={{ duration: reduced ? 0 : 0.75, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: reduced ? 0 : 0.26, ease: [0.22, 1, 0.36, 1] }}
                       style={{
                         left: "50%",
                         marginLeft: -1,
@@ -700,7 +720,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                   )}
 
                   {/* card grows out of the beam tip, centred on the beam */}
-                  <AnimatePresence>
+                  <AnimatePresence key={skipped ? "skipped" : "playing"}>
                     {isExpanded && cardW > 0 && (
                       <div
                         key="card"
@@ -712,7 +732,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                           cardW={cardW}
                           cardH={cardH}
                           reduced={reduced}
-                          onClose={finished ? closeStageCard : undefined}
+                          onClose={finished ? closeFromCard : undefined}
                         />
                       </div>
                     )}
@@ -742,7 +762,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                       {isComplete && (
                         <motion.span
                           aria-label="Completed"
-                          initial={{ scale: reduced ? 1 : 0, opacity: 0 }}
+                          initial={{ scale: reduced ? 1 : 0, opacity: reduced ? 1 : 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           transition={{ type: "spring", stiffness: 420, damping: 18 }}
                           className="absolute left-1/2 z-20 flex items-center justify-center rounded-full bg-[#A98AFF] text-[#170E29] shadow-[0_0_14px_rgba(169,138,255,.55)]"
@@ -786,7 +806,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                       className="absolute bottom-[-14px] left-1/2 top-7 w-px origin-top bg-white/35"
                       initial={{ scaleY: reduced ? 1 : 0 }}
                       animate={{ scaleY: 1 }}
-                      transition={{ duration: reduced ? 0 : 0.6, ease: "easeInOut" }}
+                      transition={{ duration: reduced ? 0 : 0.22, ease: "easeInOut" }}
                     />
                   )}
                   <span
@@ -800,12 +820,11 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                 <div className="flex min-w-0 flex-col items-start">
                   <motion.button
                     type="button"
-                    disabled={!finished}
                     onClick={() => togglePill(index)}
                     aria-label={`Show ${step.title} card`}
                     initial={{ opacity: 0, scaleX: reduced ? 1 : 0.3 }}
                     animate={{ opacity: 1, scaleX: 1 }}
-                    transition={{ duration: reduced ? 0 : 0.5, ease: EASE_OUT }}
+                    transition={{ duration: reduced ? 0 : 0.2, ease: EASE_OUT }}
                     style={{ transformOrigin: "left center" }}
                     className={`mt-1 inline-flex items-center gap-2 rounded-full border py-1 pl-3 pr-1 text-[10px] backdrop-blur-xl disabled:cursor-default ${isActive
                       ? "border-[#C8B4FF]/50 bg-[#8057E8]/35 text-white shadow-[inset_0_1px_0_rgba(255,255,255,.3)]"
@@ -818,21 +837,21 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                     </span>
                   </motion.button>
 
-                  <AnimatePresence initial={false}>
+                  <AnimatePresence key={skipped ? "skipped" : "playing"} initial={false}>
                     {isExpanded && (
                       <motion.div
                         key="m-card"
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: reduced ? 0 : 0.6, ease: EASE_OUT }}
+                        transition={{ duration: reduced ? 0 : 0.28, ease: EASE_OUT }}
                         className="mt-3 w-full overflow-hidden"
                       >
                         <div className="relative rounded-xl border border-[#A98AFF]/65 bg-[#171020] p-3.5 pr-10 shadow-[0_0_28px_rgba(128,87,232,.4)]">
                           {finished && (
                             <button
                               type="button"
-                              onClick={closeStageCard}
+                              onClick={closeFromCard}
                               aria-label="Close stage card"
                               className="absolute right-2 top-2 rounded-full p-1 text-white/55 hover:bg-white/10 hover:text-white"
                             >
@@ -840,7 +859,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                             </button>
                           )}
                           <h3 className="mb-1.5 text-sm font-semibold text-white">
-                            {reduced ? step.title : <TypewriterText text={step.title} speed={28} delay={450} />}
+                            {reduced ? step.title : <TypewriterText text={step.title} speed={TITLE_TYPE_MS} delay={200} />}
                           </h3>
                           <p className="text-xs leading-relaxed text-white/75">
                             {reduced ? (
@@ -848,8 +867,8 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                             ) : (
                               <TypewriterText
                                 text={STAGE_SUMMARIES[index]}
-                                speed={16}
-                                delay={450 + step.title.length * 28 + 120}
+                                speed={SUMMARY_TYPE_MS}
+                                delay={200 + step.title.length * TITLE_TYPE_MS + AFTER_TITLE_MS}
                               />
                             )}
                           </p>

@@ -1,14 +1,19 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useScroll, useMotionValueEvent } from "framer-motion";
 import { SERVICES_CONTENT } from "@/content/services";
 import { OpenBoxServicesVisual } from "./OpenBoxServicesVisual";
 import { PillLink } from "@/components/ui/PillLink";
 import { AllServicesCatalog } from "./AllServicesCatalog";
 import { ServicesIntro } from "./ServicesIntro";
 import { Container } from "@/components/ui/Container";
+
+const MAX_OFFSET = 6; // 10 services, 4 visible at a time
+const NAV_HEIGHT = 64;
+const ENGAGE_DISTANCE = 220; // how close the section must be to the top before the box takes the wheel
+const STEP_DISTANCE = 60; // wheel travel per card step
+const STEP_COOLDOWN_MS = 280; // stops one trackpad flick from running through every card
 
 interface ServicesSectionProps {
   embedded?: boolean;
@@ -19,67 +24,54 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
   const router = useRouter();
   const [offset, setOffset] = useState<number>(0);
 
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const currentOffsetRef = useRef(0);
-  const requestedOffsetRef = useRef(0);
-  const scrollTargetRef = useRef<number | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const boxAreaRef = useRef<HTMLDivElement>(null);
+  const offsetRef = useRef(0);
 
-  // Scroll tracking: drive which 4 cards pop out as user scrolls through the section
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (!window.matchMedia("(min-width: 1024px)").matches) return;
-    const maxOffset = 6; // 10 services total, 4 visible at a time (0 to 6)
-    const raw = latest * (maxOffset + 0.5);
-    const step = Math.min(maxOffset, Math.max(0, Math.floor(raw)));
-    currentOffsetRef.current = step;
-    setOffset(step);
-    if (scrollTargetRef.current === null) {
-      requestedOffsetRef.current = step;
-    } else if (step === scrollTargetRef.current) {
-      requestedOffsetRef.current = step;
-      scrollTargetRef.current = null;
-    }
-  });
-
-  React.useEffect(() => {
-    const handleScrollEnd = () => {
-      if (scrollTargetRef.current !== null) {
-        requestedOffsetRef.current = currentOffsetRef.current;
-        scrollTargetRef.current = null;
-      }
-    };
-    window.addEventListener("scrollend", handleScrollEnd);
-    return () => window.removeEventListener("scrollend", handleScrollEnd);
-  }, []);
-
-  const services = SERVICES_CONTENT.services;
-
-  // Scroll the desktop section to the target squad; let scroll progress own
-  // the visible offset so the cards never jump forward and then snap back.
   const moveSquad = useCallback((direction: -1 | 1) => {
-    const next = Math.max(0, Math.min(6, (scrollTargetRef.current ?? requestedOffsetRef.current) + direction));
-    const section = sectionRef.current;
-    if (section && window.matchMedia("(min-width: 1024px)").matches) {
-      const rect = section.getBoundingClientRect();
-      const top = rect.top + window.scrollY;
-      const totalScrollable = section.offsetHeight - window.innerHeight;
-      if (totalScrollable > 0) {
-        requestedOffsetRef.current = next;
-        scrollTargetRef.current = next;
-        const targetY = top + (next / 6) * totalScrollable;
-        window.scrollTo({ top: targetY, behavior: "smooth" });
-        return;
-      }
-    }
-
-    requestedOffsetRef.current = next;
-    currentOffsetRef.current = next;
+    const next = Math.max(0, Math.min(MAX_OFFSET, offsetRef.current + direction));
+    offsetRef.current = next;
     setOffset(next);
   }, []);
+
+  // With the cursor over the box, the wheel moves the cards and holds the page until
+  // they run out. Everywhere else the wheel never reaches this, so the page scrolls normally.
+  useEffect(() => {
+    const area = boxAreaRef.current;
+    if (!area) return;
+    let travelled = 0;
+    let coolingUntil = 0;
+
+    const onWheel = (event: WheelEvent) => {
+      if (!window.matchMedia("(min-width: 1024px)").matches) return;
+      const section = sectionRef.current?.getBoundingClientRect();
+      // Only once the section is on screen, so a passing scroll isn't caught half way.
+      if (!section || Math.abs(section.top - NAV_HEIGHT) > ENGAGE_DISTANCE) return;
+
+      const direction = event.deltaY > 0 ? 1 : -1;
+      const now = performance.now();
+      const hasRoom = direction > 0 ? offsetRef.current < MAX_OFFSET : offsetRef.current > 0;
+      if (!hasRoom && now >= coolingUntil) return;
+
+      event.preventDefault();
+      if (section.top !== NAV_HEIGHT) {
+        window.scrollBy({ top: section.top - NAV_HEIGHT, behavior: "instant" });
+      }
+      if (now < coolingUntil) return;
+
+      travelled += event.deltaY;
+      if (Math.abs(travelled) >= STEP_DISTANCE) {
+        travelled = 0;
+        coolingUntil = now + STEP_COOLDOWN_MS;
+        moveSquad(direction);
+      }
+    };
+
+    area.addEventListener("wheel", onWheel, { passive: false });
+    return () => area.removeEventListener("wheel", onWheel);
+  }, [moveSquad]);
+
+  const services = SERVICES_CONTENT.services;
 
   const handlePrevSquad = useCallback(() => moveSquad(-1), [moveSquad]);
   const handleNextSquad = useCallback(() => moveSquad(1), [moveSquad]);
@@ -102,7 +94,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
   // Dedicated catalog view on /services page
   if (showAllCatalog) {
     return (
-      <div ref={sectionRef}>
+      <div>
       <section 
         id="services" 
         className="relative z-0 overflow-hidden border-b border-[#ECEBF0] pb-2 text-[#24232A] sm:pb-3"
@@ -132,10 +124,11 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
 
   // Desktop keeps the scroll-driven display; mobile scrolls normally and uses arrows.
   return (
-    <div ref={sectionRef} className="relative h-auto lg:h-[280vh]">
+    <div className="relative">
       <section 
+        ref={sectionRef}
         id="services" 
-        className="relative top-0 min-h-[calc(100svh-4rem)] w-full flex flex-col justify-start overflow-hidden text-white border-b border-white/[0.08] py-7 sm:py-10 lg:sticky lg:h-screen lg:min-h-0 lg:justify-center lg:py-0"
+        className="relative min-h-[calc(100svh-4rem)] w-full scroll-mt-14 flex flex-col justify-start overflow-hidden text-white border-b border-white/[0.08] py-7 sm:scroll-mt-16 sm:py-10 lg:h-[calc(100svh-4rem)] lg:min-h-0 lg:justify-center lg:py-0"
         style={backgroundStyle}
       >
         <div className="relative z-10 w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -163,7 +156,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-14 items-center">
             
             {/* LEFT: THE 3D BOX WITH GLASSMORPHIC CARDS POPPING OUT & MINI ARROW BUTTONS */}
-            <div className="lg:col-span-6 w-full flex justify-center lg:justify-start">
+            <div ref={boxAreaRef} className="lg:col-span-6 w-full flex justify-center lg:justify-start">
               <OpenBoxServicesVisual
                 services={services}
                 offset={offset}
@@ -171,7 +164,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
                 onPrevSquad={handlePrevSquad}
                 onNextSquad={handleNextSquad}
                 canPrevSquad={offset > 0}
-                canNextSquad={offset < 6}
+                canNextSquad={offset < MAX_OFFSET}
               />
             </div>
 

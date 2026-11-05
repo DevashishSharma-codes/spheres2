@@ -37,54 +37,29 @@ export default function ContactInquiryForm() {
 
         <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
           <div>
-            <label className={labelClass} htmlFor="first-name">First Name<RequiredMark /></label>
+            <label className={labelClass} htmlFor="first-name">First name<RequiredMark /></label>
             <input className={fieldClass} id="first-name" name="firstName" autoComplete="given-name" required />
           </div>
           <div>
-            <label className={labelClass} htmlFor="last-name">Last Name<RequiredMark /></label>
+            <label className={labelClass} htmlFor="last-name">Last name<RequiredMark /></label>
             <input className={fieldClass} id="last-name" name="lastName" autoComplete="family-name" required />
           </div>
         </div>
 
         <div>
-          <label className={labelClass} htmlFor="email">E-Mail<RequiredMark /></label>
+          <label className={labelClass} htmlFor="email">Email address<RequiredMark /></label>
           <input className={fieldClass} id="email" name="email" type="email" autoComplete="email" required />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
           <div>
-            <label className={labelClass} htmlFor="company">Company</label>
+            <label className={labelClass} htmlFor="phone">Phone number</label>
+            <input className={fieldClass} id="phone" name="phone" type="tel" autoComplete="tel" />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="company">Company name</label>
             <input className={fieldClass} id="company" name="company" autoComplete="organization" />
           </div>
-          <div>
-            <label className={labelClass} htmlFor="country">Country<RequiredMark /></label>
-            <select className={`${fieldClass} text-[#77777d]`} id="country" name="country" autoComplete="country-name" required defaultValue="">
-              <option value="" disabled>Select a country</option>
-              {["Australia", "Canada", "India", "United Kingdom", "United States", "Other"].map((country) => <option key={country} value={country}>{country}</option>)}
-            </select>
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
-          <div>
-            <label className={labelClass} htmlFor="job-title">Job Title</label>
-            <input className={fieldClass} id="job-title" name="jobTitle" autoComplete="organization-title" />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="company-size">Company Size</label>
-            <select className={fieldClass} id="company-size" name="companySize" defaultValue="">
-              <option value="">- None -</option>
-              {["1–10", "11–50", "51–200", "201–1,000", "1,001+"].map((size) => <option key={size} value={size}>{size}</option>)}
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label className={labelClass} htmlFor="industry">Industry<RequiredMark /></label>
-          <select className={`${fieldClass} text-[#77777d]`} id="industry" name="industry" required defaultValue="">
-            <option value="" disabled>Choose an industry</option>
-            {["Technology", "Financial services", "Healthcare", "Retail & commerce", "Education", "Manufacturing", "Other"].map((industry) => <option key={industry} value={industry}>{industry}</option>)}
-          </select>
         </div>
 
         <div className="space-y-3 pt-1 text-[13px] leading-5 text-[#515157] sm:text-sm">

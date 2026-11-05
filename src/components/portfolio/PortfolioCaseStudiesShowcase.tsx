@@ -3,6 +3,8 @@
 import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useHashLink } from "@/lib/useHashLink";
 import { Bot, Landmark, ShieldCheck, Smartphone, type LucideIcon } from "lucide-react";
 import { FolderTabCard } from "@/components/ui/FolderTabCard";
 import { LaptopFrame } from "@/components/ui/LaptopFrame";
@@ -141,6 +143,7 @@ function CaseStudyCard({ project }: { project: DetailedCaseStudy }) {
 /* Section                                                             */
 /* ------------------------------------------------------------------ */
 export function PortfolioCaseStudiesSection() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("all");
   const [featuredId, setFeaturedId] = useState(PORTFOLIO_CASE_STUDIES[0]?.id ?? "");
 
@@ -153,10 +156,26 @@ export function PortfolioCaseStudiesSection() {
   const featured = projects.find((project) => project.id === featuredId) ?? projects[0];
   const featuredRef = useRef<HTMLDivElement>(null);
 
+  // Each project has its own address, so Back and Forward step through them.
   function openProject(id: string) {
     setFeaturedId(id);
+    router.push(`/portfolio#${id}`, { scroll: false });
     featuredRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+
+  useHashLink((hash) => {
+    const project = PORTFOLIO_CASE_STUDIES.find(({ id }) => `#${id}` === hash);
+    if (project) {
+      setFeaturedId(project.id);
+      // A link to a project hidden by the current filter shows it anyway.
+      setActiveTab((tab) => {
+        const label = DISCIPLINE_TABS.find((t) => t.id === tab)?.label;
+        return tab === "all" || label === project.discipline ? tab : "all";
+      });
+    } else if (!hash) {
+      setFeaturedId(PORTFOLIO_CASE_STUDIES[0]?.id ?? "");
+    }
+  });
 
   const stats: [string, string][] = [
     [String(PORTFOLIO_CASE_STUDIES.length), "Case studies published"],
@@ -215,7 +234,11 @@ export function PortfolioCaseStudiesSection() {
           </p>
         </div>
 
-        <div ref={featuredRef} className="scroll-mt-24">
+        <div ref={featuredRef} className="relative scroll-mt-24">
+          {/* Link targets for each project */}
+          {PORTFOLIO_CASE_STUDIES.map(({ id }) => (
+            <span key={id} id={id} aria-hidden="true" className="absolute left-0 top-0 scroll-mt-24" />
+          ))}
           {featured && <AnimatePresence mode="wait">
             <CaseStudyCard key={featured.id} project={featured} />
           </AnimatePresence>}

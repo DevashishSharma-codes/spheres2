@@ -4,7 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 
 export type PillSize = "sm" | "md";
 
-const SHADE = "bg-gradient-to-r from-[#2a2a2e] to-[#6a6a70] text-white";
+const SHADE = "bg-gradient-to-r from-[#2b2735] to-[#7560b8] text-white";
 
 const SIZES: Record<PillSize, { pill: string; circle: string; arrow: string }> = {
   sm: { pill: "h-10 gap-4 pl-4 pr-1 text-[13px]", circle: "h-8 w-8", arrow: "h-4 w-4" },
