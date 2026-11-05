@@ -139,7 +139,7 @@ export function ThreeCardElement({ type, className = "" }: ThreeCardElementProps
       // 6. Resilient Systems: Faceted geodesic crystalline shield structure (zero downtime)
       const geometry = new THREE.IcosahedronGeometry(1.9, 0);
       const mesh = new THREE.Mesh(geometry, material);
-      mesh.rotation.set(0.35, 0.45, 0.15);
+      mesh.rotation.set(0.35, 0.46, 0.15);
       group.add(mesh);
     }
 
