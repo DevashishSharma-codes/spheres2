@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { motion, useMotionTemplate, useMotionValueEvent, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { 
-  Sparkles, 
-  ArrowRight,
   X,
   ChevronLeft,
   ChevronRight,
@@ -17,6 +16,7 @@ import {
   Users
 } from "lucide-react";
 import { CompanyStatisticsSection } from "@/components/about/CompanyStatisticsSection";
+import { FolderTabCard } from "@/components/ui/FolderTabCard";
 import { useHashLink } from "@/lib/useHashLink";
 import { useRouter } from "next/navigation";
 
@@ -115,18 +115,20 @@ const BASE_CARDS: AboutCardItem[] = [
   },
 ];
 
-// Start with a short runway in both directions and extend the track as it is used.
-const INITIAL_SET_COUNT = 5;
-const CENTER_SET_INDEX = 2;
+const ARROW_CLASS =
+  "absolute top-[calc(50%-12px)] z-30 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-[#19191C] to-[#573EBF] text-white shadow-[0_8px_20px_-8px_rgba(43,39,53,0.6)] transition-[filter] duration-200 hover:brightness-125";
+
+// The carousel position is a plain counter with no start or end. Cards are drawn around wherever
+// the track is on screen, so there is always a card to show, however fast it's clicked.
+const CARDS_EACH_SIDE = 7; // enough to fill very wide screens either side of the centre card
+// Settles without overshooting, and keeps its momentum when a new click arrives mid-slide.
+const SLIDE_SPRING = { stiffness: 90, damping: 20, mass: 1 };
 
 export function AboutSection({ showStatistics = false }: { showStatistics?: boolean } = {}) {
   const baseCount = BASE_CARDS.length;
-  // Start centered in the middle copy so either direction has room to slide.
-  const [currentIndex, setCurrentIndex] = useState(baseCount * CENTER_SET_INDEX);
-  const [firstCardIndex, setFirstCardIndex] = useState(0);
-  const [lastCardIndex, setLastCardIndex] = useState(baseCount * INITIAL_SET_COUNT - 1);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [visibleCenter, setVisibleCenter] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const [withTransition, setWithTransition] = useState(true);
   const [selectedCard, setSelectedCard] = useState<AboutCardItem | null>(null);
   const router = useRouter();
 
@@ -142,38 +144,29 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
       router.replace("/#about", { scroll: false });
     }
   }, [router]);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [trackTranslateX, setTrackTranslateX] = useState(0);
+  const reduceMotion = useReducedMotion();
+  const position = useSpring(0, SLIDE_SPRING);
+  const trackOffset = useTransform(position, (value) => -value);
+  const trackTransform = useMotionTemplate`translate3d(calc(var(--about-step) * ${trackOffset}), 0, 0)`;
+
+  useMotionValueEvent(position, "change", (value) => setVisibleCenter(Math.round(value)));
+
+  useEffect(() => {
+    if (reduceMotion) position.jump(currentIndex);
+    else position.set(currentIndex);
+  }, [currentIndex, position, reduceMotion]);
 
   const activeBaseIndex = ((currentIndex % baseCount) + baseCount) % baseCount;
 
   // Next smoothly advances by 1 card in continuous motion
   const handleNext = useCallback(() => {
-    setWithTransition(true);
     setCurrentIndex((prev) => prev + 1);
   }, []);
 
   // Prev smoothly steps back by 1 card in continuous motion
   const handlePrev = useCallback(() => {
-    setWithTransition(true);
     setCurrentIndex((prev) => prev - 1);
   }, []);
-
-  const handleTrackTransitionEnd = useCallback((event: React.TransitionEvent<HTMLDivElement>) => {
-    if (event.propertyName !== "transform") return;
-
-    const nearStart = currentIndex <= firstCardIndex + baseCount;
-    const nearEnd = currentIndex >= lastCardIndex - baseCount;
-
-    // Keep the current card nodes and position; just add identical cards beyond either edge.
-    if (nearEnd) setLastCardIndex((lastIndex) => lastIndex + baseCount);
-    if (nearStart) {
-      // Prepending shifts DOM offsets, so recalculate without animating that coordinate correction.
-      setWithTransition(false);
-      setFirstCardIndex((firstIndex) => firstIndex - baseCount);
-    }
-  }, [baseCount, currentIndex, firstCardIndex, lastCardIndex]);
 
   // Shortest circular path for pagination dots:
   // e.g. clicking dot 0 from dot 4 smoothly advances forward by 1 (+1) rather than rewinding across all 4 cards
@@ -188,7 +181,6 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
       diff += baseCount;
     }
 
-    setWithTransition(true);
     setCurrentIndex((prev) => prev + diff);
   }, [currentIndex, baseCount]);
 
@@ -313,326 +305,119 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
     setSelectedCard(BASE_CARDS[foundIdx]);
   });
 
-  // Calculate track position to center active card horizontally
-  const updateTrackPosition = useCallback(() => {
-    if (!containerRef.current) return;
-    const container = containerRef.current;
-    const containerWidth = container.offsetWidth;
-
-    // Use live DOM child measurement for sub-pixel centering precision
-    const activeChildIndex = currentIndex - firstCardIndex;
-    if (trackRef.current && trackRef.current.children[activeChildIndex]) {
-      const activeChild = trackRef.current.children[activeChildIndex] as HTMLElement;
-      const cardCenter = activeChild.offsetLeft + activeChild.offsetWidth / 2;
-      const containerCenter = containerWidth / 2;
-      setTrackTranslateX(cardCenter - containerCenter);
-    } else {
-      const isMobile = containerWidth < 640;
-      const isTablet = containerWidth >= 640 && containerWidth < 1024;
-
-      const activeWidth = isMobile ? 260 : isTablet ? 280 : 295;
-      const inactiveWidth = isMobile ? 220 : isTablet ? 240 : 255;
-      // sm:gap-5 is 20px (1.25rem), gap-3.5 is 14px (0.875rem)
-      const gap = isMobile ? 14 : 20;
-
-      let leftOffset = 0;
-      for (let i = firstCardIndex; i < currentIndex; i++) {
-        leftOffset += inactiveWidth + gap;
-      }
-
-      const centeredOffset = leftOffset - (containerWidth / 2) + (activeWidth / 2);
-      setTrackTranslateX(centeredOffset);
-    }
-  }, [currentIndex, firstCardIndex]);
-
-  useLayoutEffect(() => {
-    updateTrackPosition();
-  }, [updateTrackPosition]);
-
-  useEffect(() => {
-    window.addEventListener("resize", updateTrackPosition);
-    return () => window.removeEventListener("resize", updateTrackPosition);
-  }, [updateTrackPosition]);
-
-  useEffect(() => {
-    if (withTransition) return;
-    const frame = window.requestAnimationFrame(() => setWithTransition(true));
-    return () => window.cancelAnimationFrame(frame);
-  }, [withTransition]);
-
   return (
-    <div className="relative z-0 overflow-hidden w-full border-b border-[#DADADD]/70 bg-[#FBFBFA]">
-      
-      {/* =========================================================
-          HERO ABOUT US SECTION: 100VH ONE-SCREEN FIT
-          - Background minimalist misty mountain panorama photo
-          - SQUARED EDGES (rounded-none) throughout
-          - NO TOP CLIPPING: Generous headroom so cards never cut off!
-          ========================================================= */}
-      <section 
-        id="about" 
-        className="scroll-mt-14 sm:scroll-mt-16 relative z-10 w-full min-h-[calc(100vh-64px)] lg:h-[calc(100vh-64px)] lg:max-h-[890px] flex flex-col justify-between pt-5 sm:pt-6 lg:pt-7 pb-4 sm:pb-5 lg:pb-6 overflow-hidden"
+    <div className="relative z-0 w-full overflow-hidden border-b border-[#ECEBF0] bg-white">
+      <section
+        id="about"
+        className="relative z-10 flex w-full min-h-[calc(100vh-64px)] scroll-mt-14 flex-col justify-center overflow-hidden py-8 sm:scroll-mt-16 lg:py-10"
       >
         {/* Link targets for each card, so /#card-id lands on this section */}
         {BASE_CARDS.map((card) => (
           <span key={card.id} id={card.id} aria-hidden="true" className="absolute left-0 top-0 scroll-mt-14 sm:scroll-mt-16" />
         ))}
-        {/* Clearly Visible Background Photo with higher opacity */}
-        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-          <Image
-            src="/minimalist-misty-mountain-panorama.png"
-            alt="Minimalist Misty Mountain Panorama"
-            fill
-            priority
-            className="object-cover object-center scale-[1.02] opacity-95"
-          />
-          
-          {/* Subtle Hairline Grid Pattern */}
-          <div 
-            className="absolute inset-0 pointer-events-none opacity-15"
-            style={{
-              backgroundImage: `
-                linear-gradient(to right, rgba(42, 42, 46, 0.10) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(42, 42, 46, 0.10) 1px, transparent 1px)
-              `,
-              backgroundSize: "64px 64px",
-            }}
-          />
 
-          {/* Light Ambient Glass Sheen leaving central background photo clearly visible */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/45 via-white/15 to-white/55 backdrop-blur-[0.3px]" />
-          <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/70 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white/70 to-transparent" />
-        </div>
-
-        {/* Inner Content Container */}
-        <div className="relative z-10 w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between flex-1">
-          
-          {/* 1. TOP HEADER ROW (Clean 'OUR STORY' label, no pill) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start justify-between">
-            
-            {/* Left: OUR STORY label (no pill) & Heading */}
-            <div className="lg:col-span-6 flex flex-col items-start">
-              <span className="mb-1 text-[12px] font-bold uppercase tracking-[0.18em] text-[#7E22CE] sm:text-[13px]">
+        <div className="relative z-10 mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-4 border-b border-[#E7E5EB] pb-5 lg:grid-cols-12 lg:items-end lg:gap-8">
+            <div className="flex flex-col items-start lg:col-span-6">
+              <span className="mb-2 text-[10px] font-semibold uppercase tracking-[0.19em] text-[#7057D9] sm:text-[11px]">
                 OUR STORY
               </span>
-
-              <h2 className="select-none whitespace-nowrap text-3xl font-light leading-none tracking-[-0.04em] text-[#111114] sm:text-4xl md:text-5xl lg:text-[52px]">
+              <h2 className="select-none whitespace-nowrap text-3xl font-light leading-none tracking-[-0.045em] text-[#232129] sm:text-4xl md:text-5xl lg:text-[52px]">
                 About Us
               </h2>
-
-              <p className="text-xs sm:text-[13.5px] text-[#4A4A52] font-normal italic mt-1.5">
-                &ldquo;Building a better, brighter and more connected tomorrow.&rdquo;
+              <p className="mt-2.5 text-sm font-light text-[#6E6D78]">
+                Building a better, brighter and more connected tomorrow.
               </p>
             </div>
-
-            {/* Right: Full narrative text matching reference */}
-            <div className="lg:col-span-6 flex flex-col items-start lg:items-end justify-center pt-1">
-              <p className="text-xs sm:text-[13px] lg:text-[13.5px] font-normal text-[#383842] leading-relaxed max-w-[500px] lg:text-left">
-                At 21 Spears, we believe in the power of ideas, people and technology to create meaningful change. Our journey began with a simple vision — to deliver innovative solutions that make life easier, smarter and more connected. Today, we are a passionate team of creators, thinkers and doers, working together to turn possibilities into reality.
+            <div className="flex lg:col-span-6 lg:justify-end">
+              <p className="max-w-[540px] text-sm font-light leading-relaxed text-[#6E6D78]">
+                At 21 Spheres, we believe in the power of ideas, people and technology to create meaningful change. Our journey began with a simple vision — to deliver innovative solutions that make life easier, smarter and more connected. Today, we are a passionate team of creators, thinkers and doers, working together to turn possibilities into reality.
               </p>
             </div>
-
           </div>
+        </div>
 
-          {/* 2. INFINITE MOVING 3D CAROUSEL */}
-          <div 
-            className="mt-auto pt-2 pb-1 relative"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+        {/* Runs edge to edge, with the outer cards fading away instead of being cut off */}
+        <div
+          className="relative z-10 mt-1 w-full"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <button
+            type="button"
+            onClick={handlePrev}
+            aria-label="Previous card"
+            className={`left-3 sm:left-6 lg:left-10 ${ARROW_CLASS}`}
           >
-            {/* Left & Right Floating Carousel Navigation Arrows */}
-            <button
-              onClick={handlePrev}
-              aria-label="Previous card"
-              className="absolute -left-2 sm:-left-4 top-[50%] -translate-y-1/2 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 backdrop-blur-md text-[#160429] shadow-[0_4px_16px_rgba(74,18,120,0.18)] border border-purple-200/60 flex items-center justify-center transition-all duration-200 hover:bg-[#2A084E] hover:text-white hover:scale-110 active:scale-95 cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={handleNext}
+            aria-label="Next card"
+            className={`right-3 sm:right-6 lg:right-10 ${ARROW_CLASS}`}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
 
-            <button
-              onClick={handleNext}
-              aria-label="Next card"
-              className="absolute -right-2 sm:-right-4 top-[50%] -translate-y-1/2 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 backdrop-blur-md text-[#160429] shadow-[0_4px_16px_rgba(74,18,120,0.18)] border border-purple-200/60 flex items-center justify-center transition-all duration-200 hover:bg-[#2A084E] hover:text-white hover:scale-110 active:scale-95 cursor-pointer"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-
-            {/* Sliding Viewport: Generous Headroom so TOP of cards NEVER cuts off */}
-            <div 
-              ref={containerRef}
-              className="overflow-hidden pt-6 sm:pt-8 pb-3 px-1"
-              style={{ perspective: "1200px" }}
-            >
-              {/* Horizontal Sliding Track: Aligned at bottom, active card stands taller without clipping */}
-              <div 
-                ref={trackRef}
-                onTransitionEnd={handleTrackTransitionEnd}
-                className={`relative flex items-end gap-3.5 sm:gap-5 ${withTransition ? "transition-transform duration-600 ease-out" : ""}`}
-                style={{
-                  transform: `translateX(-${trackTranslateX}px)`,
-                  transformStyle: "preserve-3d",
-                }}
+          <div className="overflow-hidden pb-9 pt-6 [--about-card:280px] [--about-step:294px] [mask-image:linear-gradient(to_right,transparent,black_7%,black_93%,transparent)] sm:[--about-card:300px] sm:[--about-step:320px] lg:[--about-card:320px] lg:[--about-step:340px]">
+            <div className="relative h-[400px]">
+              <motion.div
+                className="absolute inset-y-0 left-1/2 w-0 will-change-transform"
+                style={{ transform: trackTransform }}
               >
-                {Array.from({ length: lastCardIndex - firstCardIndex + 1 }, (_, offset) => {
-                  const index = firstCardIndex + offset;
-                  const card = BASE_CARDS[((index % baseCount) + baseCount) % baseCount];
+                {Array.from({ length: CARDS_EACH_SIDE * 2 + 1 }, (_, offset) => {
+                  const index = visibleCenter - CARDS_EACH_SIDE + offset;
+                  const baseIndex = ((index % baseCount) + baseCount) % baseCount;
+                  const card = BASE_CARDS[baseIndex];
                   const isActive = currentIndex === index;
-
-                  // Subtle 3D depth
-                  const subtleRotateY = isActive ? 0 : index < currentIndex ? 3.5 : -3.5;
-                  const subtleTranslateZ = isActive ? 18 : -10;
 
                   return (
                     <div
-                      key={`${card.id}-${index}`}
-                      onClick={() => {
-                        if (isActive) {
-                          openCard(card);
-                        } else {
-                          setWithTransition(true);
-                          setCurrentIndex(index);
-                        }
-                      }}
-                      className="shrink-0 cursor-pointer transition-all duration-500 ease-out"
+                      key={index}
+                      className={`absolute bottom-0 origin-bottom transition-transform duration-500 ease-out motion-reduce:transition-none ${isActive ? "scale-100" : "scale-[0.94]"}`}
                       style={{
-                        transform: `rotateY(${subtleRotateY}deg) translateZ(${subtleTranslateZ}px)`,
-                        transformStyle: "preserve-3d",
+                        left: `calc(var(--about-step) * ${index})`,
+                        width: "var(--about-card)",
+                        marginLeft: "calc(var(--about-card) / -2)",
                       }}
                     >
-                      {isActive ? (
-                        /* =========================================================
-                            ACTIVE CARD:
-                            - Top 54%: Real photo with rounded top
-                            - Seam: Floating circular white icon badge
-                            - Bottom: Crisp white background, title, description,
-                              and bottom pill strip with circular arrow
-                            ========================================================= */
-                        <div
-                          className="relative w-[260px] sm:w-[280px] lg:w-[295px] h-[345px] sm:h-[360px] lg:h-[370px] rounded-[26px] overflow-hidden flex flex-col justify-between z-20 transition-all duration-500 shadow-[0_20px_50px_-12px_rgba(40,20,80,0.18),0_6px_20px_rgba(0,0,0,0.06)] border border-purple-200/70 bg-white select-none group"
-                        >
-                          {/* TOP: Real Photo */}
-                          <div className="relative w-full h-[54%] overflow-hidden bg-slate-100">
-                            <Image
-                              src={card.image}
-                              alt={card.title}
-                              fill
-                              sizes="(max-width: 640px) 260px, (max-width: 1024px) 280px, 295px"
-                              className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                              priority={isActive}
-                            />
-                          </div>
-
-                          {/* SEAM: Floating Circular White Icon Badge */}
-                          <div className="relative z-20 -mt-5 ml-4 sm:ml-5 w-10 h-10 rounded-full bg-white shadow-[0_4px_14px_rgba(40,25,80,0.16)] border border-purple-100/90 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                            <card.icon className="w-5 h-5 text-[#5B3299]" />
-                          </div>
-
-                          {/* BOTTOM: Pure White Area */}
-                          <div className="relative z-10 px-4 sm:px-5 pt-1.5 pb-4 flex flex-col justify-between flex-1 bg-white">
-                            <div className="flex flex-col">
-                              <h3 className="font-light tracking-[-0.035em] text-[18px] sm:text-[19px] lg:text-[20px] text-[#180E2E] leading-[1.2]">
-                                {card.title}
-                              </h3>
-                              <p className="font-light text-[11px] sm:text-[11.5px] text-[#554D69] tracking-[-0.01em] leading-relaxed mt-1.5 line-clamp-2">
-                                {card.description}
-                              </p>
-                            </div>
-
-                            {/* Bottom Cylindrical Pill Strip */}
-                            <div 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openCard(card);
-                              }}
-                              className="mt-auto w-full px-3.5 py-1.5 rounded-full bg-[#F6F5FA] border border-[#E5E2F0] shadow-xs flex items-center justify-between group/pill hover:bg-purple-50/80 hover:border-purple-200 transition-all duration-300 cursor-pointer"
-                            >
-                              <span className="font-normal text-[10.5px] sm:text-[11px] text-[#2B1F48] tracking-[-0.02em] pl-1">
-                                {card.pill}
-                              </span>
-                              <div className="w-6.5 h-6.5 rounded-full bg-[#180E2E] text-white flex items-center justify-center shadow-xs group-hover/pill:scale-105 group-hover/pill:bg-[#341F5E] transition-all">
-                                <ArrowRight className="w-3.5 h-3.5 text-white" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        /* =========================================================
-                            SIDE / INACTIVE CARDS:
-                            - Crisp white bottom area
-                            ========================================================= */
-                        <div
-                          className="relative w-[220px] sm:w-[240px] lg:w-[255px] h-[305px] sm:h-[320px] lg:h-[330px] rounded-[24px] overflow-hidden flex flex-col justify-between opacity-85 hover:opacity-100 transition-all duration-400 shadow-[0_12px_32px_-8px_rgba(40,20,80,0.12)] border border-purple-100/70 bg-white select-none group"
-                        >
-                          {/* TOP: Real Photo */}
-                          <div className="relative w-full h-[54%] overflow-hidden bg-slate-100">
-                            <Image
-                              src={card.image}
-                              alt={card.title}
-                              fill
-                              sizes="(max-width: 640px) 220px, (max-width: 1024px) 240px, 255px"
-                              className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                            />
-                          </div>
-
-                          {/* SEAM: Floating Circular White Icon Badge */}
-                          <div className="relative z-20 -mt-4.5 ml-3.5 sm:ml-4 w-9 h-9 rounded-full bg-white shadow-[0_3px_10px_rgba(40,25,80,0.12)] border border-purple-100/80 flex items-center justify-center">
-                            <card.icon className="w-4 h-4 text-[#5B3299]" />
-                          </div>
-
-                          {/* BOTTOM: Pure White Area */}
-                          <div className="relative z-10 px-3.5 sm:px-4 pt-1 pb-3.5 flex flex-col justify-between flex-1 bg-white">
-                            <div className="flex flex-col">
-                              <h4 className="font-light tracking-[-0.035em] text-[16px] sm:text-[17px] text-[#180E2E] leading-[1.2]">
-                                {card.title}
-                              </h4>
-                              <p className="font-light text-[10.5px] sm:text-[11px] text-[#554D69] tracking-[-0.01em] leading-relaxed mt-1 line-clamp-2">
-                                {card.description}
-                              </p>
-                            </div>
-
-                            {/* Bottom Cylindrical Pill Strip */}
-                            <div 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openCard(card);
-                              }}
-                              className="mt-auto w-full px-3 py-1.5 rounded-full bg-[#F6F5FA] border border-[#E5E2F0] shadow-xs flex items-center justify-between cursor-pointer hover:bg-purple-50/80 hover:border-purple-200 transition-all"
-                            >
-                              <span className="font-normal text-[9.5px] sm:text-[10px] text-[#2B1F48] tracking-[-0.02em] pl-0.5">
-                                {card.pill}
-                              </span>
-                              <div className="w-5.5 h-5.5 rounded-full bg-[#180E2E] text-white flex items-center justify-center shadow-xs">
-                                <ArrowRight className="w-3.5 h-3.5 text-white" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                      <FolderTabCard
+                        theme="contrast"
+                        id={`about-${index}`}
+                        number={String(baseIndex + 1).padStart(2, "0")}
+                        category={card.pill}
+                        title={card.title}
+                        description={card.description}
+                        image={card.image}
+                        icon={card.icon}
+                        onClick={() => {
+                          if (isActive) openCard(card);
+                          else setCurrentIndex(index);
+                        }}
+                      />
                     </div>
                   );
                 })}
-              </div>
+              </motion.div>
             </div>
-
-            {/* Bottom Progress Navigation Dots */}
-            <div className="flex items-center justify-center gap-1.5 mt-2">
-              {BASE_CARDS.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleDotClick(i)}
-                  aria-label={`Go to slide ${i + 1}`}
-                  className={`h-1.5 transition-all duration-300 rounded-full cursor-pointer ${
-                    activeBaseIndex === i 
-                      ? "w-6 bg-gradient-to-r from-[#7C3AED] to-[#A78BFA]" 
-                      : "w-1.5 bg-[#DADADD] hover:bg-black/30"
-                  }`}
-                />
-              ))}
-            </div>
-
           </div>
 
+          <div className="flex items-center justify-center gap-1.5">
+            {BASE_CARDS.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => handleDotClick(i)}
+                aria-label={`Go to slide ${i + 1}`}
+                className={`h-1.5 cursor-pointer rounded-full transition-all duration-300 ${
+                  activeBaseIndex === i
+                    ? "w-6 bg-gradient-to-r from-[#7057D9] to-[#8E79E8]"
+                    : "w-1.5 bg-[#DADADD] hover:bg-black/30"
+                }`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* =========================================================
@@ -685,7 +470,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                 <div>
                   {/* Top Row: Circular Icon Badge */}
                   <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 rounded-full border border-purple-200/80 bg-purple-50/50 flex items-center justify-center text-[#5E2EE5] shadow-xs">
+                    <div className="w-12 h-12 rounded-full border border-purple-200/80 bg-purple-50/50 flex items-center justify-center text-[#7057D9] shadow-xs">
                       <selectedCard.icon className="w-6 h-6" />
                     </div>
                   </div>

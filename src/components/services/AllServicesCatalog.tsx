@@ -111,6 +111,7 @@ export function AllServicesCatalog({ services }: AllServicesCatalogProps) {
                 className="relative"
               >
                 <FolderTabCard
+                  theme="contrast"
                   id={service.id}
                   number={service.number}
                   category={service.category}

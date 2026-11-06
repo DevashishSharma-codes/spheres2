@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { COMPANY_SOCIALS } from "@/content/company";
 import { PillLink } from "@/components/ui/PillLink";
@@ -25,6 +26,7 @@ const LINK_GROUPS = [
       { label: "Case Studies", href: "/case-studies" },
       { label: "Industries", href: "/#industries" },
       { label: "Insights", href: "/insights" },
+      { label: "Founder's Note", href: "/insights/founders-note" },
     ],
   },
   {
@@ -53,43 +55,77 @@ const SOCIALS = [
   },
 ] as const;
 
-// TODO: replace the city with the full studio address.
-const ADDRESS = "Ahmedabad, India";
+const ADDRESS = "PC-81, Vardhman Nagar South, Madhapar Bhuj, Gujarat 370020";
 const EMAIL = "info@21spheres.com";
-const PHONE = { label: "+91 97247 80021", href: "tel:+919724780021" };
+const PHONE = {
+  label: "+91 97247 80021",
+  href: "tel:+919724780021",
+  whatsappHref: "https://wa.me/919724780021",
+};
 
 const labelClass = "text-[11px] font-medium uppercase tracking-[0.12em] text-[#2A2A2E]/50";
 const linkClass = "text-[#2A2A2E] transition-colors hover:text-[#7057D9]";
+const contactLabelClass =
+  "flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-[#2A2A2E]/60";
+const contactIconClass = "h-3.5 w-3.5 shrink-0 text-[#7057D9]";
+const contactValueClass = "mt-1 block w-fit transition-colors hover:text-[#7057D9]";
 
 export function Footer() {
   return (
-    <footer className="w-full border-t border-[#DADADD] bg-[#EDEDF0]">
+    <footer className="w-full border-t border-[#DADADD] bg-white">
       <Container wide>
-        <div className="grid gap-10 py-10 lg:grid-cols-12 lg:gap-8 lg:py-12">
-          {/* Contact leads the footer: the email is the biggest thing in it */}
-          <div className="lg:col-span-5">
-            <h2 className={labelClass}>Get in touch</h2>
-            <p className="mt-4">
-              <a
-                href={`mailto:${EMAIL}`}
-                className="text-3xl font-light tracking-[-0.03em] text-[#19191C] transition-colors hover:text-[#7057D9] sm:text-4xl"
-              >
-                {EMAIL}
-              </a>
-            </p>
-            <address className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm not-italic text-[#2A2A2E]/70">
-              <span>{ADDRESS}</span>
-              <span aria-hidden="true" className="h-1 w-1 rounded-full bg-[#2A2A2E]/30" />
-              <a href={PHONE.href} className="transition-colors hover:text-[#7057D9]">
-                {PHONE.label}
-              </a>
-            </address>
-            <PillLink href="/contact" size="sm" className="mt-6">
+        <div className="grid gap-10 pt-8 pb-6 lg:grid-cols-12 lg:gap-8">
+          {/* Contact leads the footer: start a project, or reach out directly */}
+          <div className="lg:col-span-7">
+            <PillLink href="/contact" size="sm">
               Start a project
             </PillLink>
+            <h2 className={`mt-5 ${labelClass}`}>Get in touch</h2>
+            {/* Details share rows, so the logo below stays within reach on short screens */}
+            <address className="mt-3 grid gap-x-12 gap-y-3 text-[17px] font-medium tracking-[-0.01em] not-italic text-[#19191C] sm:grid-cols-[auto_auto] sm:justify-start">
+              <div>
+                <div className={contactLabelClass}>
+                  <span className="flex items-center gap-1.5">
+                    <Phone aria-hidden="true" className={contactIconClass} />
+                    Phone
+                  </span>
+                  <span aria-hidden="true" className="h-3 w-px bg-[#2A2A2E]/25" />
+                  <a
+                    href={PHONE.whatsappHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 transition-colors hover:text-[#7057D9]"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3.5 w-3.5 shrink-0" fill="#25D366">
+                      <path d={SOCIAL_ICON_PATHS.whatsapp} />
+                    </svg>
+                    WhatsApp
+                  </a>
+                </div>
+                <a href={PHONE.href} className={contactValueClass}>
+                  {PHONE.label}
+                </a>
+              </div>
+              <div>
+                <p className={contactLabelClass}>
+                  <Mail aria-hidden="true" className={contactIconClass} />
+                  Email
+                </p>
+                <a href={`mailto:${EMAIL}`} className={contactValueClass}>
+                  {EMAIL}
+                </a>
+              </div>
+              <div className="sm:col-span-2">
+                <p className={contactLabelClass}>
+                  <MapPin aria-hidden="true" className={contactIconClass} />
+                  Address
+                </p>
+                <p className="mt-1">{ADDRESS}</p>
+              </div>
+            </address>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:col-span-6 lg:col-start-7">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:col-span-5">
             {LINK_GROUPS.map((group) => (
               <nav key={group.title} aria-label={group.title} className={group.className}>
                 <h2 className={labelClass}>{group.title}</h2>
@@ -107,7 +143,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-6 border-t border-[#DADADD] py-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-6 border-t border-[#DADADD] pt-4 pb-6 sm:flex-row sm:items-end sm:justify-between">
           <FooterLogoReveal className="w-full max-w-[420px]" />
 
           <div className="flex shrink-0 flex-col gap-4 sm:items-end">

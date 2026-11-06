@@ -368,26 +368,26 @@ export function TestimonialsWall() {
         <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 items-start relative z-10 pb-6">
           {/* Column 1 (Leftmost - Shifted Upwards) */}
           <div className="flex flex-col gap-4 sm:gap-5 lg:-mt-16">
-            <StaticTestimonialCard card={CARDS[0]} />
-            <StaticTestimonialCard card={CARDS[1]} />
+            <StaticTestimonialCard card={CARDS[0]} bricks="up" />
+            <StaticTestimonialCard card={CARDS[1]} bricks="down" />
           </div>
 
           {/* Column 2 (Center Left - Shifted Downwards) */}
           <div className="flex flex-col gap-4 sm:gap-5 lg:pt-8">
-            <StaticTestimonialCard card={CARDS[2]} />
-            <StaticTestimonialCard card={CARDS[3]} />
+            <StaticTestimonialCard card={CARDS[2]} bricks="up" />
+            <StaticTestimonialCard card={CARDS[3]} bricks="down" />
           </div>
 
           {/* Column 3 (Center Right - Shifted Downwards) */}
           <div className="flex flex-col gap-4 sm:gap-5 lg:pt-8">
-            <StaticTestimonialCard card={CARDS[4]} />
-            <StaticTestimonialCard card={CARDS[5]} />
+            <StaticTestimonialCard card={CARDS[4]} bricks="up" />
+            <StaticTestimonialCard card={CARDS[5]} bricks="down" />
           </div>
 
           {/* Column 4 (Rightmost - Shifted Upwards) */}
           <div className="flex flex-col gap-4 sm:gap-5 lg:-mt-16">
-            <StaticTestimonialCard card={CARDS[6]} />
-            <StaticTestimonialCard card={CARDS[7]} />
+            <StaticTestimonialCard card={CARDS[6]} bricks="up" />
+            <StaticTestimonialCard card={CARDS[7]} bricks="down" />
           </div>
         </div>
 

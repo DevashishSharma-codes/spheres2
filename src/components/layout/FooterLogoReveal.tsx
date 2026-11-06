@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { LOGO_VIEW, MARK_BOX, MARK_DOTS, MARK_SIZE, WORDMARK_PATH } from "./logoShapes";
+import { LOGO_VIEW, MARK_BOX, MARK_DOTS, MARK_SIZE, TAGLINE_PATH, WORDMARK_PATH } from "./logoShapes";
 
 const EASE = [0.65, 0, 0.25, 1] as const;
 const DURATION = 1.1;
 
 // How much of the logo must be on screen to play the transition, and to undo it when scrolling back.
-const OPEN_AT = 0.9;
-const CLOSE_AT = 0.5;
+const OPEN_AT = 0.6;
+const CLOSE_AT = 0.3;
 
 // The mark's position and size inside the logo, in % of the logo's box.
 const MARK_LAYOUT = {
@@ -64,7 +64,7 @@ export function FooterLogoReveal({ className = "" }: { className?: string }) {
       ref={logoRef}
       role="img"
       aria-label="21 Spheres. A world within."
-      className={`relative text-[#573EBF] ${className}`}
+      className={`relative text-[#6D54F1] ${className}`}
       style={{ aspectRatio: `${LOGO_VIEW[0]} / ${LOGO_VIEW[1]}` }}
     >
       {/* The wordmark wipes in behind the mark as it travels across */}
@@ -82,6 +82,7 @@ export function FooterLogoReveal({ className = "" }: { className?: string }) {
         aria-hidden="true"
       >
         <path d={WORDMARK_PATH} />
+        <path d={TAGLINE_PATH} fill="#392F6F" />
       </motion.svg>
 
       {/* The logo's own mark, settling into place once the travelling one has left */}

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { BRICKS_DOWN, BRICKS_UP } from "@/components/ui/brickHover";
 
 export interface TestimonialCardData {
   id: number;
@@ -15,9 +16,11 @@ export interface TestimonialCardData {
 
 interface StaticTestimonialCardProps {
   card: TestimonialCardData;
+  /** Which way the hover layers grow: pick the side with room around the card. */
+  bricks: "up" | "down";
 }
 
-export function StaticTestimonialCard({ card }: StaticTestimonialCardProps) {
+export function StaticTestimonialCard({ card, bricks }: StaticTestimonialCardProps) {
   // Use restrained violet color washes over the existing artwork. Keep copy neutral.
   const getThemeStyles = () => {
     switch (card.themeVariant) {
@@ -27,6 +30,8 @@ export function StaticTestimonialCard({ card }: StaticTestimonialCardProps) {
           overlayGradient: "linear-gradient(135deg, rgba(209, 183, 244, 0.48) 0%, rgba(194, 162, 238, 0.42) 52%, rgba(224, 207, 250, 0.56) 100%)",
           tintBg: "rgba(246, 239, 255, 0.08)",
           frameBg: "rgba(232, 220, 248, 0.82)",
+          brickNear: "#B79CEB",
+          brickFar: "#D8C8F5",
           titleColor: "text-[#120E1E]",
           quoteColor: "text-[#181424]",
           nameColor: "text-[#120E1E]",
@@ -39,6 +44,8 @@ export function StaticTestimonialCard({ card }: StaticTestimonialCardProps) {
           overlayGradient: "linear-gradient(135deg, rgba(218, 218, 218, 0.62) 0%, rgba(194, 194, 194, 0.58) 54%, rgba(174, 174, 174, 0.66) 100%)",
           tintBg: "rgba(248, 248, 248, 0.06)",
           frameBg: "rgba(232, 232, 234, 0.88)",
+          brickNear: "#B4B4BC",
+          brickFar: "#D2D2D8",
           titleColor: "text-[#0F172A]",
           quoteColor: "text-[#1E293B]",
           nameColor: "text-[#0F172A]",
@@ -51,6 +58,8 @@ export function StaticTestimonialCard({ card }: StaticTestimonialCardProps) {
           overlayGradient: "linear-gradient(135deg, rgba(34, 34, 35, 0.78) 0%, rgba(22, 22, 23, 0.82) 52%, rgba(40, 40, 41, 0.78) 100%)",
           tintBg: "rgba(0, 0, 0, 0.08)",
           frameBg: "rgba(31, 31, 33, 0.9)",
+          brickNear: "#1F1F21",
+          brickFar: "#4A4A4E",
           titleColor: "text-white",
           quoteColor: "text-white/90",
           nameColor: "text-white",
@@ -64,6 +73,8 @@ export function StaticTestimonialCard({ card }: StaticTestimonialCardProps) {
           overlayGradient: "linear-gradient(135deg, rgba(255, 255, 255, 0.70) 0%, rgba(250, 250, 250, 0.66) 48%, rgba(242, 242, 244, 0.72) 100%)",
           tintBg: "rgba(255, 255, 255, 0.08)",
           frameBg: "rgba(248, 248, 250, 0.9)",
+          brickNear: "#CFCFD5",
+          brickFar: "#E4E4E8",
           titleColor: "text-[#18181B]",
           quoteColor: "text-[#27272A]",
           nameColor: "text-[#18181B]",
@@ -77,8 +88,8 @@ export function StaticTestimonialCard({ card }: StaticTestimonialCardProps) {
 
   return (
     <div
-      className="relative p-2 sm:p-2.5 backdrop-blur-md rounded-none shadow-none transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(112,87,217,0.12)] group"
-      style={{ backgroundColor: theme.frameBg }}
+      className={`group relative rounded-none p-2 shadow-none backdrop-blur-md transition-shadow duration-300 ease-out hover:z-10 motion-reduce:transition-none sm:p-2.5 ${bricks === "up" ? BRICKS_UP : BRICKS_DOWN}`}
+      style={{ backgroundColor: theme.frameBg, "--brick-near": theme.brickNear, "--brick-far": theme.brickFar } as React.CSSProperties}
     >
       {/* Inner Card Body with Color-Graded Watercolor Background */}
       <div className="relative w-full min-h-[340px] sm:min-h-[370px] lg:min-h-[390px] p-6 sm:p-7 rounded-none flex flex-col justify-between overflow-hidden">

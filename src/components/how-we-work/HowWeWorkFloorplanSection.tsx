@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Check, X } from "lucide-react";
+import { Check, Plus, X } from "lucide-react";
 import { HOW_WE_WORK_CONTENT, WORK_FLOORPLAN_STEPS } from "@/content/howWeWork";
 import { useHashLink } from "@/lib/useHashLink";
 
@@ -123,6 +123,50 @@ function BeamPulse({
       }}
       transition={{ duration, ease: "easeInOut", opacity: { duration, times: [0, 0.85, 1] } }}
     />
+  );
+}
+
+const WAVE_CLEAR = "0 0 0 0 rgba(200, 180, 255, 0)";
+const WAVE_REST = { boxShadow: WAVE_CLEAR };
+const WAVE = { boxShadow: [WAVE_CLEAR, "0 0 0 4px rgba(200, 180, 255, 0.35)", "0 0 0 9px rgba(200, 180, 255, 0)"] };
+
+/* Looks like a button before it's touched: a glass pill whose plus turns into a close mark
+ * when its card is open. Once the intro ends, a soft wave runs along the row to draw the eye.
+ * Sits inside a button with the `group` class, which provides the click and the hover. */
+function WeekPill({
+  label,
+  open,
+  wave,
+  waveDelay,
+}: {
+  label: string;
+  open: boolean;
+  wave: boolean;
+  waveDelay: number;
+}) {
+  return (
+    <motion.span
+      animate={wave ? WAVE : WAVE_REST}
+      transition={wave ? { duration: 1.1, delay: waveDelay, ease: "easeOut" } : { duration: 0 }}
+      className={`flex h-7 items-center gap-1.5 whitespace-nowrap rounded-full border py-1 pl-3 pr-1 text-[11px] font-medium tabular-nums tracking-[0.02em] transition-colors duration-200 ${
+        open
+          ? "border-[#C8B4FF] bg-[#C8B4FF] text-[#170E29]"
+          : "border-white/20 bg-white/[0.07] text-white/85 shadow-[inset_0_1px_0_rgba(255,255,255,.14)] group-hover:border-[#C8B4FF]/70 group-hover:bg-white/[0.14] group-hover:text-white"
+      }`}
+    >
+      {label}
+      <span
+        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ${
+          open ? "bg-[#170E29] text-[#C8B4FF]" : "bg-white/10 text-white group-hover:bg-[#C8B4FF] group-hover:text-[#170E29]"
+        }`}
+      >
+        <Plus
+          aria-hidden="true"
+          strokeWidth={2.25}
+          className={`h-3 w-3 transition-transform duration-300 motion-reduce:transition-none ${open ? "rotate-45" : "group-hover:rotate-90"}`}
+        />
+      </span>
+    </motion.span>
   );
 }
 
@@ -675,28 +719,25 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                     />
                   )}
 
-                  {/* marker on the timeline, with its duration below */}
+                  {/* marker on the timeline, with the pill that opens its card below */}
                   {hasPill && (
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex justify-center">
                       <motion.button
                         type="button"
                         onClick={() => togglePill(index)}
-                        aria-label={`Show ${step.title} card`}
+                        aria-label={`${isExpanded ? "Hide" : "Show"} ${step.title} card`}
+                        aria-expanded={isExpanded}
                         initial={{ opacity: 0, scale: reduced ? 1 : 0.6 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: reduced ? 0 : 0.2, ease: EASE_OUT }}
-                        className="group pointer-events-auto flex flex-col items-center px-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+                        className="group pointer-events-auto flex cursor-pointer flex-col items-center justify-between rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
                         style={{ height: STEM_BOTTOM + MARKER / 2 }}
                       >
                         <span
                           className={`block shrink-0 rounded-full border transition-colors ${isActive ? "border-[#C8B4FF] bg-[#C8B4FF]" : "border-[#B79CFF]/60 group-hover:border-[#C8B4FF]"}`}
                           style={{ width: MARKER, height: MARKER, backgroundColor: isActive ? undefined : MARKER_FILL }}
                         />
-                        <span
-                          className={`mt-3 whitespace-nowrap text-[11px] tabular-nums tracking-[0.04em] transition-colors ${isActive ? "text-[#C8B4FF]" : "text-white/55 group-hover:text-white"}`}
-                        >
-                          {duration}
-                        </span>
+                        <WeekPill label={duration ?? ""} open={isExpanded} wave={finished && !reduced} waveDelay={index * 0.12} />
                       </motion.button>
                     </div>
                   )}
@@ -813,7 +854,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                   {hasLink && (
                     <motion.span
                       aria-hidden="true"
-                      className="absolute -bottom-1.5 left-1/2 top-2 w-px origin-top bg-[#B79CFF]/40"
+                      className="absolute -bottom-3.5 left-1/2 top-3.5 w-px origin-top bg-[#B79CFF]/40"
                       initial={{ scaleY: reduced ? 1 : 0 }}
                       animate={{ scaleY: 1 }}
                       transition={{ duration: reduced ? 0 : 0.22, ease: "easeInOut" }}
@@ -824,7 +865,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                     initial={{ opacity: 0, scale: reduced ? 1 : 0.4 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: reduced ? 0 : 0.2, ease: EASE_OUT }}
-                    className={`relative mt-1 block h-[9px] w-[9px] rounded-full border ${isActive ? "border-[#C8B4FF] bg-[#C8B4FF]" : "border-[#B79CFF]/60"}`}
+                    className={`relative mt-[9.5px] block h-[9px] w-[9px] rounded-full border ${isActive ? "border-[#C8B4FF] bg-[#C8B4FF]" : "border-[#B79CFF]/60"}`}
                     style={isActive ? undefined : { backgroundColor: MARKER_FILL }}
                   />
                 </div>
@@ -833,10 +874,16 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                   <button
                     type="button"
                     onClick={() => togglePill(index)}
-                    aria-label={`Show ${step.title} card`}
-                    className={`text-[11px] tabular-nums tracking-[0.04em] ${isActive ? "text-[#C8B4FF]" : "text-white/55"}`}
+                    aria-label={`${isExpanded ? "Hide" : "Show"} ${step.title} card`}
+                    aria-expanded={isExpanded}
+                    className="group cursor-pointer rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
                   >
-                    {step.step} &middot; {duration}
+                    <WeekPill
+                      label={`${step.step} \u00b7 ${duration ?? ""}`}
+                      open={isExpanded}
+                      wave={finished && !reduced}
+                      waveDelay={index * 0.12}
+                    />
                   </button>
 
                   <AnimatePresence key={skipped ? "skipped" : "playing"} initial={false}>
@@ -886,7 +933,7 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                       tabIndex={-1}
                       aria-hidden="true"
                       onClick={() => togglePill(index)}
-                      className="mt-1.5 flex items-center gap-2 py-0.5 text-left"
+                      className="mt-2 flex items-center gap-2 py-0.5 text-left"
                     >
                       {isComplete && (
                         <motion.span

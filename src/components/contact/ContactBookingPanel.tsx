@@ -8,7 +8,14 @@ import Image from "next/image";
 // Availability and bookings are managed in Google Calendar. This is the live schedule.
 const calendarUrl = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ08BaXRCtnGSSZM8qLs5VTV1lhd5j9wOkiBRFFAD8_93kF6yVHFyT8qgGORaV43Mzfm6CMr5Xmo?gv=true";
 
-const sliderSteps = [20, 50, 100, 150, 200];
+const milestones = [
+  { year: 2021, startups: 20 },
+  { year: 2022, startups: 40 },
+  { year: 2023, startups: 60 },
+  { year: 2024, startups: 80 },
+  { year: 2025, startups: 100 },
+  { year: 2026, startups: 120 },
+];
 
 /* Where the date picker starts on Google's page, which has a wide and a narrow layout.
    Scrolling there, rather than cropping, keeps the top of Google's booking form reachable. */
@@ -22,18 +29,14 @@ export default function ContactBookingPanel() {
   const frameRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<HTMLIFrameElement>(null);
   const [calendarInUse, setCalendarInUse] = useState(false);
-  const [stepIndex, setStepIndex] = useState(2);
+  const [stepIndex, setStepIndex] = useState(0);
   const [autoPlaying, setAutoPlaying] = useState(true);
 
+  // Time only runs forward, so after the last year the timeline starts over.
   useEffect(() => {
     if (!autoPlaying) return;
-    let direction = 1;
     const interval = window.setInterval(() => {
-      setStepIndex((current) => {
-        if (current >= sliderSteps.length - 1) direction = -1;
-        if (current <= 0) direction = 1;
-        return Math.max(0, Math.min(sliderSteps.length - 1, current + direction));
-      });
+      setStepIndex((current) => (current + 1) % milestones.length);
     }, 1800);
     return () => window.clearInterval(interval);
   }, [autoPlaying]);
@@ -55,7 +58,8 @@ export default function ContactBookingPanel() {
     panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [calendarInUse]);
 
-  const stepPercent = (stepIndex / (sliderSteps.length - 1)) * 100;
+  const milestone = milestones[stepIndex];
+  const stepPercent = (stepIndex / (milestones.length - 1)) * 100;
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -85,20 +89,25 @@ export default function ContactBookingPanel() {
           <p className="mb-5 max-w-xl text-xs leading-relaxed text-white/65 sm:text-sm">Meet with our lead software architects and map out your next move.</p>
 
           <div className="mb-2 flex flex-wrap items-baseline gap-x-1 text-[10px] font-light text-white/85 sm:text-xs">
-            <span>21Spheres ships</span>
+            <span>21Spheres ignited</span>
             <AnimatePresence mode="wait" initial={false}>
-              <motion.strong key={sliderSteps[stepIndex]} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }} className="text-xs font-semibold text-white sm:text-sm">{sliderSteps[stepIndex]}</motion.strong>
+              <motion.strong key={milestone.startups} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }} className="text-xs font-semibold text-white sm:text-sm">{milestone.startups}</motion.strong>
             </AnimatePresence>
-            <span>commits &amp; outbounds a day</span>
+            <span>startups in</span>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.strong key={milestone.year} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }} className="text-xs font-semibold text-white sm:text-sm">{milestone.year}</motion.strong>
+            </AnimatePresence>
           </div>
           <div className="relative my-5 flex h-2 items-center rounded-full bg-white/10">
             <motion.div className="h-full rounded-full bg-gradient-to-r from-[#d8f28c] via-[#74c0fc] to-[#ff922b]" animate={{ width: `${stepPercent}%` }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} />
-            {sliderSteps.map((step, index) => <button key={step} type="button" onClick={() => { setAutoPlaying(false); setStepIndex(index); }} aria-label={`Show ${step} commits per day`} className="absolute z-10 -ml-1 h-2 w-2 cursor-pointer rounded-full bg-white/90 transition-transform hover:scale-150" style={{ left: `${(index / (sliderSteps.length - 1)) * 100}%` }} />)}
+            {milestones.map(({ year }, index) => <button key={year} type="button" onClick={() => { setAutoPlaying(false); setStepIndex(index); }} aria-label={`Show ${year}`} className="absolute z-10 -ml-1 h-2 w-2 cursor-pointer rounded-full bg-white/90 transition-transform hover:scale-150" style={{ left: `${(index / (milestones.length - 1)) * 100}%` }} />)}
             <motion.div className="absolute z-20 -ml-3 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-black/20 bg-white outline outline-2 outline-white/15 sm:-ml-3.5 sm:h-7 sm:w-7" animate={{ left: `${stepPercent}%`, rotate: stepIndex * 180 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
               <Image src="/logo-square.png" alt="21Spheres" fill sizes="28px" className="object-contain p-1" />
             </motion.div>
           </div>
-          <div className="flex justify-between text-[8px] text-white/45"><span>20</span><span>200</span></div>
+          <div className="flex justify-between text-[10px] tabular-nums text-white/45">
+            {milestones.map(({ year }, index) => <span key={year} className={`transition-colors duration-300 ${index === stepIndex ? "text-white" : ""}`}>{year}</span>)}
+          </div>
         </div>
       </div>}
 

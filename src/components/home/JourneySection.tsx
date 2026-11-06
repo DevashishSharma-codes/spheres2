@@ -41,6 +41,8 @@ export function JourneySection() {
     const fit = () => {
       const box = section.getBoundingClientRect();
       const text = heading.getBoundingClientRect();
+      // A hidden section measures zero, and there's nothing to fit until it's visible again.
+      if (box.width === 0 || box.height === 0) return;
       const on = (name: HandName, fx: number, fy: number) => {
         const hand = handRefs.current[name]?.getBoundingClientRect();
         if (!hand) return { x: 0, y: 0 };
@@ -56,6 +58,7 @@ export function JourneySection() {
       const pinchHeight = Math.min((cy - pinch.y) / ry, 0.9);
       const fitted = (cx - pinch.x) / Math.sqrt(1 - pinchHeight * pinchHeight);
       const rx = Math.min(Math.max(fitted, (text.width / 2) * 1.25), cx - 12);
+      if (!Number.isFinite(rx) || !Number.isFinite(ry)) return;
 
       // The tail leaves the right of the oval heading straight down, and ends on the rightmost finger.
       const end = on("bottom-right", 0.86, 0.2);
@@ -82,7 +85,7 @@ export function JourneySection() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex h-[50svh] min-h-[380px] w-full items-center justify-center overflow-hidden border-t border-[#DADADD]/70 bg-white px-4"
+      className="relative -mb-px flex h-[50svh] min-h-[380px] w-full items-center justify-center overflow-hidden border-t border-[#DADADD]/70 bg-white px-4"
     >
       {HANDS.map((hand) => (
         <Image
@@ -95,7 +98,7 @@ export function JourneySection() {
           width={hand.width}
           height={hand.height}
           unoptimized
-          className={`pointer-events-none absolute w-auto select-none ${hand.className}`}
+          className={`pointer-events-none absolute w-auto select-none grayscale contrast-125 ${hand.className}`}
         />
       ))}
 
