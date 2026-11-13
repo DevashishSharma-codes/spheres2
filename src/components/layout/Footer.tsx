@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { COMPANY_SOCIALS } from "@/content/company";
-import { PillLink } from "@/components/ui/PillLink";
-import { FooterLogoReveal } from "./FooterLogoReveal";
+import { BackToTopButton, FooterCone } from "./FooterCone";
+import { FooterWordmark } from "./FooterWordmark";
 import { SOCIAL_ICON_PATHS } from "./socialIconPaths";
 
 const LINK_GROUPS = [
@@ -70,62 +70,91 @@ const contactLabelClass =
 const contactIconClass = "h-3.5 w-3.5 shrink-0 text-[#7057D9]";
 const contactValueClass = "mt-1 block w-fit transition-colors hover:text-[#7057D9]";
 
+function SocialIcons() {
+  return (
+    <ul aria-label="Follow us" className="flex items-center gap-4">
+      {SOCIALS.map((social) => (
+        <li key={social.label}>
+          <a
+            href={social.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={social.label}
+            className="block transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:transition-none"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill={social.fill}>
+              {social.icon === "instagram" && (
+                <defs>
+                  <linearGradient id="footer-instagram" x1="10%" y1="90%" x2="90%" y2="10%">
+                    <stop offset="0%" stopColor="#FEDA75" />
+                    <stop offset="30%" stopColor="#FA7E1E" />
+                    <stop offset="55%" stopColor="#D62976" />
+                    <stop offset="78%" stopColor="#962FBF" />
+                    <stop offset="100%" stopColor="#4F5BD5" />
+                  </linearGradient>
+                </defs>
+              )}
+              <path d={SOCIAL_ICON_PATHS[social.icon]} />
+            </svg>
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function Footer() {
   return (
-    <footer className="w-full border-t border-[#DADADD] bg-white">
-      <Container wide>
-        <div className="grid gap-10 pt-8 pb-6 lg:grid-cols-12 lg:gap-8">
-          {/* Contact leads the footer: start a project, or reach out directly */}
-          <div className="lg:col-span-7">
-            <PillLink href="/contact" size="sm">
-              Start a project
-            </PillLink>
-            <h2 className={`mt-5 ${labelClass}`}>Get in touch</h2>
-            {/* Details share rows, so the logo below stays within reach on short screens */}
-            <address className="mt-3 grid gap-x-12 gap-y-3 text-[17px] font-medium tracking-[-0.01em] not-italic text-[#19191C] sm:grid-cols-[auto_auto] sm:justify-start">
-              <div>
-                <div className={contactLabelClass}>
-                  <span className="flex items-center gap-1.5">
-                    <Phone aria-hidden="true" className={contactIconClass} />
-                    Phone
-                  </span>
-                  <span aria-hidden="true" className="h-3 w-px bg-[#2A2A2E]/25" />
-                  <a
-                    href={PHONE.whatsappHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 transition-colors hover:text-[#7057D9]"
-                  >
-                    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3.5 w-3.5 shrink-0" fill="#25D366">
-                      <path d={SOCIAL_ICON_PATHS.whatsapp} />
-                    </svg>
-                    WhatsApp
-                  </a>
-                </div>
-                <a href={PHONE.href} className={contactValueClass}>
-                  {PHONE.label}
-                </a>
-              </div>
-              <div>
-                <p className={contactLabelClass}>
-                  <Mail aria-hidden="true" className={contactIconClass} />
-                  Email
-                </p>
-                <a href={`mailto:${EMAIL}`} className={contactValueClass}>
-                  {EMAIL}
-                </a>
-              </div>
-              <div className="sm:col-span-2">
-                <p className={contactLabelClass}>
-                  <MapPin aria-hidden="true" className={contactIconClass} />
-                  Address
-                </p>
-                <p className="mt-1">{ADDRESS}</p>
-              </div>
-            </address>
-          </div>
+    <footer className="w-full overflow-x-clip bg-white">
+      {/* The thread, the call to action, and the paper plane that flies between them */}
+      <FooterCone />
 
-          <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:col-span-5">
+      <Container wide>
+        {/* Contact details on the left, the site's pages on the right */}
+        <div className="grid gap-8 border-t border-[#E7E5EB] py-6 lg:grid-cols-12 lg:gap-8">
+          <address className="grid gap-y-3 text-[17px] font-medium tracking-[-0.01em] not-italic text-[#19191C] lg:col-span-4">
+            <div>
+              <div className={contactLabelClass}>
+                <span className="flex items-center gap-1.5">
+                  <Phone aria-hidden="true" className={contactIconClass} />
+                  Phone
+                </span>
+                <span aria-hidden="true" className="h-3 w-px bg-[#2A2A2E]/25" />
+                <a
+                  href={PHONE.whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 transition-colors hover:text-[#7057D9]"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3.5 w-3.5 shrink-0" fill="#25D366">
+                    <path d={SOCIAL_ICON_PATHS.whatsapp} />
+                  </svg>
+                  WhatsApp
+                </a>
+              </div>
+              <a href={PHONE.href} className={contactValueClass}>
+                {PHONE.label}
+              </a>
+            </div>
+            <div>
+              <p className={contactLabelClass}>
+                <Mail aria-hidden="true" className={contactIconClass} />
+                Email
+              </p>
+              <a href={`mailto:${EMAIL}`} className={contactValueClass}>
+                {EMAIL}
+              </a>
+            </div>
+            <div>
+              <p className={contactLabelClass}>
+                <MapPin aria-hidden="true" className={contactIconClass} />
+                Studio
+              </p>
+              <p className="mt-1 max-w-[340px]">{ADDRESS}</p>
+            </div>
+          </address>
+
+          <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:col-span-7 lg:col-start-6">
             {LINK_GROUPS.map((group) => (
               <nav key={group.title} aria-label={group.title} className={group.className}>
                 <h2 className={labelClass}>{group.title}</h2>
@@ -143,41 +172,15 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-6 border-t border-[#DADADD] pt-4 pb-6 sm:flex-row sm:items-end sm:justify-between">
-          <FooterLogoReveal className="w-full max-w-[420px]" />
-
-          <div className="flex shrink-0 flex-col gap-4 sm:items-end">
-            <ul aria-label="Follow us" className="flex items-center gap-5">
-              {SOCIALS.map((social) => (
-                <li key={social.label}>
-                  <a
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={social.label}
-                    className="block transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:transition-none"
-                  >
-                    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill={social.fill}>
-                      {social.icon === "instagram" && (
-                        <defs>
-                          <linearGradient id="footer-instagram" x1="10%" y1="90%" x2="90%" y2="10%">
-                            <stop offset="0%" stopColor="#FEDA75" />
-                            <stop offset="30%" stopColor="#FA7E1E" />
-                            <stop offset="55%" stopColor="#D62976" />
-                            <stop offset="78%" stopColor="#962FBF" />
-                            <stop offset="100%" stopColor="#4F5BD5" />
-                          </linearGradient>
-                        </defs>
-                      )}
-                      <path d={SOCIAL_ICON_PATHS[social.icon]} />
-                    </svg>
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <p className="text-xs text-[#2A2A2E]/50">© 2026 21Spheres Studio. All rights reserved.</p>
+        <div className="flex flex-col gap-4 border-t border-[#E7E5EB] py-4 text-xs text-[#2A2A2E]/60 sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 21Spheres Studio. All rights reserved.</p>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <SocialIcons />
+            <BackToTopButton />
           </div>
         </div>
+
+        <FooterWordmark />
       </Container>
     </footer>
   );
