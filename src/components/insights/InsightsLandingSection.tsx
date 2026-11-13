@@ -9,6 +9,31 @@ import { PageBackButton } from "@/components/ui/PageBackButton";
 
 const PAGE_SIZE = 6;
 
+/* The hero fades into the page in two layers. The dark tint lifts away first, so the photo's own
+   warm, light tones show through; then the photo itself dissolves into the page. Fading both
+   together would pass through a muddy grey, which is what made the old fade look odd. */
+const eased = (from: number, to: number) => {
+  const stops = [1, 0.97, 0.88, 0.73, 0.54, 0.35, 0.18, 0.06, 0];
+  return `linear-gradient(to bottom, ${stops
+    .map((alpha, i) => `rgba(0,0,0,${alpha}) ${(from + ((to - from) * i) / (stops.length - 1)).toFixed(1)}%`)
+    .join(", ")})`;
+};
+const PHOTO_FADE = { maskImage: eased(70, 100), WebkitMaskImage: eased(70, 100) };
+const TINT_FADE = { maskImage: eased(58, 92), WebkitMaskImage: eased(58, 92) };
+
+/** The video and its tint, each fading out at its own pace. */
+function HeroBackdrop() {
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+      <video tabIndex={-1} className="absolute inset-0 h-full w-full object-cover" style={PHOTO_FADE} src="/videoplayback.mp4" autoPlay muted loop playsInline preload="metadata" />
+      <div className="absolute inset-0" style={TINT_FADE}>
+        <div className="absolute inset-0 bg-black/35" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-black/15" />
+      </div>
+    </div>
+  );
+}
+
 function InsightFilterDropdown({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (value: string) => void }) {
   const [open, setOpen] = useState(false);
   return <div className="relative min-w-0">
@@ -46,10 +71,8 @@ export function InsightsLandingSection({ archive = false }: { archive?: boolean 
   if (!archive) {
     return (
       <>
-        <section aria-label="Insights introduction" className="relative flex min-h-[70svh] items-center overflow-hidden bg-black text-white">
-          <video aria-hidden="true" tabIndex={-1} className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-65" src="/videoplayback.mp4" autoPlay muted loop playsInline preload="metadata" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-black/15" />
-          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-white sm:h-40" />
+        <section aria-label="Insights introduction" className="relative flex min-h-[70svh] items-center overflow-hidden bg-white text-white">
+          <HeroBackdrop />
           <div className="relative mx-auto w-full max-w-[1380px] px-6 py-20 sm:px-10 lg:px-16">
             <p className="mb-6 text-xs font-semibold uppercase tracking-[0.24em] text-white/75">Insights / Points of view</p>
             <div className="mb-7 h-px w-full bg-white/30" />
@@ -64,10 +87,8 @@ export function InsightsLandingSection({ archive = false }: { archive?: boolean 
 
   return (
     <section id="insights" aria-label="Insights" className="w-full bg-[#efefed] text-[#171717]">
-      <div className="relative flex min-h-[100svh] items-center overflow-hidden bg-black text-white">
-        <video aria-hidden="true" tabIndex={-1} className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-65" src="/videoplayback.mp4" autoPlay muted loop playsInline preload="metadata" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-black/15" />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-[#efefed] sm:h-40" />
+      <div className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#efefed] text-white">
+        <HeroBackdrop />
         <div className="absolute inset-x-0 top-4 z-10 mx-auto w-full max-w-[1380px] px-6 sm:px-10 lg:px-16"><PageBackButton /></div>
         <div className="relative mx-auto w-full max-w-[1380px] px-6 py-20 sm:px-10 lg:px-16">
           <p className="mb-6 text-xs font-semibold uppercase tracking-[0.24em] text-white/75">Insights / Points of view</p>
