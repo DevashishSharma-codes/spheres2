@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowUp, ArrowUpRight } from "lucide-react";
 import { pillClassName } from "@/components/ui/PillLink";
 import { MARK_DOTS, MARK_SIZE } from "./logoShapes";
@@ -190,7 +191,16 @@ const SHEET_H = (SHEET_W / 100) * 130;
 const PLANE_H = 30;
 type Label = "start" | "sending" | "sent";
 
+/**
+ * The footer stays mounted while the visitor moves between pages, so it starts over on each one:
+ * a fresh look for the hands, and the whole sequence ready to play again.
+ */
 export function FooterCone() {
+  const pathname = usePathname();
+  return <ThreadAndCallToAction key={pathname} />;
+}
+
+function ThreadAndCallToAction() {
   const boxRef = useRef<HTMLDivElement>(null);
   const flightRef = useRef<SVGPathElement>(null);
   const trailRef = useRef<SVGPathElement>(null);
@@ -219,9 +229,28 @@ export function FooterCone() {
     };
     const observer = new ResizeObserver(layout);
     observer.observe(box);
-    document.querySelectorAll("[data-cone-anchor]").forEach((el) => observer.observe(el));
+    const watched = new Set<Element>();
+    const watchHands = () => {
+      document.querySelectorAll("[data-cone-anchor]").forEach((el) => {
+        if (!watched.has(el)) {
+          watched.add(el);
+          observer.observe(el);
+        }
+      });
+      return watched.size === HAND_NAMES.length;
+    };
+    // The page's content can appear a moment after the footer, so keep looking for the hands for a
+    // few seconds. Pages without them simply keep the plain cone.
+    let tries = 0;
+    const search = window.setInterval(() => {
+      tries += 1;
+      if (watchHands()) layout();
+      if (watched.size === HAND_NAMES.length || tries >= 30) window.clearInterval(search);
+    }, 100);
+    watchHands();
     window.addEventListener("resize", layout);
     return () => {
+      window.clearInterval(search);
       observer.disconnect();
       window.removeEventListener("resize", layout);
     };
@@ -245,6 +274,12 @@ export function FooterCone() {
   }, []);
 
   const showcase = Boolean(thread?.flight) && !reduceMotion;
+  // Read when the plane is about to launch, not when the sequence starts: the hands may be found
+  // a moment after the footer first comes into view.
+  const showcaseRef = useRef(showcase);
+  useEffect(() => {
+    showcaseRef.current = showcase;
+  }, [showcase]);
 
   useEffect(() => {
     if (!started) return;
@@ -264,7 +299,7 @@ export function FooterCone() {
       await wait(reduceMotion ? 0 : 2450); // the thread finishes drawing
       if (cancelled) return;
       setButtonIn(true);
-      if (!showcase) return;
+      if (!showcaseRef.current) return;
 
       // The sheet rises out of the button and the note types itself.
       await wait(500);

@@ -61,6 +61,9 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
   },
+  // The site is designed light-only. This tells the Dark Reader extension to leave it alone, so it
+  // doesn't recolour the design or alter the HTML before React loads (which causes hydration errors).
+  other: { "darkreader-lock": "true" },
   icons: {
     icon: [
       { url: "/logo-square.png", type: "image/png" },

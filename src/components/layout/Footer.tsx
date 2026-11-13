@@ -148,7 +148,7 @@ export function Footer() {
             <div>
               <p className={contactLabelClass}>
                 <MapPin aria-hidden="true" className={contactIconClass} />
-                Studio
+                Address
               </p>
               <p className="mt-1 max-w-[340px]">{ADDRESS}</p>
             </div>
