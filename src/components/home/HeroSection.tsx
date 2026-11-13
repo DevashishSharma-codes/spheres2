@@ -6,34 +6,34 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const ROTATING_WORDS = ["Products", "Startups", "Tools", "Companies"];
 
-// 6 Distinct Distorted, Organic Pure White Film Grain Frames (More Spread Out & Distorted)
-const SVG_STATIC_NOISE_FRAMES = [
-  `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n1'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.52 0.68' numOctaves='2' seed='1' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n1)'/%3E%3C/svg%3E")`,
-  `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.52 0.68' numOctaves='2' seed='15' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)'/%3E%3C/svg%3E")`,
-  `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n3'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.52 0.68' numOctaves='2' seed='32' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n3)'/%3E%3C/svg%3E")`,
-  `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n4'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.52 0.68' numOctaves='2' seed='51' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n4)'/%3E%3C/svg%3E")`,
-  `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n5'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.52 0.68' numOctaves='2' seed='73' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n5)'/%3E%3C/svg%3E")`,
-  `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n6'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.52 0.68' numOctaves='2' seed='96' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n6)'/%3E%3C/svg%3E")`,
-];
+/* Fine film grain. The noise is drawn once as a small tile; the layer is then nudged to a new
+   position a few times a second, so it shimmers like film without redrawing anything. That keeps
+   it crisp on large and low-density screens, and light on slower machines. */
+const FILM_GRAIN = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.6 -0.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")`;
+const FILM_GRAIN_CSS = `
+.hero-grain { animation: hero-grain 0.9s steps(1) infinite; }
+@keyframes hero-grain {
+  0% { transform: translate3d(0, 0, 0); }
+  12% { transform: translate3d(-37px, 21px, 0); }
+  25% { transform: translate3d(23px, -44px, 0); }
+  37% { transform: translate3d(-58px, -13px, 0); }
+  50% { transform: translate3d(41px, 52px, 0); }
+  62% { transform: translate3d(-19px, 67px, 0); }
+  75% { transform: translate3d(63px, 9px, 0); }
+  87% { transform: translate3d(-48px, -61px, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .hero-grain { animation: none; } }
+`;
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [wordIdx, setWordIdx] = useState(0);
-  const [grainFrame, setGrainFrame] = useState(0);
 
   // Rotate the last word smoothly every 2.8s
   useEffect(() => {
     const interval = setInterval(() => {
       setWordIdx((prev) => (prev + 1) % ROTATING_WORDS.length);
     }, 2800);
-    return () => clearInterval(interval);
-  }, []);
-
-  // In-Place Re-Randomized Grain Shimmer (No Horizontal/Vertical Translation)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setGrainFrame((prev) => (prev + 1) % SVG_STATIC_NOISE_FRAMES.length);
-    }, 50); // 20 FPS in-place analog noise flicker
     return () => clearInterval(interval);
   }, []);
 
@@ -62,15 +62,12 @@ export function HeroSection() {
         className="hero-bg absolute inset-0 w-full h-full object-cover object-top brightness-[0.97] contrast-[1.08] z-0 pointer-events-none select-none"
       />
 
-      {/* LAYER 1: DISTORTED SPREAD-OUT PURE WHITE FILM GRAIN (ZERO TRANSLATION) */}
+      {/* LAYER 1: FINE FILM GRAIN. Larger than the hero, so moving it never shows an edge */}
+      <style href="hero-film-grain" precedence="default">{FILM_GRAIN_CSS}</style>
       <div
         aria-hidden="true"
-        className="grain-overlay absolute inset-0 w-full h-full z-[1] pointer-events-none mix-blend-screen opacity-[0.22]"
-        style={{
-          backgroundImage: SVG_STATIC_NOISE_FRAMES[grainFrame],
-          backgroundRepeat: "repeat",
-          backgroundSize: "220px 220px",
-        }}
+        className="hero-grain absolute -inset-20 z-[1] pointer-events-none opacity-[0.2] will-change-transform"
+        style={{ backgroundImage: FILM_GRAIN, backgroundRepeat: "repeat", backgroundSize: "180px 180px" }}
       />
 
       {/* LAYER 2: HERO PSEUDO VIGNETTE (RADIAL GRADIENT) */}

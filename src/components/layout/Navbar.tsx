@@ -256,7 +256,8 @@ export function Navbar() {
             }`
       }`}
     >
-      <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-4 lg:gap-6">
+      {/* Grows with the screen, so the logo and Contact Us keep the same distance from the edges on big monitors */}
+      <div className="max-w-[max(1340px,calc(100vw_-_128px))] mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-4 lg:gap-6">
         
         {/* Brand / Logo */}
         <Link href="/" className="shrink-0 flex items-center" onClick={() => setHoveredKey(null)}>
@@ -264,7 +265,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Navigation Links (Left Side with Mega Dropdowns) */}
-        <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 mr-auto">
+        <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 mr-auto 2xl:mx-auto">
           {primaryNav.map((item) => {
             const active = isItemActive(item.href);
             const isHovered = hoveredKey === item.key;
