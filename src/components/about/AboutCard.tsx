@@ -27,6 +27,16 @@ const REFLECTION =
 const GRAIN =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
+/*
+ * "blend": the light violet below with the glass's drifting colour, grain and reflection on top.
+ * "dusk": the light violet alone (from the Industries tabs, lightened towards the logo's violet).
+ * "glass": the frosted purple glass above. Switch STYLE to compare them.
+ */
+const STYLE: "blend" | "dusk" | "glass" = "blend";
+// Leans towards the 21 Spheres logo's violet, kept soft.
+const DUSK = "linear-gradient(172deg, #9a89de 0%, #8571cf 40%, #6d58b9 72%, #5641a0 100%)";
+const DUSK_REFLECTION = "linear-gradient(180deg, rgba(255,255,255,.1) 0%, rgba(255,255,255,0) 30%)";
+
 // Light caught inside the edges of the glass.
 const EDGE_LIGHT =
   "inset 0 1px 0 rgba(255,255,255,.55), inset 0 -1px 0 rgba(255,255,255,.18), inset 0 0 28px rgba(255,255,255,.1)";
@@ -56,17 +66,35 @@ export function AboutCard({ title, summary, image, icon: Icon, active = false, o
       style={{ boxShadow: EDGE_LIGHT }}
       className="group relative flex h-[372px] w-full cursor-pointer flex-col overflow-hidden rounded-[28px] p-2 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7057D9] motion-reduce:transition-none sm:h-[392px]"
     >
-      {/* Behind the glass: colour drifting over a light, see-through base */}
-      <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[28px] bg-[#7A5CE6]/45">
-        <span className="about-glass-blob absolute -left-12 -top-6 h-56 w-56 rounded-full bg-[#6D28D9] blur-2xl" />
-        <span className="about-glass-blob absolute -right-14 top-1/4 h-56 w-56 rounded-full bg-[#D946EF]/70 blur-2xl [animation-delay:-7s]" />
-        <span className="about-glass-blob absolute -bottom-14 left-1/5 h-56 w-56 rounded-full bg-[#3B82F6]/70 blur-2xl [animation-delay:-12s]" />
-        <span className="about-glass-blob absolute bottom-1/4 right-1/4 h-32 w-32 rounded-full bg-white/50 blur-2xl [animation-delay:-4s]" />
-      </span>
-      {/* The glass: violet frost, grain, then the reflections on its surface */}
-      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[28px]" style={{ background: FROST }} />
-      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[28px] opacity-[.12] mix-blend-overlay" style={{ backgroundImage: GRAIN }} />
-      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[28px]" style={{ background: REFLECTION }} />
+      {STYLE === "blend" ? (
+        <>
+          <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[28px]" style={{ background: DUSK }}>
+            {/* The glass's colour, drifting softly through the violet */}
+            <span className="about-glass-blob absolute -left-12 -top-6 h-56 w-56 rounded-full bg-[#7C3AED]/45 blur-2xl" />
+            <span className="about-glass-blob absolute -right-14 top-1/4 h-56 w-56 rounded-full bg-[#E879F9]/35 blur-2xl [animation-delay:-7s]" />
+            <span className="about-glass-blob absolute -bottom-14 left-1/5 h-56 w-56 rounded-full bg-[#60A5FA]/35 blur-2xl [animation-delay:-12s]" />
+            <span className="about-glass-blob absolute bottom-1/4 right-1/4 h-32 w-32 rounded-full bg-white/30 blur-2xl [animation-delay:-4s]" />
+          </span>
+          <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[28px] opacity-[.1] mix-blend-overlay" style={{ backgroundImage: GRAIN }} />
+          <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[28px]" style={{ background: REFLECTION }} />
+        </>
+      ) : STYLE === "dusk" ? (
+        <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[28px]" style={{ background: `${DUSK_REFLECTION}, ${DUSK}` }} />
+      ) : (
+        <>
+          {/* Behind the glass: colour drifting over a light, see-through base */}
+          <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[28px] bg-[#7A5CE6]/45">
+            <span className="about-glass-blob absolute -left-12 -top-6 h-56 w-56 rounded-full bg-[#6D28D9] blur-2xl" />
+            <span className="about-glass-blob absolute -right-14 top-1/4 h-56 w-56 rounded-full bg-[#D946EF]/70 blur-2xl [animation-delay:-7s]" />
+            <span className="about-glass-blob absolute -bottom-14 left-1/5 h-56 w-56 rounded-full bg-[#3B82F6]/70 blur-2xl [animation-delay:-12s]" />
+            <span className="about-glass-blob absolute bottom-1/4 right-1/4 h-32 w-32 rounded-full bg-white/50 blur-2xl [animation-delay:-4s]" />
+          </span>
+          {/* The glass: violet frost, grain, then the reflections on its surface */}
+          <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[28px]" style={{ background: FROST }} />
+          <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[28px] opacity-[.12] mix-blend-overlay" style={{ backgroundImage: GRAIN }} />
+          <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[28px]" style={{ background: REFLECTION }} />
+        </>
+      )}
       {/* Rim */}
       <span aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 rounded-[28px]" style={RIM} />
       {/* Photo, framed inside the card */}
