@@ -20,7 +20,7 @@ const DIGIT = "bg-gradient-to-b from-[#6D54F1] via-[#7F68EE] to-[#A898F5]/50 bg-
 
 export default function NotFound() {
   return (
-    <section className="flex min-h-[calc(100svh-4rem)] items-center justify-center bg-white px-6 pb-16 pt-28">
+    <section data-no-footer-cone className="flex min-h-[calc(100svh-4rem)] items-center justify-center bg-white px-6 pb-16 pt-28">
       <style href="not-found-ring" precedence="default">{RING_CSS}</style>
       <div className="flex max-w-2xl flex-col items-center text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.19em] text-[#7057D9]">Error 404</p>

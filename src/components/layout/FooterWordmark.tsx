@@ -15,13 +15,24 @@ import { MARK_DOTS, MARK_SIZE, WORDMARK_PATH } from "./logoShapes";
 
 const PURPLE = "#6D54F1";
 
-// The "21 SPHERES" lettering, cropped tight so it runs the full width of the footer.
+// The "21 SPHERES" lettering, cropped tight. x runs from the name's left edge.
 const TITLE = { left: 1046, top: 182, right: 3345, bottom: 482 };
 const NAME_HEIGHT = TITLE.bottom - TITLE.top;
-const VIEW_WIDTH = TITLE.right - TITLE.left;
+const NAME_WIDTH = TITLE.right - TITLE.left;
+
+// The logo's mark sits to the left of the name, a little taller than the letters.
+const MARK_SCALE = (NAME_HEIGHT * 1.4) / MARK_SIZE[1];
+const MARK_W = MARK_SIZE[0] * MARK_SCALE;
+const MARK_H = MARK_SIZE[1] * MARK_SCALE;
+const MARK_GAP = 110;
+const MARK_CENTER = { x: -MARK_GAP - MARK_W / 2, y: TITLE.top + NAME_HEIGHT / 2 };
+
 // Room above the letters, so they can lift towards the cursor without being cut off.
 const HEADROOM = 90;
-const VIEW_TOP = TITLE.top - HEADROOM;
+const VIEW_LEFT = -MARK_GAP - MARK_W;
+const VIEW_WIDTH = NAME_WIDTH - VIEW_LEFT;
+const VIEW_TOP = Math.min(TITLE.top - HEADROOM, MARK_CENTER.y - MARK_H / 2);
+const VIEW_HEIGHT = Math.max(TITLE.bottom, MARK_CENTER.y + MARK_H / 2) + 2 - VIEW_TOP;
 
 // How far the cursor's pull reaches afterwards, and how high the nearest letter lifts.
 const REACH = 650;
@@ -63,11 +74,11 @@ function splitLetters(path: string) {
 const LETTERS = splitLetters(WORDMARK_PATH);
 
 /* ---------------- the entrance ----------------
-   One timeline, 0 to 1. The logo's spheres appear as the ring, in the middle of the name. They
-   leave it in small groups, left side of the ring to the left letters, each group gliding along a
+   One timeline, 0 to 1. The logo's mark appears beside the name. Copies of its spheres leave it in
+   small groups, left side of the ring to the left letters, each group gliding along a
    gentle arc to its letter. As a group arrives its letter blooms out of the spheres, which melt
    into it. Then a soft band of light glides once across the finished name. */
-const RING = { x: VIEW_WIDTH / 2, y: TITLE.top + NAME_HEIGHT / 2, scale: (NAME_HEIGHT * 0.95) / MARK_SIZE[1] };
+const RING = { ...MARK_CENTER, scale: MARK_SCALE };
 const RING_IN = [0, 0.14] as const;
 const LEAVE_FIRST = 0.16; // the first group leaves the ring...
 const LEAVE_STEP = 0.032; // ...and each next letter's group a little later
@@ -129,8 +140,7 @@ function Letter({ letter, pointer, progress }: { letter: (typeof LETTERS)[number
       <g clipPath={`url(#${clipId})`}>
         <motion.g style={{ y: lift }}>
           <g transform={`translate(${-TITLE.left} 0)`}>
-            <path d={letter.d} fill="url(#footer-wordmark-fade)" />
-            <path d={letter.d} fill="url(#footer-wordmark-spot)" />
+            <path d={letter.d} fill={PURPLE} />
             <path d={letter.d} fill="url(#footer-wordmark-sheen)" />
           </g>
         </motion.g>
@@ -141,17 +151,15 @@ function Letter({ letter, pointer, progress }: { letter: (typeof LETTERS)[number
 
 /**
  * The name at the foot of the page, formed from the logo's spheres: they gather as the ring, travel
- * out to the letters, and each letter blooms from them. Afterwards the name follows the cursor:
- * letters near it lift and a deeper tone of the brand colour moves along with it.
+ * out to the letters, and each letter blooms from them. Afterwards letters near the cursor lift.
  */
-export function FooterWordmark() {
+export function FooterWordmark({ className = "" }: { className?: string }) {
   const reduceMotion = useReducedMotion();
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const inView = useInView(wrapRef, { once: true, amount: 0.4 });
   const progress = useMotionValue(0);
   const pointer = useMotionValue(AWAY);
-  const spotX = useSpring(pointer, { stiffness: 120, damping: 24 });
   const [formed, setFormed] = useState(false);
   const done = Boolean(reduceMotion) || formed;
 
@@ -170,39 +178,29 @@ export function FooterWordmark() {
   }, [inView, progress, reduceMotion]);
 
   // The band of light, once every letter has formed.
-  const sheenX = useTransform(progress, [0.86, 1], [-SHEEN_WIDTH, VIEW_WIDTH + SHEEN_WIDTH], { clamp: true });
+  const sheenX = useTransform(progress, [0.86, 1], [-SHEEN_WIDTH, NAME_WIDTH + SHEEN_WIDTH], { clamp: true });
+  // The mark itself fades in with the spheres and then stays.
+  const markOpacity = useTransform(progress, [RING_IN[0], RING_IN[1]], [0, 1], { clamp: true });
   const sheenX2 = useTransform(sheenX, (x) => x + SHEEN_WIDTH);
 
   const follow = (event: React.PointerEvent<SVGSVGElement>) => {
     const rect = svgRef.current?.getBoundingClientRect();
     if (!rect || !done || reduceMotion) return;
-    pointer.set(((event.clientX - rect.left) / rect.width) * VIEW_WIDTH);
+    pointer.set(VIEW_LEFT + ((event.clientX - rect.left) / rect.width) * VIEW_WIDTH);
   };
 
   return (
-    <div ref={wrapRef} className="relative overflow-hidden pt-1">
-      {/* A soft wash of the brand colours behind the name, kept inside it so it adds no space below */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-[10%] bottom-0 h-[60%] rounded-[50%] bg-gradient-to-r from-[#B9C8FF]/25 via-[#8E79E8]/20 to-[#E9B8F0]/25 blur-[70px]" />
+    <div ref={wrapRef} className={`relative overflow-hidden pt-1 ${className}`}>
       <svg
         ref={svgRef}
         role="img"
         aria-label="21 Spheres"
-        viewBox={`0 ${VIEW_TOP} ${VIEW_WIDTH} ${NAME_HEIGHT + HEADROOM}`}
+        viewBox={`${round(VIEW_LEFT)} ${round(VIEW_TOP)} ${round(VIEW_WIDTH)} ${round(VIEW_HEIGHT)}`}
         className="relative block h-auto w-full"
         onPointerMove={follow}
         onPointerLeave={() => pointer.set(AWAY)}
       >
         <defs>
-          {/* Fades only partly at the bottom, so the name stays readable */}
-          <linearGradient id="footer-wordmark-fade" gradientUnits="userSpaceOnUse" x1="0" y1={TITLE.top} x2="0" y2={TITLE.bottom}>
-            <stop offset="0%" stopColor={PURPLE} />
-            <stop offset="60%" stopColor="#7F68EE" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#A898F5" stopOpacity="0.4" />
-          </linearGradient>
-          <motion.radialGradient id="footer-wordmark-spot" gradientUnits="userSpaceOnUse" cx={useTransform(spotX, (x) => x + TITLE.left)} cy={TITLE.top + 120} r={520}>
-            <stop offset="0%" stopColor="#392F6F" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#392F6F" stopOpacity="0" />
-          </motion.radialGradient>
           <motion.linearGradient
             id="footer-wordmark-sheen"
             gradientUnits="userSpaceOnUse"
@@ -216,6 +214,12 @@ export function FooterWordmark() {
             <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
           </motion.linearGradient>
         </defs>
+
+        <motion.g aria-hidden="true" style={{ opacity: markOpacity }}>
+          <g transform={`translate(${round(MARK_CENTER.x - MARK_W / 2)} ${round(MARK_CENTER.y - MARK_H / 2)}) scale(${round(MARK_SCALE * 1000) / 1000})`} fill={PURPLE}>
+            {MARK_DOTS.map(([cx, cy, r]) => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={r} />)}
+          </g>
+        </motion.g>
 
         {LETTERS.map((letter) => (
           <Letter key={letter.index} letter={letter} pointer={pointer} progress={progress} />

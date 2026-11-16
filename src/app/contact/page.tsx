@@ -12,7 +12,7 @@ export const metadata = pageMetadata({
 
 export default function ContactPage() {
   return (
-    <div className="bg-[#f7f7f8] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-5">
+    <div data-no-footer-cone className="bg-[#f7f7f8] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-5">
       <div className="mx-auto grid max-w-[1480px] lg:min-h-[calc(100svh-5.5rem)] lg:items-stretch">
         {/* <ContactInquiryForm /> */}
         <ContactBookingPanel />

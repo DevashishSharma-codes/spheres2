@@ -45,10 +45,10 @@ const LINK_GROUPS = [
 ];
 
 const SOCIALS = ([
-  { label: "LinkedIn", href: COMPANY_SOCIALS.linkedin, icon: "linkedin" },
-  { label: "Instagram", href: COMPANY_SOCIALS.instagram, icon: "instagram" },
-  { label: "X", href: COMPANY_SOCIALS.x, icon: "x" },
-  { label: "Facebook", href: COMPANY_SOCIALS.facebook, icon: "facebook" },
+  { label: "LinkedIn", href: COMPANY_SOCIALS.linkedin, icon: "linkedin", fill: "#0A66C2" },
+  { label: "Instagram", href: COMPANY_SOCIALS.instagram, icon: "instagram", fill: "url(#footer-instagram)" },
+  { label: "X", href: COMPANY_SOCIALS.x, icon: "x", fill: "#000000" },
+  { label: "Facebook", href: COMPANY_SOCIALS.facebook, icon: "facebook", fill: "#1877F2" },
 ] as const).map((social) => ({ ...social, ariaLabel: `21 Spheres on ${social.label}` }));
 
 const ADDRESS = "PC-81, Vardhman Nagar South, Madhapar Bhuj, Gujarat 370020";
@@ -70,19 +70,41 @@ const contactValueClass = "mt-1 block w-fit transition-colors hover:text-[#7057D
 // question already filled in, so they get a summary of the studio in one click.
 const AI_PROMPT = `Give me a short summary of 21 Spheres (${SITE_URL}): what they build, the services they offer, the industries they work with, and why companies choose them.`;
 const ASK_AI = ([
-  { label: "ChatGPT", icon: "chatgpt", href: `https://chatgpt.com/?q=${encodeURIComponent(AI_PROMPT)}` },
-  { label: "Claude", icon: "claude", href: `https://claude.ai/new?q=${encodeURIComponent(AI_PROMPT)}` },
-  { label: "Google AI Mode", icon: "gemini", href: `https://www.google.com/search?udm=50&q=${encodeURIComponent(AI_PROMPT)}` },
-  { label: "Perplexity", icon: "perplexity", href: `https://www.perplexity.ai/search?q=${encodeURIComponent(AI_PROMPT)}` },
+  { label: "ChatGPT", icon: "chatgpt", fill: "#000000", href: `https://chatgpt.com/?q=${encodeURIComponent(AI_PROMPT)}` },
+  { label: "Claude", icon: "claude", fill: "#D97757", href: `https://claude.ai/new?q=${encodeURIComponent(AI_PROMPT)}` },
+  { label: "Google AI Mode", icon: "gemini", fill: "url(#footer-gemini)", href: `https://www.google.com/search?udm=50&q=${encodeURIComponent(AI_PROMPT)}` },
+  { label: "Perplexity", icon: "perplexity", fill: "#20808D", href: `https://www.perplexity.ai/search?q=${encodeURIComponent(AI_PROMPT)}` },
 ] as const).map((ai) => ({ ...ai, ariaLabel: `Ask ${ai.label} about 21 Spheres` }));
 
 
-// Socials and the AI assistants share one look: a quiet grey mark in an outlined circle, filling
-// in black on hover.
+// Socials and the AI assistants share one look: each brand's own coloured mark in an outlined
+// circle, lifting slightly on hover.
 const ROUND_ICON =
-  "flex h-10 w-10 items-center justify-center rounded-full border border-[#E7E5EB] text-[#2A2A2E]/70 transition-colors duration-200 hover:border-[#19191C] hover:bg-[#19191C] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7057D9]";
+  "flex h-10 w-10 items-center justify-center rounded-full border border-[#E7E5EB] transition duration-200 hover:-translate-y-0.5 hover:border-[#BDBDC5] hover:shadow-[0_8px_18px_-10px_rgba(25,25,28,0.35)] motion-reduce:transition-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7057D9]";
 
-function IconRow({ title, items }: { title: string; items: readonly { label: string; href: string; icon: keyof typeof SOCIAL_ICON_PATHS; ariaLabel: string }[] }) {
+/** The gradients the Instagram and Gemini marks are filled with, defined once for the whole footer. */
+function IconGradients() {
+  return (
+    <svg aria-hidden="true" className="absolute h-0 w-0" focusable="false">
+      <defs>
+        <linearGradient id="footer-instagram" x1="10%" y1="90%" x2="90%" y2="10%">
+          <stop offset="0%" stopColor="#FEDA75" />
+          <stop offset="30%" stopColor="#FA7E1E" />
+          <stop offset="55%" stopColor="#D62976" />
+          <stop offset="78%" stopColor="#962FBF" />
+          <stop offset="100%" stopColor="#4F5BD5" />
+        </linearGradient>
+        <linearGradient id="footer-gemini" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#1C7DFF" />
+          <stop offset="52%" stopColor="#9168C0" />
+          <stop offset="100%" stopColor="#E26F6F" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+
+function IconRow({ title, items }: { title: string; items: readonly { label: string; href: string; icon: keyof typeof SOCIAL_ICON_PATHS; fill: string; ariaLabel: string }[] }) {
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
       <h2 className={labelClass}>{title}</h2>
@@ -90,7 +112,7 @@ function IconRow({ title, items }: { title: string; items: readonly { label: str
         {items.map((item) => (
           <li key={item.label}>
             <a href={item.href} target="_blank" rel="noopener noreferrer" aria-label={item.ariaLabel} title={item.label} className={ROUND_ICON}>
-              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px]" fill="currentColor">
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px]" fill={item.fill}>
                 <path d={SOCIAL_ICON_PATHS[item.icon]} />
               </svg>
             </a>
@@ -104,8 +126,11 @@ function IconRow({ title, items }: { title: string; items: readonly { label: str
 export function Footer() {
   return (
     <footer className="w-full overflow-x-clip bg-white">
-      {/* The thread, the call to action, and the paper plane that flies between them */}
-      <FooterCone />
+      {/* The thread, the call to action, and the paper plane that flies between them. Pages that
+          already lead to contact (the contact page, the 404) hide it with a `data-no-footer-cone` marker. */}
+      <div className="[body:has([data-no-footer-cone])_&]:hidden">
+        <FooterCone />
+      </div>
 
       <Container wide>
         {/* Contact details on the left, the site's pages on the right */}
@@ -172,16 +197,19 @@ export function Footer() {
 
         {/* Where else to find us, and a quick way to ask an AI about us */}
         <div className="flex flex-col gap-5 border-t border-[#E7E5EB] py-5 sm:flex-row sm:items-center sm:justify-between">
+          <IconGradients />
           <IconRow title="Follow us" items={SOCIALS} />
           <IconRow title="Ask AI for a summary of 21 Spheres" items={ASK_AI} />
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-[#E7E5EB] py-4 text-xs text-[#2A2A2E]/60 sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 21Spheres Studio. All rights reserved.</p>
-          <BackToTopButton />
+        {/* The name sits bottom-left, with the copyright and the way back up beside it */}
+        <div className="flex flex-col gap-5 border-t border-[#E7E5EB] pt-4 pb-6 sm:flex-row sm:items-end sm:justify-between">
+          <FooterWordmark className="w-full max-w-[520px]" />
+          <div className="flex shrink-0 items-center justify-between gap-4 text-xs text-[#2A2A2E]/60 sm:flex-col sm:items-end">
+            <BackToTopButton />
+            <p>© 2026 21Spheres Studio. All rights reserved.</p>
+          </div>
         </div>
-
-        <FooterWordmark />
       </Container>
     </footer>
   );
