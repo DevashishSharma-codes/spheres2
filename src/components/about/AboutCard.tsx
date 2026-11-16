@@ -15,17 +15,17 @@ interface AboutCardProps {
  * Lilac glass, built on the optics that make glass read as glass (as in a macOS segmented control):
  *  - Body: a translucent lilac tint, slightly deeper at the top and clearing towards the bottom,
  *    with a soft diagonal sheen. It sits over the lilac field behind the carousel.
- *  - Depth: an inner shadow under the top edge (the glass's thickness) and light rising from
- *    inside the bottom edge.
- *  - Rim: a 1.5px bevel, soft at the top, faintly violet down the sides, and bright white along the
- *    bottom where the light catches it.
+ *  - Depth: light glowing in from inside both the top and the bottom edge.
+ *  - Rim: a 1.5px bevel, bright white along the top and the bottom where the light catches it,
+ *    and faintly violet down the sides.
  *  - A small neutral shadow beneath: no coloured glow.
  */
 const BODY =
   "linear-gradient(115deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.22) 44%, rgba(255,255,255,0) 58%), " +
   "linear-gradient(180deg, rgba(200,188,242,.78) 0%, rgba(216,207,247,.72) 55%, rgba(233,228,252,.82) 100%)";
 
-const DEPTH = "inset 0 12px 20px -14px rgba(52,34,132,.38), inset 0 -16px 24px -16px rgba(255,255,255,.9)";
+// Light glowing in from both edges, top and bottom, like the lit lower edge of real glass.
+const DEPTH = "inset 0 16px 24px -16px rgba(255,255,255,.9), inset 0 -16px 24px -16px rgba(255,255,255,.9)";
 const SHADOW = "0 1px 2px rgba(24,16,64,.08), 0 18px 32px -20px rgba(30,20,80,.42)";
 const SHADOW_ACTIVE = "0 2px 4px rgba(24,16,64,.1), 0 22px 38px -20px rgba(30,20,80,.5)";
 
@@ -33,7 +33,7 @@ const SHADOW_ACTIVE = "0 2px 4px rgba(24,16,64,.1), 0 22px 38px -20px rgba(30,20
 const RIM: React.CSSProperties = {
   padding: "1.5px",
   background:
-    "linear-gradient(180deg, rgba(255,255,255,.75) 0%, rgba(150,130,228,.45) 35%, rgba(150,130,228,.4) 65%, rgba(255,255,255,1) 100%)",
+    "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(150,130,228,.45) 35%, rgba(150,130,228,.4) 65%, rgba(255,255,255,1) 100%)",
   WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
   WebkitMaskComposite: "xor",
   mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
