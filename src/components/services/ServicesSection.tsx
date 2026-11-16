@@ -8,6 +8,7 @@ import { PillLink } from "@/components/ui/PillLink";
 import { AllServicesCatalog } from "./AllServicesCatalog";
 import { ServicesIntro } from "./ServicesIntro";
 import { Container } from "@/components/ui/Container";
+import { FooterClosingLine } from "@/components/layout/FooterClosingLine";
 
 const MAX_OFFSET = 6; // 10 services, 4 visible at a time
 const NAV_HEIGHT = 64;
@@ -97,7 +98,7 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
       <div>
       <section 
         id="services" 
-        className="relative z-0 overflow-hidden border-b border-[#ECEBF0] pb-2 text-[#24232A] sm:pb-3"
+        className="relative z-0 overflow-hidden pb-2 text-[#24232A] sm:pb-3"
         style={backgroundStyle}
       >
         <ServicesIntro />
@@ -117,6 +118,9 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
           </div>
         </Container>
         <AllServicesCatalog services={services} />
+
+        {/* Closing line, shown in the footer right above its thread and "Start a project" button */}
+        <FooterClosingLine>{SERVICES_CONTENT.closing.title}</FooterClosingLine>
       </section>
       </div>
     );
@@ -128,24 +132,25 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
       <section 
         ref={sectionRef}
         id="services" 
-        className="relative min-h-[calc(100svh-4rem)] w-full scroll-mt-14 flex flex-col justify-start overflow-hidden text-white border-b border-white/[0.08] py-7 sm:scroll-mt-16 sm:py-10 lg:h-[calc(100svh-4rem)] lg:min-h-0 lg:justify-center lg:py-0"
+        className="relative min-h-[calc(100svh-4rem)] w-full scroll-mt-14 flex flex-col justify-start overflow-hidden text-white border-b border-white/[0.08] py-7 sm:scroll-mt-16 sm:py-10 lg:justify-center lg:py-12"
         style={backgroundStyle}
       >
         <div className="relative z-10 w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* =========================================================
               1. TOP ROW: REFINED "SERVICES" HEADER (MATCHES ABOUT US & HOW WE WORK)
               ========================================================= */}
-          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 pb-3 sm:pb-3.5 border-b border-white/15 mb-5 sm:mb-7 lg:mb-8">
-            <div className="flex flex-col items-start">
-              <span className="text-[12px] sm:text-[13px] font-bold text-[#C084FC] tracking-[0.18em] uppercase mb-1">
+          {/* The right-hand line, on one line, is centred vertically in the header: halfway between
+              the top of the label and the divider below. */}
+          <div className="mb-6 flex flex-col gap-2.5 border-b border-white/15 pb-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:pb-5 lg:mb-10">
+            <div>
+              <span className="mb-1 block text-[12px] font-bold uppercase tracking-[0.18em] text-[#C084FC] sm:text-[13px]">
                 OUR CAPABILITIES
               </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-light tracking-[-0.04em] leading-none text-white select-none whitespace-nowrap">
+              <h2 className="select-none whitespace-nowrap text-3xl font-light leading-none tracking-[-0.04em] text-white sm:text-4xl md:text-5xl lg:text-[52px]">
                 Services
               </h2>
             </div>
-
-            <p className="text-xs sm:text-[13px] text-white/70 font-light leading-relaxed max-w-lg sm:text-right pb-0.5">
+            <p className="text-[13px] font-light leading-relaxed text-white/65 sm:text-right sm:text-sm">
               Specialized engineering squads delivering high-frequency digital platforms.
             </p>
           </div>
@@ -153,10 +158,11 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
           {/* =================================================================
               HERO SECTION: 3D OPEN BOX WITH 4 POPPING CARDS + DYNAMIC CONTROLS
               ================================================================= */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-14 items-center">
+          {/* Phones read the words first, then explore the box; desktop keeps the box on the left */}
+          <div className="grid grid-cols-1 items-center gap-8 sm:gap-10 lg:grid-cols-12 lg:gap-12">
             
             {/* LEFT: THE 3D BOX WITH GLASSMORPHIC CARDS POPPING OUT & MINI ARROW BUTTONS */}
-            <div ref={boxAreaRef} className="lg:col-span-6 w-full flex justify-center lg:justify-start">
+            <div ref={boxAreaRef} className="order-2 flex w-full justify-center lg:order-none lg:col-span-6 lg:justify-start">
               <OpenBoxServicesVisual
                 services={services}
                 offset={offset}
@@ -168,28 +174,23 @@ export function ServicesSection({ embedded = false, showAllCatalog = false }: Se
               />
             </div>
 
-            {/* RIGHT: EVENLY DISTRIBUTED HEADLINE, NARRATIVE & CTA */}
-            <div className="lg:col-span-6 flex flex-col justify-center text-left lg:pl-6 max-w-xl">
-              
-              {/* Headline with application-wide font-light tracking-[-0.04em] */}
-              <h3 className="text-3xl sm:text-4xl md:text-[42px] lg:text-[46px] font-light tracking-[-0.04em] leading-[1.15] text-white mb-6 sm:mb-8">
-                Full-stack systems, <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D8B4FE] via-[#EDE9FE] to-white">autonomous AI</span>, and <br />
-                <span className="text-white/60">scalable architectures</span>
+            {/* RIGHT: heading, a lead statement, its supporting detail under a hairline, then the CTA.
+                One spacing rhythm: heading 24px, lead 20px, detail 32px, button. */}
+            <div className="order-1 flex max-w-[600px] flex-col justify-center text-left lg:order-none lg:col-span-6 lg:pl-2 xl:pl-8">
+              <h3 className="text-[30px] font-light leading-[1.12] tracking-[-0.04em] text-white sm:text-[38px] lg:text-[34px] xl:text-[42px]">
+                We Engineer What Businesses <br className="hidden sm:block" />
+                Need to{" "}
+                <span className="bg-gradient-to-r from-[#D8B4FE] via-[#EDE9FE] to-white bg-clip-text text-transparent">Move Forward</span>
               </h3>
 
-              {/* Distributed, breathable narrative copy */}
-              <div className="space-y-4 mb-8 sm:mb-10">
-                <p className="text-sm sm:text-[15px] lg:text-[15.5px] text-white/85 font-light leading-relaxed">
-                  We deploy 10 specialized engineering services spanning Mobile &amp; Web applications, Custom AI &amp; LLM integration, Chatbots, Workflow automation, Websites, SaaS, Enterprise software, and Custom software.
-                </p>
-                <p className="text-xs sm:text-[13px] lg:text-[13.5px] text-white/55 font-light leading-relaxed">
-                  Engineered for high-velocity scale with zero technical debt, sub-16ms responsiveness, and multi-tenant security.
-                </p>
-              </div>
+              <p className="mt-5 text-[15px] font-light leading-[1.65] text-white/85 sm:mt-6 sm:text-base">
+                {SERVICES_CONTENT.landing.lead}
+              </p>
+              <p className="mt-4 border-t border-white/10 pt-4 text-[13px] font-light leading-[1.65] text-white/55 sm:mt-5 sm:pt-5 sm:text-sm">
+                {SERVICES_CONTENT.landing.detail}
+              </p>
 
-              {/* CTA: EXPLORE ALL SERVICES */}
-              <div>
+              <div className="mt-7 sm:mt-8">
                 <PillLink href="/services#all-services">Explore all services</PillLink>
               </div>
 

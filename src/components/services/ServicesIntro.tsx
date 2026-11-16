@@ -12,6 +12,8 @@ const STATS = [
   { icon: Code2, value: "100%", label: "In-house code" },
 ];
 
+const overview = SERVICES_CONTENT.overview;
+
 export function ServicesIntro() {
   return (
     <>
@@ -58,15 +60,18 @@ export function ServicesIntro() {
               className="absolute -left-5 -top-5 h-28 w-28"
               style={{ backgroundImage: "radial-gradient(#7057D9 1.5px, transparent 1.5px)", backgroundSize: "14px 14px", opacity: 0.3 }}
             />
-            <div className="relative aspect-[3/2] overflow-hidden rounded-2xl bg-[#E7E5EB] shadow-[0_18px_40px_-16px_rgba(40,30,80,.3)]">
+            <div className="relative aspect-[2/1] overflow-hidden sm:aspect-[3/2] rounded-2xl bg-[#E7E5EB] shadow-[0_18px_40px_-16px_rgba(40,30,80,.3)]">
               <Image src="/portfolio/photos/team.jpg" alt="The team working together around a table with laptops" fill sizes="(max-width: 1023px) 92vw, 40vw" className="object-cover" />
             </div>
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.19em] text-[#6248CA]">Overview</p>
-            <h2 className="mt-3 text-3xl font-light leading-[1.1] tracking-[-0.04em] text-[#232129] sm:text-4xl lg:text-[44px]">One team for your product, AI and engineering</h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-[#5F5E69] sm:text-base">Dedicated engineering teams for complex digital products. From mobile and web platforms to AI systems, we build secure software around your needs, designed to scale as your business grows.</p>
-            <p className="mt-3 text-[15px] leading-relaxed text-[#5F5E69] sm:text-base">{SERVICES_CONTENT.lead}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.19em] text-[#6248CA]">{overview.eyebrow}</p>
+            <h2 className="mt-3 text-[28px] font-light leading-[1.1] tracking-[-0.04em] text-[#232129] sm:text-4xl lg:text-[44px]">{overview.title}</h2>
+            <div className="mt-4 space-y-3 text-[14.5px] leading-relaxed text-[#5F5E69] sm:text-base">
+              {overview.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            </div>
+            {/* The one line to remember, set apart from the paragraphs */}
+            <p className="mt-5 border-l-2 border-[#7057D9] pl-4 text-[15px] font-normal leading-relaxed text-[#232129] sm:text-[17px]">{overview.focus}</p>
           </div>
         </div>
       </Container>

@@ -2,7 +2,7 @@ import {
   AppWindow, Boxes, BrainCircuit, Building2, Cable, ClipboardCheck, CloudCog, Code2, CreditCard,
   Database, Eye, FileSearch, Gauge, GraduationCap, Headphones, Layers, LayoutTemplate, LineChart,
   MessageSquare, Palette, PenTool, Plug, Rocket, ScanSearch, Search, ShieldCheck, Smartphone,
-  Sparkles, Users, Wand2, Workflow, Wrench, type LucideIcon,
+  Sparkles, Users, Workflow, Wrench, type LucideIcon,
 } from "lucide-react";
 
 export interface ServiceOffering {
@@ -61,7 +61,16 @@ export interface ServiceProof {
 
 export interface ServiceDetail {
   heroTitle: string;
+  /** Used for search results and link previews; also the hero text when there's no `intro`. */
   lead: string;
+  /** A line under the hero title. */
+  tagline?: string;
+  /** The hero's paragraphs, in place of `lead`. */
+  intro?: string[];
+  /** The line that closes the page, leading into the footer's call to action. */
+  closingTitle?: string;
+  /** An optional smaller line under the closing title. */
+  closingLead?: string;
   sectionTitle: string;
   sectionLead: string;
   model: ServiceModelKind;
@@ -73,7 +82,15 @@ export interface ServiceDetail {
 export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
   "mobile-application-development": {
     heroTitle: "Mobile Application Development",
-    lead: "iOS and Android apps that feel fast and natural in the hand, designed around how your customers actually use their phones.",
+    lead: "Native and cross-platform iOS and Android applications, from user experience and backend integration to device features and app-store deployment.",
+    tagline: "Applications Designed for the Way People Use Their Phones.",
+    closingTitle: "Have a Mobile Product to Bring to Life?",
+    closingLead: "Let's plan the experience and engineer the application.",
+    intro: [
+      "A mobile application needs to feel natural, respond reliably, and make everyday actions simple.",
+      "We develop native and cross-platform applications for iOS and Android, covering everything from user experience and backend integration to device functionality and app-store deployment.",
+      "Whether you are launching a new digital product or extending an existing business platform to mobile, we build applications around how your users interact with them.",
+    ],
     sectionTitle: "Mobile app development services",
     sectionLead: "From a first version to a mature product, we design, build and look after apps people want to keep on their home screen.",
     model: "mobile",
@@ -95,7 +112,14 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
   },
   "web-application-development": {
     heroTitle: "Web Application Development",
-    lead: "Fast, dependable web applications shaped around your business, from customer portals to the internal tools your teams rely on.",
+    lead: "Custom web applications, customer portals, admin panels and enterprise systems, built around your business requirements, users and growth objectives.",
+    tagline: "Software Built Around the Way Your Business Works.",
+    closingTitle: "Have an Application in Mind?",
+    closingLead: "Let's define the architecture, features, and development approach.",
+    intro: [
+      "A web application should do more than display information. It should create meaningful digital experiences, simplify business operations, and provide customers, employees, partners, and administrators with seamless ways to interact and get work done.",
+      "We design and develop custom web solutions, including e-commerce platforms, high-converting landing pages, customer portals, business websites, web applications, admin panels, and enterprise management systems. From custom business logic and workflow automation to third-party integrations and scalable backend architecture, we build solutions tailored to your business requirements, users, and growth objectives.",
+    ],
     sectionTitle: "Web app development services",
     sectionLead: "We plan, design and engineer web applications that stay quick to use and easy to change as your business grows.",
     model: "webPortal",
@@ -117,7 +141,13 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
   },
   "custom-ai-development": {
     heroTitle: "Custom AI Development",
-    lead: "AI built around your data and your decisions, designed to solve a specific business problem rather than to demonstrate a technology.",
+    lead: "Machine learning and deep learning solutions from 21 Spheres, engineered around your data, requirements, and operating environment.",
+    tagline: "AI Built for the Problems Your Business Actually Faces.",
+    closingTitle: "Have a Problem That Needs Its Own AI Model?",
+    intro: [
+      "Not every business problem can be solved with an existing AI model. Some require domain-specific training, carefully prepared datasets, custom algorithms, and models designed around the way your business operates.",
+      "At 21 Spheres, we develop machine learning and deep learning solutions for problems that demand more than an off-the-shelf implementation. From predictive models and computer vision to intelligent classification and decision systems, we engineer AI around your data, requirements, and operating environment.",
+    ],
     sectionTitle: "Custom AI development services",
     sectionLead: "We start from the outcome you need, then build, test and deploy the model that can reliably deliver it.",
     model: "aiConnect",
@@ -139,7 +169,13 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
   },
   "llm-integration": {
     heroTitle: "LLM Integration",
-    lead: "Bring large language models into your products and workflows safely, connected to your own knowledge and kept under your control.",
+    lead: "GPT, Claude, Gemini and other large language models integrated into your applications and workflows, working with your business information and systems.",
+    tagline: "Bring the Power of Large Language Models Into Your Business.",
+    closingTitle: "Your Business Has the Data. Let's Make It More Useful.",
+    intro: [
+      "Large language models become significantly more useful when they can work with your business information, understand context, and interact with the systems your teams already use.",
+      "We integrate models such as GPT, Claude, Gemini, and other compatible LLMs into applications and workflows. From intelligent document assistance and knowledge retrieval to tool calling and multi-step task execution, we build integrations around what your business needs the model to do.",
+    ],
     sectionTitle: "LLM integration services",
     sectionLead: "We help you choose the right models and connect them to your systems in a way your team can trust and maintain.",
     model: "answers",
@@ -153,15 +189,21 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
       ],
     },
     offerings: [
-      { icon: FileSearch, title: "Search Over Your Knowledge", description: "Answers drawn from your own documents and data, with sources people can check for themselves.", includes: ["Document ingestion", "Hybrid search", "Answers with citations"] , image: "/portfolio/photos/external/clinical-ai.jpg", bestFor: "Large document libraries and expert teams" },
       { icon: Plug, title: "Product Integration", description: "AI features added to the products and internal tools your teams and customers already use.", includes: ["In-app AI features", "API and tool connections", "Streaming responses"] , image: "/about/card-security.jpg", bestFor: "Products adding AI features for users" },
-      { icon: ShieldCheck, title: "Guardrails & Evaluation", description: "Testing, review steps and clear limits that keep responses accurate, appropriate and safe to rely on.", includes: ["Automated test suites", "Human review steps", "Policy and safety limits"] , image: "/how-we-work/stage-5-qa-security-testing.jpg", bestFor: "Regulated or high-stakes use cases" },
-      { icon: Wand2, title: "Model Selection & Tuning", description: "Matching each task to a suitable model, then balancing quality, speed and running cost.", includes: ["Model comparison", "Prompt optimization", "Cost and speed tracking"] , image: "/about/corp-performance.jpg", bestFor: "Teams balancing quality against cost" },
+      { icon: FileSearch, title: "Retrieval-Augmented Generation (RAG)", description: "Allow language models to retrieve relevant information from your own documents, databases, and knowledge repositories.", includes: ["Document ingestion and chunking", "Embedding generation", "Vector search and retrieval"], image: "/portfolio/photos/external/clinical-ai.jpg", bestFor: "Enterprise knowledge assistants and document-based question answering." },
+      { icon: Workflow, title: "AI Agents & Tool Calling", description: "Enable language models to interact with approved tools, APIs, and business systems to complete multi-step tasks.", includes: ["Function and tool calling", "Agent orchestration", "Context and task management"], image: "/about/automation-code.jpg", bestFor: "AI-assisted business processes and intelligent applications." },
+      { icon: ShieldCheck, title: "AI Security & Evaluation", description: "Build appropriate controls around model responses, information access, and output quality.", includes: ["Prompt and response validation", "Access control and data boundaries", "Evaluation and monitoring"], image: "/how-we-work/stage-5-qa-security-testing.jpg", bestFor: "Business applications handling sensitive or important information." },
     ],
   },
   "chatbot-development": {
     heroTitle: "Chatbot Development",
-    lead: "Helpful conversational assistants for customers and teams that answer real questions, complete tasks and know when to involve a person.",
+    lead: "Chatbots for websites, mobile apps, WhatsApp and other channels, designed around the conversations your business actually handles.",
+    tagline: "Build Conversations That Do More Than Answer Questions.",
+    closingTitle: "What Should Your Chatbot Be Able to Do?",
+    intro: [
+      "A useful chatbot needs to understand what someone is asking, maintain context, retrieve the right information, and know when a conversation requires human attention.",
+      "We develop conversational systems for websites, mobile applications, WhatsApp, and other digital channels. From customer enquiries and lead qualification to internal knowledge assistance, each chatbot is designed around the conversations your business actually handles.",
+    ],
     sectionTitle: "Chatbot development services",
     sectionLead: "We design assistants around the conversations your business actually has, then connect them to the systems that get things done.",
     model: "chat",
@@ -184,7 +226,14 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
   },
   "workflow-automation": {
     heroTitle: "Workflow Automation",
-    lead: "Take repetitive, manual work out of your day by connecting the tools you already use and automating the steps in between.",
+    lead: "Workflow automation that connects your systems, triggers the right actions and keeps information moving, with AI where it makes the process more reliable.",
+    tagline: "Your Business Has a Process. Let's Make It Work Better.",
+    closingTitle: "Which Process Is Taking Too Much of Your Team's Time?",
+    intro: [
+      "Approvals, invoices, customer onboarding, data entry, notifications, and reporting often involve multiple people and disconnected software.",
+      "We examine how work currently moves through your business and engineer workflows that connect the right systems, trigger the right actions, and keep information moving without unnecessary manual intervention.",
+      "Where appropriate, we introduce AI for document understanding, classification, and decision support. The objective is not to automate everything blindly, but to make the process more reliable.",
+    ],
     sectionTitle: "Workflow automation services",
     sectionLead: "We map how work really moves through your business, then automate it with clear checkpoints for your people.",
     model: "workflow",
@@ -206,7 +255,13 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
   },
   "website-development": {
     heroTitle: "Website Development",
-    lead: "Clear, polished websites that tell your story well, load quickly and turn visitors into conversations.",
+    lead: "Company websites, product landing pages and content-driven platforms that communicate clearly, build credibility and perform reliably.",
+    tagline: "Your Website Is Where Your Business Makes Its First Impression.",
+    closingTitle: "Let's Build a Website Worth Remembering.",
+    intro: [
+      "A business website should communicate clearly, establish credibility, and help visitors understand what to do next.",
+      "We design and develop websites that bring together thoughtful visual design, clear content structure, responsive engineering, and reliable performance. Whether you need a company website, product landing page, or a content-driven platform, we build around your brand and business objectives.",
+    ],
     sectionTitle: "Website development services",
     sectionLead: "From a focused landing page to a full brand site, we handle design and development as one piece of work.",
     model: "website",
@@ -228,7 +283,14 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
   },
   "saas-development": {
     heroTitle: "SaaS Development",
-    lead: "Turn your idea into a subscription product, with everything a SaaS business needs in place from day one.",
+    lead: "SaaS platforms engineered from the ground up, with the user management, subscriptions, billing and infrastructure needed to run as a subscription service.",
+    tagline: "From Product Idea to a Platform People Can Use.",
+    closingTitle: "Have a SaaS Idea Worth Building?",
+    closingLead: "Let's turn your product requirements into a development roadmap.",
+    intro: [
+      "Building a SaaS product involves more than developing its core features. It requires user management, subscriptions, billing, permissions, data architecture, and a product experience that can support multiple customers.",
+      "We engineer SaaS platforms from the ground up, helping businesses turn product ideas into working software with the infrastructure and functionality needed to operate as a subscription-based service.",
+    ],
     sectionTitle: "SaaS development services",
     sectionLead: "We build the product your customers see and the foundations behind it, ready to grow with each new account.",
     model: "saas",
@@ -251,7 +313,14 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
   },
   "enterprise-software-development": {
     heroTitle: "Enterprise Software Development",
-    lead: "Secure, dependable systems for complex organizations, built to fit alongside what you already run and to last for years.",
+    lead: "Enterprise software development and modernization that connects legacy systems, departments and data, built to fit existing operations and future requirements.",
+    tagline: "Complex Business Operations Need Software Built to Match.",
+    closingTitle: "Is Your Existing Software Holding Your Business Back?",
+    closingLead: "Let's assess your current systems and identify the right engineering approach.",
+    intro: [
+      "Enterprise environments often involve legacy systems, multiple departments, large datasets, and business processes that have developed over many years.",
+      "We develop and modernize enterprise software that connects these moving parts. From internal management platforms and system integrations to large-scale application architecture, our focus is on building software that fits existing operations while supporting future requirements.",
+    ],
     sectionTitle: "Enterprise software services",
     sectionLead: "We work with your teams to modernize core systems step by step, keeping the business running throughout.",
     model: "globe",
@@ -273,7 +342,14 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
   },
   "custom-software-development": {
     heroTitle: "Custom Software Development",
-    lead: "When off-the-shelf software doesn't fit, we build the tool your business actually needs, and hand it over ready for you to own.",
+    lead: "Custom software built around the way your business operates, from internal tools and specialized platforms to complex integrations and industry-specific applications.",
+    tagline: "When Standard Software Doesn't Fit, Build What Does.",
+    closingTitle: "Have a Requirement That Existing Software Cannot Meet?",
+    closingLead: "Let's understand what needs to be built.",
+    intro: [
+      "Off-the-shelf platforms are useful until your business requirements become too specific, your workflows become too complex, or existing tools start creating limitations.",
+      "We develop custom software around the way your business operates. From internal management tools and specialized business platforms to complex integrations and industry-specific applications, we build software to address requirements that generic products cannot adequately serve.",
+    ],
     sectionTitle: "Custom software services",
     sectionLead: "We begin by understanding the problem, then build only what will make a real difference to your work.",
     model: "board",

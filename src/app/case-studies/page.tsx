@@ -18,7 +18,7 @@ export const metadata = pageMetadata({
 
 export default function Page() {
   return (
-    <div className="relative isolate overflow-hidden bg-[#0A0910] text-white">
+    <div data-footer-dark className="relative isolate overflow-hidden bg-[#0A0910] text-white">
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-20"

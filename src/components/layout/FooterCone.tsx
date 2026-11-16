@@ -9,6 +9,8 @@ import { pillClassName } from "@/components/ui/PillLink";
 import { MARK_DOTS, MARK_SIZE } from "./logoShapes";
 
 const INK = "#19191C";
+// The thread's colour: ink on light pages, white where the page above ends dark (set in Footer.tsx).
+const THREAD = "var(--cone-ink, #19191C)";
 const HAND_NAMES = ["top-left", "top-center", "top-right", "bottom-left", "bottom-right"] as const;
 type HandName = (typeof HAND_NAMES)[number];
 
@@ -386,7 +388,7 @@ function ThreadAndCallToAction() {
               <motion.path
                 key={i}
                 d={d}
-                stroke={INK}
+                style={{ stroke: THREAD }}
                 strokeWidth={2.25}
                 strokeLinecap="round"
                 initial={{ pathLength: reduceMotion ? 1 : 0 }}
@@ -402,7 +404,7 @@ function ThreadAndCallToAction() {
                 rx={6}
                 ry={13}
                 transform={`rotate(${angle} ${at.x} ${at.y})`}
-                stroke={INK}
+                style={{ stroke: THREAD }}
                 strokeWidth={2}
                 initial={{ opacity: reduceMotion ? 1 : 0 }}
                 animate={{ opacity: started || reduceMotion ? 1 : 0 }}
@@ -413,7 +415,7 @@ function ThreadAndCallToAction() {
               cx={thread.tip.x}
               cy={thread.tip.y}
               r={5}
-              fill={INK}
+              style={{ fill: THREAD }}
               initial={{ scale: reduceMotion ? 1 : 0 }}
               animate={{ scale: started || reduceMotion ? 1 : 0 }}
               transition={after(2.3)}
@@ -425,9 +427,9 @@ function ThreadAndCallToAction() {
                 <defs>
                   {/* The travelled thread shades from the ink colour into the brand purple */}
                   <linearGradient id="footer-trail" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={thread.width} y2="0">
-                    <stop offset="0%" stopColor={INK} />
+                    <stop offset="0%" style={{ stopColor: THREAD }} />
                     <stop offset="50%" stopColor="#6D54F1" />
-                    <stop offset="100%" stopColor={INK} />
+                    <stop offset="100%" style={{ stopColor: THREAD }} />
                   </linearGradient>
                 </defs>
                 <path
@@ -541,7 +543,7 @@ function ThreadAndCallToAction() {
             {/* The site's pill, built here so its circle can show the progress: arrow, spinner, then tick */}
             <Link
               href="/contact"
-              className={`group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8] ${pillClassName("md")}`}
+              className={`group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8] [body:has([data-footer-dark])_&]:shadow-[0_0_0_1px_rgba(255,255,255,0.18)] ${pillClassName("md")}`}
             >
               <span className="grid">
                 {(["start", "sending", "sent"] as const).map((state) => (

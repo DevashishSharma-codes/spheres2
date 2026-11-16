@@ -6,6 +6,11 @@ import { PillLink } from "@/components/ui/PillLink";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAVIGATION_ITEMS } from "@/content/navigation";
+import { ABOUT_CARDS, ABOUT_INTRO } from "@/content/about";
+import { HOW_WE_WORK_INTRO, WORK_FLOORPLAN_STEPS } from "@/content/howWeWork";
+import { INDUSTRIES_CONTENT } from "@/content/industries";
+import { SERVICES_CONTENT } from "@/content/services";
+import { PORTFOLIO_CASE_STUDIES } from "@/content/portfolioCaseStudies";
 import { Logo } from "@/components/ui/Logo";
 import { Menu, X, ChevronDown, ChevronRight, ArrowRight } from "lucide-react";
 
@@ -26,45 +31,27 @@ interface DropdownSectionData {
 const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
   about: {
     headline: "Infrastructure to Intelligence",
-    narrative: "Navigate the AI era with confidence. 21Spheres turns modern software architecture and autonomous intelligence into a strategic partner that empowers talent, reimagines processes, and accelerates business transformation.",
-    ctaText: "Unlock enterprise intelligence",
+    // The menu has room for the opening two paragraphs; the section itself has all three.
+    narrative: ABOUT_INTRO.paragraphs.slice(0, 2).join("\n\n"),
+    ctaText: ABOUT_INTRO.cta,
     ctaHref: "/#about",
     links: [
-      { title: "Seamless Integration", tag: "Effortless Connectivity", href: "/#seamless-integration" },
-      { title: "Exceptional Security", tag: "Deterministic Guardrails", href: "/#exceptional-security" },
-      { title: "High Performance", tag: "Sub-Second Latency", href: "/#high-performance" },
-      { title: "Intelligent Automation", tag: "Self-Healing Workflows", href: "/#intelligent-automation" },
-      { title: "Multi-Agent Swarms", tag: "Autonomous Swarms", href: "/#multi-agent-swarms" },
-      { title: "Production Track Record & Metrics", tag: "20+ Automations • 15+ AI Models", href: "/#statistics" },
+      ...ABOUT_CARDS.map((card) => ({ title: card.title, tag: card.pill, href: `/#${card.id}` })),
     ],
   },
   "how-we-work": {
     headline: "Deterministic Sprint Cadence",
-    narrative: "From discovery and architectural design to full-scale edge deployment and 24/7 SLAs, our 6-stage engineering sprint methodology eliminates surprises and accelerates time-to-market with disciplined execution.",
+    narrative: HOW_WE_WORK_INTRO.lead,
     ctaText: "Explore our sprint methodology",
     ctaHref: "/#how-we-work",
-    links: [
-      { title: "Discovery & SRS Design", tag: "Week 1", href: "/#discovery-srs" },
-      { title: "Architecture & Tech Stack", tag: "Week 1–2", href: "/#architecture-stack" },
-      { title: "UI/UX Design & Prototyping", tag: "Week 2–3", href: "/#ui-ux-prototyping" },
-      { title: "Agile Development & Integration", tag: "Week 3–5", href: "/#agile-development" },
-      { title: "QA, Security & Testing", tag: "Week 5–6", href: "/#qa-security-testing" },
-      { title: "Deployment, Launch & Support", tag: "Week 6+", href: "/#deployment-launch-support" },
-    ],
+    links: WORK_FLOORPLAN_STEPS.map((step) => ({ title: step.title, href: `/#${step.id}` })),
   },
   services: {
-    headline: "Squads Engineered for Scale",
-    narrative: "We deploy dedicated engineering squads with deep domain mastery in mobile architectures, autonomous AI pipelines, low-latency web platforms, and mission-critical enterprise systems.",
+    headline: SERVICES_CONTENT.menu.headline,
+    narrative: SERVICES_CONTENT.menu.narrative,
     ctaText: "Explore all technical capabilities",
     ctaHref: "/services",
-    links: [
-      { title: "Mobile Application Development", tag: "120Hz Native iOS & Android", href: "/services/mobile-application-development" },
-      { title: "Web Application Development", tag: "Next.js & Sub-20ms Edge", href: "/services/web-application-development" },
-      { title: "Custom AI & Multi-Agent Loops", tag: "LoRA & TensorRT Pipelines", href: "/services/custom-ai-development" },
-      { title: "LLM Integration & Hybrid RAG", tag: "Zero-Hallucination Guardrails", href: "/services/llm-integration" },
-      { title: "SaaS & Multi-Tenant Systems", tag: "Enterprise SSO & Billing Engine", href: "/services/saas-development" },
-      { title: "Enterprise Software & Cloud Mesh", tag: "Kubernetes & 99.999% SLA", href: "/services/enterprise-software-development" },
-    ],
+    links: SERVICES_CONTENT.services.map((service) => ({ title: service.title, tag: service.category, href: `/services/${service.id}` })),
   },
   "case-studies": {
     headline: "High-Conviction Systems",
@@ -72,27 +59,15 @@ const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
     ctaText: "View full production case studies",
     ctaHref: "/case-studies",
     links: [
-      { title: "Bimakart Connect", tag: "InsurTech • Sub-2.4s Gateway", href: "/case-studies#bimakart-connect" },
-      { title: "Wealth Wisdom Terminal", tag: "FinTech • $1.4B+ AUM", href: "/case-studies#wealth-wisdom" },
-      { title: "Kaster Underwriting Lab", tag: "Vision AI • 420ms Verify", href: "/case-studies#kaster-underwriting-lab" },
-      { title: "UrbanFlow Dispatch", tag: "Mobile • 450k+ Monthly Bookings", href: "/case-studies#urbanflow-dispatch" },
-      { title: "Hahnnemen Clinical AI", tag: "AI Agents • Sub-180ms Lookup", href: "/case-studies#hahnnemen-clinical-ai" },
+      ...PORTFOLIO_CASE_STUDIES.map((study) => ({ title: study.title, tag: study.discipline, href: `/case-studies#${study.id}` })),
     ],
   },
   industries: {
     headline: "Mission-Critical Verticals",
-    narrative: "Deep vertical expertise across regulated, latency-sensitive, and high-concurrency industries where reliability, data integrity, and compliance cannot be compromised.",
+    narrative: INDUSTRIES_CONTENT.lead,
     ctaText: "Explore our industry solutions",
     ctaHref: "/#industries",
-    links: [
-      { title: "Healthcare", tag: "HIPAA • Clinical AI", href: "/industries/healthcare" },
-      { title: "SaaS", tag: "Multi-Tenant • 99.999% SLA", href: "/industries/saas" },
-      { title: "Fintech", tag: "$1.4B+ AUM • Sub-12ms", href: "/industries/fintech" },
-      { title: "eCommerce", tag: "Headless • 250k Concurrency", href: "/industries/ecommerce" },
-      { title: "GCC", tag: "Global Capability Centers", href: "/industries/gcc" },
-      { title: "Travel", tag: "GDS • Sub-400ms Search", href: "/industries/travel" },
-      { title: "Hospitality", tag: "PMS • Keyless IoT", href: "/industries/hospitality" },
-    ],
+    links: INDUSTRIES_CONTENT.items.map((industry) => ({ title: industry.name, tag: industry.label, href: `/#${industry.id}` })),
   },
   insights: {
     headline: "Engineering RFCs & Memos",
@@ -231,7 +206,7 @@ export function Navbar() {
     if (cleanPath === "/" && activeSection === "services" && cleanHref === "/services") return true;
     if (cleanPath === "/" && activeSection === "case-studies" && cleanHref === "/case-studies") return true;
     if (cleanPath === "/" && activeSection === "insights" && cleanHref === "/insights") return true;
-    if (cleanHref === "/#industries" && (activeSection === "industries" || cleanPath.startsWith("/industries"))) return true;
+    if (cleanHref === "/#industries" && activeSection === "industries") return true;
     if (cleanPath === "/" && activeSection === "testimonials" && cleanHref.startsWith("/#testimonials")) return true;
     return false;
   };
@@ -368,7 +343,7 @@ export function Navbar() {
                     <h3 className="text-xl sm:text-[22px] lg:text-[24px] font-normal tracking-[-0.03em] leading-[1.2] mb-2 bg-gradient-to-r from-white via-[#EDE4FF] to-[#A78BFA] bg-clip-text text-transparent">
                       {NAVBAR_DROPDOWNS[hoveredKey].headline}
                     </h3>
-                    <p className="text-xs sm:text-[13px] font-light text-white/70 leading-relaxed max-w-[380px] mb-4">
+                    <p className="whitespace-pre-line text-xs sm:text-[13px] font-light text-white/70 leading-relaxed max-w-[380px] mb-4">
                       {NAVBAR_DROPDOWNS[hoveredKey].narrative}
                     </p>
                   </div>
@@ -386,17 +361,21 @@ export function Navbar() {
                 </div>
 
                 {/* Right Side: Links with dividing lines & chevrons */}
-                <div className="col-span-7 flex flex-col">
-                  {NAVBAR_DROPDOWNS[hoveredKey].links.map((item, index) => (
+                {/* Longer lists run in two columns, so the menu stays about as tall as its description */}
+                <div
+                  className={`col-span-7 ${NAVBAR_DROPDOWNS[hoveredKey].links.length > 6 ? "grid grid-flow-col grid-cols-2 gap-x-5" : "flex flex-col"}`}
+                  style={NAVBAR_DROPDOWNS[hoveredKey].links.length > 6 ? { gridTemplateRows: `repeat(${Math.ceil(NAVBAR_DROPDOWNS[hoveredKey].links.length / 2)}, auto)` } : undefined}
+                >
+                  {NAVBAR_DROPDOWNS[hoveredKey].links.map((item, index, links) => (
                     <Link
                       key={item.title}
                       href={item.href}
                       onClick={() => setHoveredKey(null)}
                       className={`group/item flex items-center justify-between py-2 sm:py-2.5 border-b border-white/[0.06] hover:border-white/15 transition-all duration-150 px-3 rounded-lg hover:bg-white/[0.04] ${
-                        index === 0 ? "border-t border-white/[0.06]" : ""
+                        index === 0 || (links.length > 6 && index === Math.ceil(links.length / 2)) ? "border-t border-white/[0.06]" : ""
                       }`}
                     >
-                      <span className="text-[14px] sm:text-[14.5px] font-light tracking-[-0.01em] text-white/85 group-hover/item:text-white transition-colors">
+                      <span className="truncate text-[14px] sm:text-[14.5px] font-light tracking-[-0.01em] text-white/85 group-hover/item:text-white transition-colors">
                         {item.title}
                       </span>
                       <ChevronRight className="w-3.5 h-3.5 text-white/35 group-hover/item:text-white group-hover/item:translate-x-1 transition-all duration-150 shrink-0 ml-4" />

@@ -39,27 +39,14 @@ export function AllServicesCatalog({ services }: AllServicesCatalogProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const categories = ["All", "AI & Intelligence", "Web & Platforms", "Mobile & Devices", "Enterprise & Cloud"];
-  const filteredServices = selectedCategory === "All"
-    ? services
-    : services.filter((service) => {
-        if (selectedCategory === "AI & Intelligence") {
-          return service.id.includes("ai") || service.id.includes("llm") || service.id.includes("chatbot");
-        }
-        if (selectedCategory === "Web & Platforms") {
-          return service.id.includes("web") || service.id.includes("website") || service.id.includes("saas");
-        }
-        if (selectedCategory === "Mobile & Devices") return service.id.includes("mobile");
-        if (selectedCategory === "Enterprise & Cloud") {
-          return service.id.includes("enterprise") || service.id.includes("workflow") || service.id.includes("custom-software");
-        }
-        return true;
-      });
+  // The groups come from the services themselves, in the order they first appear.
+  const categories = ["All", ...new Set(services.map((service) => service.category).filter((category): category is string => Boolean(category)))];
+  const filteredServices = selectedCategory === "All" ? services : services.filter((service) => service.category === selectedCategory);
 
   return (
     <section 
       id="all-services" 
-      className="relative z-10 overflow-hidden bg-transparent pt-2 pb-12 text-[#24232A] sm:pb-16"
+      className="relative z-10 overflow-hidden bg-transparent pb-8 pt-2 text-[#24232A] sm:pb-10"
     >
       <Container wide>
         <nav aria-label="Filter services by category" className="mb-4 flex gap-6 overflow-x-auto overflow-y-hidden [scrollbar-width:none] border-b border-[#E7E5EB] sm:gap-8">

@@ -1,7 +1,7 @@
 import {
   Accessibility, BadgeCheck, Bell, BookOpen, Bot, Brain, Clock, Cloud, Code2, Coins, Compass, Database, Eye, FileCheck,
-  FileSearch, Gauge, GitBranch, Globe, Handshake, Headphones, KeyRound, Languages, Layers, LineChart, Lock, Maximize2,
-  MessageSquare, MousePointerClick, Palette, PenTool, Plug, Puzzle, Rocket, Scale, ScanSearch, Search, ShieldCheck,
+  FileSearch, Gauge, Globe, Handshake, Headphones, KeyRound, Languages, Layers, LineChart, Lock, Maximize2,
+  MessageSquare, MousePointerClick, Palette, Plug, Puzzle, Rocket, Scale, ScanSearch, Search, ShieldCheck,
   Smartphone, Sparkles, Target, TrendingUp, Users, Wallet, WifiOff, Workflow, Wrench, Zap, type LucideIcon,
 } from "lucide-react";
 
@@ -24,7 +24,8 @@ export interface CapabilityTile {
 export interface ServiceBenefit {
   icon: LucideIcon;
   title: string;
-  description: string;
+  /** Without descriptions, the benefits show as a compact list of points. */
+  description?: string;
 }
 
 export interface ServiceCapabilities {
@@ -77,22 +78,22 @@ export const SERVICE_CAPABILITIES: Record<string, ServiceCapabilities> = {
       { icon: LineChart, title: "Signals you can act on", description: "Forecasts and risk scores arrive inside the tools your teams already use, with the reasons shown.", image: "/portfolio/photos/external/wealth-advisory.jpg", widget: { kind: "events", event: { title: "Weekly forecast ready", time: "7:30 AM" }, card: { title: "Risk review", time: "7:31 AM", rows: [["Accounts", "Reviewed"], ["Top factor", "Late payments"], ["Next step", "Call customer"]] } } },
       { icon: Gauge, title: "Tested before release", description: "Every new model version is measured against your own examples before it reaches production.", widget: { kind: "code", lines: ["const report = await evaluate({", "  model: \"document-check-v4\",", "  dataset: yourLabelledExamples,", "});", "", "if (report.passes(targets)) {", "  deploy(report.model);", "}"], highlight: 5, tooltip: "Only ships if it passes" } },
     ],
-    benefitsTitle: "Benefits of custom AI",
+    benefitsTitle: "Benefits of Custom AI",
     benefitsLead: "Built for a specific problem, not to demonstrate a technology.",
     benefits: [
-      { icon: Target, title: "Tuned to your domain", description: "Trained on your data, it understands your language and edge cases." },
-      { icon: Clock, title: "Hours back for experts", description: "Routine checks are automated, so specialists focus on hard cases." },
-      { icon: Scale, title: "More consistent decisions", description: "The same criteria apply every time, at any volume." },
-      { icon: Lock, title: "You keep control", description: "Your data and models stay within boundaries you set." },
-      { icon: TrendingUp, title: "Improves over time", description: "Monitoring and retraining keep quality high as your data changes." },
+      { icon: Target, title: "Domain-specific intelligence" },
+      { icon: Scale, title: "Greater control over model behaviour" },
+      { icon: ScanSearch, title: "Automation of complex analysis" },
+      { icon: Plug, title: "Integration with existing applications" },
+      { icon: TrendingUp, title: "Continuous model improvement" },
     ],
   },
   "llm-integration": {
-    title: "Large language models your team can trust",
+    title: "More Than Connecting an API.",
     tiles: [
-      { icon: FileSearch, title: "Answers from your own documents", description: "People ask in plain language and get an answer with the sources right beside it.", widget: { kind: "list", title: "Sources found", cursor: "Answer", rows: [{ name: "Billing policy", note: "Page 12", action: "Open" }, { name: "Terms of service", note: "Section 8", action: "Open" }] } },
-      { icon: Plug, title: "Inside the tools you use", description: "AI assistance sits within your products and workflows, rather than in yet another tab.", image: "/portfolio/photos/external/clinical-ai.jpg", widget: { kind: "events", event: { title: "Question asked", time: "11:02 AM" }, card: { title: "Answer delivered", time: "11:02 AM", rows: [["Searched", "Clinical library"], ["Citations", "3 sources"], ["Review", "Not required"]] } } },
-      { icon: GitBranch, title: "Freedom to switch models", description: "A single layer lets you compare providers and change models without rewriting your product.", widget: { kind: "code", lines: ["const answer = await assistant.ask({", "  model: routing.bestFor(\"search\"),", "  question,", "  sources: await search(question),", "  rules: companyGuardrails,", "});"], highlight: 1, tooltip: "Change models in one place" } },
+      { icon: Lock, title: "Your Data, Within Your Boundaries", description: "Connect models to relevant business information with appropriate access controls and data-handling practices.", widget: { kind: "checklist", title: "Access check", items: [["Product manuals", "Allowed"], ["Customer records", "Masked"], ["Finance files", "Blocked"]] } },
+      { icon: FileSearch, title: "Context That Matters", description: "Use retrieval and structured context to make model responses more relevant to the actual task.", image: "/portfolio/photos/external/clinical-ai.jpg", widget: { kind: "list", title: "Context added", cursor: "Answer", rows: [{ name: "Billing policy", note: "Page 12", action: "Open" }, { name: "Customer history", note: "Last 3 orders", action: "Open" }] } },
+      { icon: Plug, title: "Models Working With Your Systems", description: "Connect language models to approved tools and APIs rather than limiting them to text generation.", widget: { kind: "code", lines: ["const result = await assistant.run({", "  task: \"Refund order #4821\",", "  tools: [orders.lookup, payments.refund],", "  approval: \"required\",", "});"], highlight: 2, tooltip: "Only approved tools" } },
     ],
     benefitsTitle: "Benefits of LLM integration",
     benefitsLead: "The speed of AI, with checks your business can stand behind.",
@@ -141,7 +142,7 @@ export const SERVICE_CAPABILITIES: Record<string, ServiceCapabilities> = {
   "website-development": {
     title: "Every detail that makes a site work harder",
     tiles: [
-      { icon: PenTool, title: "Publish without a developer", description: "Your team can edit pages and launch campaigns from a simple, well-organized editor.", widget: { kind: "list", title: "Recent pages", cursor: "You", rows: [{ name: "Spring campaign", note: "Edited today", action: "Publish" }, { name: "About the team", note: "Live", action: "Edit" }] } },
+      { icon: Puzzle, title: "Built around your business", description: "Every website is tailored to your brand, business requirements, and functionality, with flexible layouts and custom features that grow with you.", widget: { kind: "list", title: "Site building blocks", cursor: "You", rows: [{ name: "Brand theme", note: "Your colours and type", action: "Edit" }, { name: "Booking form", note: "Custom feature", action: "Open" }] } },
       { icon: MousePointerClick, title: "Designed to convert", description: "Clear structure and well-placed next steps guide each visitor towards getting in touch.", image: "/services/website.jpg", widget: { kind: "events", event: { title: "New enquiry received", time: "10:18 AM" }, card: { title: "Lead captured", time: "10:18 AM", rows: [["Source", "Pricing page"], ["Interest", "Website redesign"], ["Sent to", "Sales inbox"]] } } },
       { icon: Gauge, title: "Fast, and easy to find", description: "Optimized images, clean code and sound technical SEO are part of every build.", widget: { kind: "checklist", title: "Launch checks", items: [["Performance", "Passed"], ["Search setup", "Passed"], ["Accessibility", "Passed"]] } },
     ],
@@ -166,7 +167,7 @@ export const SERVICE_CAPABILITIES: Record<string, ServiceCapabilities> = {
     benefitsLead: "The groundwork that lets you focus on your customers.",
     benefits: [
       { icon: Rocket, title: "Quicker to market", description: "A focused first version gets you learning from real users early." },
-      { icon: Coins, title: "Predictable revenue", description: "Subscriptions and upgrades work smoothly from day one." },
+      { icon: Cloud, title: "Seamless product updates", description: "Deploy improvements, introduce new features, and deliver updates centrally without requiring customers to install new versions." },
       { icon: Maximize2, title: "Scales with each account", description: "Foundations are ready for your hundredth customer, not just your first." },
       { icon: KeyRound, title: "Business-ready security", description: "Roles and single sign-on help you pass customer reviews." },
       { icon: LineChart, title: "Clear product insight", description: "Usage data shows what's working and what to build next." },
@@ -203,7 +204,7 @@ export const SERVICE_CAPABILITIES: Record<string, ServiceCapabilities> = {
       { icon: Handshake, title: "No vendor lock-in", description: "The code is yours, so you decide what happens to it." },
       { icon: Brain, title: "Your edge stays yours", description: "Your way of working becomes an asset competitors can't buy." },
       { icon: Plug, title: "Connects cleanly", description: "Integrates with the systems and partners you depend on." },
-      { icon: Coins, title: "No per-seat surprises", description: "Add people without licence costs rising with every hire." },
+      { icon: TrendingUp, title: "Built for long-term growth", description: "Expand functionality, add new modules, and adapt the software as your business evolves without rebuilding from scratch." },
     ],
   },
 };

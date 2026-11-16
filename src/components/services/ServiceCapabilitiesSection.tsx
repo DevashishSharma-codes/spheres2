@@ -137,7 +137,8 @@ export function ServiceCapabilitiesSection({ service, content }: { service: Serv
       <section aria-labelledby="service-capabilities" className="border-t border-white/15 py-14 sm:py-20">
         <p className="text-xs font-semibold uppercase tracking-[0.19em] text-[#C9BBFF]">Capabilities</p>
         <h2 id="service-capabilities" className="mt-3 max-w-3xl text-3xl font-light leading-[1.1] tracking-[-0.04em] sm:text-[44px]">{content.title}</h2>
-        <div className="mt-10 grid gap-10 lg:grid-cols-3 lg:gap-5">
+        {/* On phones the tiles swipe sideways, like the offerings above, instead of stacking */}
+        <div className="-mx-4 mt-8 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:mt-10 sm:grid sm:snap-none sm:gap-10 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3 lg:gap-5 [&::-webkit-scrollbar]:hidden [&>*]:w-[86%] [&>*]:shrink-0 [&>*]:snap-start sm:[&>*]:w-auto">
           {content.tiles.map((tile) => <Tile key={tile.title} tile={tile} />)}
         </div>
       </section>
@@ -146,19 +147,39 @@ export function ServiceCapabilitiesSection({ service, content }: { service: Serv
       <section aria-labelledby="service-benefits" className="relative isolate overflow-hidden rounded-[26px] border border-white/10">
         <Image src={service.cardImage ?? "/portfolio/photos/team.jpg"} alt="" fill sizes="(max-width: 1400px) 100vw, 1316px" style={{ objectPosition: service.cardImagePosition }} className="-z-20 object-cover" />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-br from-[#0c0a18]/[.97] via-[#120e29]/95 to-[#241a55]/90" />
-        <div className="grid gap-x-10 gap-y-9 p-7 sm:grid-cols-2 sm:p-10 lg:grid-cols-3 lg:p-12">
-          <div>
-            <h2 id="service-benefits" className="text-3xl font-light leading-[1.1] tracking-[-0.04em] sm:text-[38px]">{content.benefitsTitle}</h2>
-            <p className="mt-3 text-[15px] leading-relaxed text-white/80">{content.benefitsLead}</p>
-          </div>
-          {content.benefits.map(({ icon: Icon, title, description }) => (
-            <div key={title}>
-              <Icon aria-hidden="true" className="h-6 w-6 text-[#C9BBFF]" />
-              <h3 className="mt-3 text-lg font-normal tracking-[-0.01em]">{title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-white/80">{description}</p>
+        {content.benefits.some((benefit) => benefit.description) ? (
+          <div className="grid gap-x-10 gap-y-9 p-7 sm:grid-cols-2 sm:p-10 lg:grid-cols-3 lg:p-12">
+            <div>
+              <h2 id="service-benefits" className="text-3xl font-light leading-[1.1] tracking-[-0.04em] sm:text-[38px]">{content.benefitsTitle}</h2>
+              <p className="mt-3 text-[15px] leading-relaxed text-white/80">{content.benefitsLead}</p>
             </div>
-          ))}
-        </div>
+            {content.benefits.map(({ icon: Icon, title, description }) => (
+              <div key={title}>
+                <Icon aria-hidden="true" className="h-6 w-6 text-[#C9BBFF]" />
+                <h3 className="mt-3 text-lg font-normal tracking-[-0.01em]">{title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-white/80">{description}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* Points only: the heading on the left, the points as a ruled list beside it */
+          <div className="grid gap-6 p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)] lg:items-center lg:gap-14 lg:p-12">
+            <div>
+              <h2 id="service-benefits" className="text-[28px] font-light leading-[1.1] tracking-[-0.04em] sm:text-[38px]">{content.benefitsTitle}</h2>
+              <p className="mt-3 text-[14.5px] leading-relaxed text-white/75 sm:text-[15px]">{content.benefitsLead}</p>
+            </div>
+            <ul className="grid sm:grid-cols-2 sm:gap-x-8">
+              {content.benefits.map(({ icon: Icon, title }) => (
+                <li key={title} className="flex items-center gap-3.5 border-b border-white/10 py-3.5 last:border-b-0 sm:py-4 sm:[&:nth-last-child(2):nth-child(odd)]:border-b-0">
+                  <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-white/[.08] text-[#C9BBFF]">
+                    <Icon className="h-[18px] w-[18px]" />
+                  </span>
+                  <span className="text-[15px] leading-snug text-white/90 sm:text-base">{title}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
     </>
   );

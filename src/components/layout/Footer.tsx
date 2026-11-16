@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { COMPANY_SOCIALS } from "@/content/company";
 import { BackToTopButton, FooterCone } from "./FooterCone";
 import { FooterWordmark } from "./FooterWordmark";
+import { FooterClosingSlot } from "./FooterClosingLine";
 import { SOCIAL_ICON_PATHS } from "./socialIconPaths";
 import { SITE_URL } from "@/lib/seo";
 
@@ -127,8 +128,12 @@ export function Footer() {
   return (
     <footer className="w-full overflow-x-clip bg-white">
       {/* The thread, the call to action, and the paper plane that flies between them. Pages that
-          already lead to contact (the contact page, the 404) hide it with a `data-no-footer-cone` marker. */}
-      <div className="[body:has([data-no-footer-cone])_&]:hidden">
+          already lead to contact (the contact page, the 404) hide it with a `data-no-footer-cone` marker.
+          Pages whose last section is dark add `data-footer-dark`, and this whole zone turns dark with
+          a white line and white text, so it continues the section above it. */}
+      <div className="[body:has([data-no-footer-cone])_&]:hidden [body:has([data-footer-dark])_&]:bg-[#0A0910] [body:has([data-footer-dark])_&]:[--cone-heading:#FFFFFF] [body:has([data-footer-dark])_&]:[--cone-ink:#FFFFFF]">
+        {/* A page's closing line (see FooterClosingLine) appears here, right above the thread */}
+        <FooterClosingSlot />
         <FooterCone />
       </div>
 

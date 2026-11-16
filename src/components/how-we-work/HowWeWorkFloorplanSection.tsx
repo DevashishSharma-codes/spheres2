@@ -4,30 +4,16 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Check, Plus, X } from "lucide-react";
-import { HOW_WE_WORK_CONTENT, WORK_FLOORPLAN_STEPS } from "@/content/howWeWork";
+import { HOW_WE_WORK_CONTENT, HOW_WE_WORK_INTRO, WORK_FLOORPLAN_STEPS } from "@/content/howWeWork";
 import { useHashLink } from "@/lib/useHashLink";
 
 interface HowWeWorkFloorplanSectionProps {
   embedded?: boolean;
 }
 
-const STAGE_SUMMARIES = [
-  "Goals, user journeys, and a clear scope. Workshops with your team become a signed-off SRS.",
-  "System blueprint, data, APIs, and tech choices, weighed for scale, cost, and security.",
-  "Design systems and interactive prototypes you can click through before any code is written.",
-  "Focused sprints, integrations, and regular demos, so you see working software every cycle.",
-  "Automated and manual testing, load runs, and security scans before anything ships.",
-  "Launch with a rollback plan, live monitoring, and support that continues after go-live.",
-];
-
-const STAGE_DELIVERABLES = [
-  ["Scope document", "User journeys", "SRS"],
-  ["Architecture diagram", "Tech stack", "API plan"],
-  ["Design system", "Wireframes", "Clickable prototype"],
-  ["Sprint demos", "Integrations", "Release builds"],
-  ["Test reports", "Performance audit", "Security review"],
-  ["Production launch", "Monitoring", "Support plan"],
-];
+// Each stage's summary and deliverables, as shown on its card.
+const STAGE_SUMMARIES = WORK_FLOORPLAN_STEPS.map((step) => step.description);
+const STAGE_DELIVERABLES = WORK_FLOORPLAN_STEPS.map((step) => step.tags);
 
 /* ------------------------------------------------------------------ *
  * Desktop geometry. The track fills all the space under the title.
@@ -72,6 +58,33 @@ const CARD_COUNT_CLASS = "text-[11px] tabular-nums tracking-[0.04em] text-[#C8B4
 const CARD_TITLE_CLASS = "text-base font-medium leading-snug tracking-[-0.01em] text-white";
 const CARD_SUMMARY_CLASS = "mb-3 mt-1.5 text-[13px] leading-relaxed text-white/65";
 const CARD_DELIVERABLES_CLASS = "mt-auto border-t border-white/10 pt-3 text-xs leading-relaxed text-white/50";
+
+/** Splits a stage name into two lines of as even a length as possible, e.g. "Discovery &" / "Requirements". */
+function twoLines(title: string): [string, string] {
+  const words = title.split(" ");
+  if (words.length < 2) return [title, ""];
+  let best = 1;
+  let bestLongest = Infinity;
+  for (let i = 1; i < words.length; i += 1) {
+    const longest = Math.max(words.slice(0, i).join(" ").length, words.slice(i).join(" ").length);
+    if (longest < bestLongest) {
+      bestLongest = longest;
+      best = i;
+    }
+  }
+  return [words.slice(0, best).join(" "), words.slice(best).join(" ")];
+}
+
+function TwoLineTitle({ title }: { title: string }) {
+  const [first, second] = twoLines(title);
+  return (
+    <>
+      {first}
+      {second && <br />}
+      {second}
+    </>
+  );
+}
 
 const stemHeight = (index: number, trackH: number, cardH: number) => {
   const maxH = Math.max(150, trackH - STEM_BOTTOM - cardH - 16);
@@ -625,17 +638,19 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
       ))}
       <div className="relative mx-auto flex min-h-[calc(100svh-5.5rem)] w-full max-w-[1600px] flex-col px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:pb-8 lg:pt-12">
         {/* ------------------------------- header (top) ------------------------------- */}
-        <header className="mb-6 flex shrink-0 flex-col gap-3 sm:mb-8 lg:mb-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
-          <div>
+        {/* Heading and tagline on the left, centred against the lead paragraph on the right */}
+        <header className="mb-6 flex shrink-0 flex-col gap-3 sm:mb-8 sm:gap-4 lg:mb-6 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
+          <div className="shrink-0">
             <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-[#C8B4FF]">
               Our process
             </p>
             <h2 className="text-[clamp(2.8rem,6vw,4.75rem)] font-light leading-[0.98] tracking-[-0.055em] text-white/90 lg:text-[clamp(2.8rem,4vw,4rem)]">
               How We Work
             </h2>
+            <p className="mt-2.5 text-sm font-light text-white/70 sm:text-[15px]">{HOW_WE_WORK_INTRO.tagline}</p>
           </div>
-          <p className="max-w-md text-xs leading-relaxed text-white/70 sm:text-[13px] lg:pb-1 lg:text-right">
-            Six clear stages. One accountable path from first brief to launch.
+          <p className="max-w-[500px] text-[13px] font-light leading-relaxed text-white/60 sm:text-sm">
+            {HOW_WE_WORK_INTRO.lead}
           </p>
         </header>
 
@@ -799,8 +814,9 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
                         }}
                       >
                         <p className="text-[11px] tabular-nums tracking-[0.04em] text-[#C8B4FF]/80">{step.step}</p>
+                        {/* Always two lines, so every label has the same shape */}
                         <p className={`mt-1 text-[13px] leading-[1.25] transition-colors ${isActive ? "text-[#C8B4FF]" : "text-white/85"}`}>
-                          {step.title}
+                          <TwoLineTitle title={step.title} />
                         </p>
                       </div>
 
@@ -829,130 +845,76 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
           </div>
         </div>
 
-        {/* ------------------------------ mobile: vertical sequence ------------------------------ */}
-        <div className="relative lg:hidden">
-          {WORK_FLOORPLAN_STEPS.map((step, index) => {
-            const hasPill = index < pillCount;
-            if (!hasPill) return null;
-            const hasTitle = index < titleCount;
-            const isComplete = index < completedCount;
-            const isActive = activeIndex === index;
-            const isExpanded = expandedIndex === index;
-            const hasLink = index < TOTAL - 1 && linkCount > index;
-            const duration = HOW_WE_WORK_CONTENT.steps[index]?.duration;
-
-            return (
-              <div key={step.id} className="relative grid min-h-[76px] grid-cols-[9px_minmax(0,1fr)] gap-4 pb-6">
-                <div className="relative">
-                  <button
-                    type="button"
-                    tabIndex={-1}
-                    aria-hidden="true"
-                    onClick={() => togglePill(index)}
-                    className="absolute -inset-x-3 inset-y-0 z-10"
-                  />
-                  {hasLink && (
-                    <motion.span
-                      aria-hidden="true"
-                      className="absolute -bottom-3.5 left-1/2 top-3.5 w-px origin-top bg-[#B79CFF]/40"
-                      initial={{ scaleY: reduced ? 1 : 0 }}
-                      animate={{ scaleY: 1 }}
-                      transition={{ duration: reduced ? 0 : 0.22, ease: "easeInOut" }}
-                    />
-                  )}
-                  <motion.span
-                    aria-hidden="true"
-                    initial={{ opacity: 0, scale: reduced ? 1 : 0.4 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: reduced ? 0 : 0.2, ease: EASE_OUT }}
-                    className={`relative mt-[9.5px] block h-[9px] w-[9px] rounded-full border ${isActive ? "border-[#C8B4FF] bg-[#C8B4FF]" : "border-[#B79CFF]/60"}`}
-                    style={isActive ? undefined : { backgroundColor: MARKER_FILL }}
-                  />
-                </div>
-
-                <div className="flex min-w-0 flex-col items-start">
-                  <button
-                    type="button"
-                    onClick={() => togglePill(index)}
-                    aria-label={`${isExpanded ? "Hide" : "Show"} ${step.title} card`}
-                    aria-expanded={isExpanded}
-                    className="group cursor-pointer rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
-                  >
-                    <WeekPill
-                      label={`${step.step} \u00b7 ${duration ?? ""}`}
-                      open={isExpanded}
-                      wave={finished && !reduced}
-                      waveDelay={index * 0.12}
-                    />
-                  </button>
-
-                  <AnimatePresence key={skipped ? "skipped" : "playing"} initial={false}>
-                    {isExpanded && (
-                      <motion.div
-                        key="m-card"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: reduced ? 0 : 0.28, ease: EASE_OUT }}
-                        className="mt-3 w-full overflow-hidden"
-                      >
-                        <div className="relative rounded-lg border border-[#B79CFF]/40 p-4 pr-10" style={{ background: CARD_BG }}>
-                          {finished && (
-                            <button
-                              type="button"
-                              onClick={closeFromCard}
-                              aria-label="Close stage card"
-                              className="absolute right-2 top-2 p-1 text-white/50 hover:text-white"
-                            >
-                              <X className="h-3.5 w-3.5" />
-                            </button>
-                          )}
-                          <h3 className={CARD_TITLE_CLASS}>
-                            {reduced ? step.title : <TypewriterText text={step.title} speed={TITLE_TYPE_MS} delay={200} />}
-                          </h3>
-                          <p className={CARD_SUMMARY_CLASS}>
-                            {reduced ? (
-                              STAGE_SUMMARIES[index]
-                            ) : (
-                              <TypewriterText
-                                text={STAGE_SUMMARIES[index]}
-                                speed={SUMMARY_TYPE_MS}
-                                delay={200 + step.title.length * TITLE_TYPE_MS + AFTER_TITLE_MS}
-                              />
-                            )}
-                          </p>
-                          <p className={CARD_DELIVERABLES_CLASS}>{STAGE_DELIVERABLES[index].join(" \u00b7 ")}</p>
-                        </div>
-                      </motion.div>
+        {/* ------------------------------ phones and tablets ------------------------------
+            The whole process at a glance: six stage tiles in a two-column grid, and one panel
+            beneath showing the selected stage. The intro walks the panel through the stages. */}
+        <div className="lg:hidden">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+            {WORK_FLOORPLAN_STEPS.map((step, index) => {
+              const revealed = index < pillCount || finished || skipped;
+              const isComplete = index < completedCount;
+              const isShown = (expandedIndex ?? activeIndex) === index;
+              const duration = HOW_WE_WORK_CONTENT.steps[index]?.duration;
+              return (
+                <button
+                  key={step.id}
+                  type="button"
+                  onClick={() => togglePill(index)}
+                  aria-pressed={isShown}
+                  className={`relative flex min-h-[92px] flex-col rounded-[14px] border p-3 text-left transition-[background-color,border-color,opacity] duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60 ${
+                    isShown ? "border-[#C8B4FF]/70 bg-[#C8B4FF]/[.13]" : "border-white/12 bg-white/[.04]"
+                  } ${revealed ? "opacity-100" : "opacity-35"}`}
+                >
+                  <span className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] tabular-nums tracking-[0.04em] text-[#C8B4FF]">{step.step}</span>
+                    {isComplete ? (
+                      <span aria-label="Completed" className="flex h-4 w-4 items-center justify-center rounded-full bg-[#B79CFF] text-[#170E29]">
+                        <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                      </span>
+                    ) : (
+                      <span className="truncate text-[10.5px] text-white/45">{duration}</span>
                     )}
-                  </AnimatePresence>
+                  </span>
+                  <span className={`mt-auto pt-2 text-[14px] leading-[1.25] ${isShown ? "text-white" : "text-white/85"}`}>
+                    <TwoLineTitle title={step.title} />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
 
-                  {hasTitle && !isExpanded && (
-                    <button
-                      type="button"
-                      tabIndex={-1}
-                      aria-hidden="true"
-                      onClick={() => togglePill(index)}
-                      className="mt-2 flex items-center gap-2 py-0.5 text-left"
-                    >
-                      {isComplete && (
-                        <motion.span
-                          aria-label="Completed"
-                          initial={{ scale: reduced ? 1 : 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 420, damping: 24 }}
-                          className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#B79CFF] text-[#170E29]"
-                        >
-                          <Check className="h-2.5 w-2.5" strokeWidth={3} />
-                        </motion.span>
-                      )}
-                      <span className="text-sm text-white/90">{step.title}</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+          {/* The selected stage */}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={expandedIndex ?? activeIndex}
+              initial={{ opacity: 0, y: reduced ? 0 : 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: reduced ? 0 : -6 }}
+              transition={{ duration: reduced ? 0 : 0.22, ease: EASE_OUT }}
+              className="mt-3 rounded-[16px] border border-[#B79CFF]/35 p-4 sm:p-5"
+              style={{ background: CARD_BG }}
+            >
+              {(() => {
+                const index = expandedIndex ?? activeIndex;
+                const step = WORK_FLOORPLAN_STEPS[index];
+                return (
+                  <>
+                    <p className="flex items-center justify-between text-[11px] tabular-nums tracking-[0.04em] text-[#C8B4FF]">
+                      <span>{step.step} / 0{TOTAL}</span>
+                      <span className="text-white/45">{HOW_WE_WORK_CONTENT.steps[index]?.duration}</span>
+                    </p>
+                    <h3 className={`mt-1.5 ${CARD_TITLE_CLASS}`}>{step.title}</h3>
+                    <p className={CARD_SUMMARY_CLASS}>{STAGE_SUMMARIES[index]}</p>
+                    <ul aria-label="Deliverables" className="flex flex-wrap gap-1.5">
+                      {STAGE_DELIVERABLES[index].map((item) => (
+                        <li key={item} className="rounded-full border border-white/12 bg-white/[.06] px-2.5 py-1 text-[11px] leading-none text-white/80">{item}</li>
+                      ))}
+                    </ul>
+                  </>
+                );
+              })()}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         <span className="sr-only" aria-live="polite">

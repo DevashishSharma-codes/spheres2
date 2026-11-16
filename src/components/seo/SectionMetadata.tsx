@@ -2,34 +2,34 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { WORK_FLOORPLAN_STEPS } from "@/content/howWeWork";
+import { ABOUT_CARDS } from "@/content/about";
+import { INDUSTRIES_CONTENT } from "@/content/industries";
 import { HOME_DESCRIPTION, HOME_TITLE, SITE_NAME } from "@/lib/seo";
 import { useHashLink } from "@/lib/useHashLink";
 
 const ABOUT = {
   title: "About Us",
   description:
-    "Learn who 21 Spheres is: a software and AI product studio focused on secure integration, high performance and intelligent automation.",
+    "Learn who 21 Spheres is: an AI-first technology company working at the intersection of artificial intelligence, software engineering and business innovation.",
+};
+const INDUSTRIES = {
+  title: "Industries",
+  description:
+    "Explore the industries 21 Spheres builds for: healthcare, fintech and insurance, forex and trading, emotional wellbeing, manufacturing, customer support and business operations.",
 };
 const HOW_WE_WORK_DESCRIPTION =
   "See how 21 Spheres works in six clear stages, from discovery and architecture to design, development, testing and launch.";
 
 const SECTIONS: Record<string, { title: string; description: string }> = {
   about: ABOUT,
-  "seamless-integration": ABOUT,
-  "exceptional-security": ABOUT,
-  "high-performance": ABOUT,
-  "intelligent-automation": ABOUT,
-  "multi-agent-swarms": ABOUT,
+  ...Object.fromEntries(ABOUT_CARDS.map((card) => [card.id, ABOUT])),
   statistics: ABOUT,
   "how-we-work": { title: "How We Work", description: HOW_WE_WORK_DESCRIPTION },
   ...Object.fromEntries(
     WORK_FLOORPLAN_STEPS.map((step) => [step.id, { title: step.title, description: HOW_WE_WORK_DESCRIPTION }])
   ),
-  industries: {
-    title: "Industries",
-    description:
-      "Explore the industries 21 Spheres builds software for, including healthcare, SaaS, fintech, eCommerce, GCCs, travel and hospitality.",
-  },
+  industries: INDUSTRIES,
+  ...Object.fromEntries(INDUSTRIES_CONTENT.items.map((industry) => [industry.id, { title: industry.name, description: INDUSTRIES.description }])),
   testimonials: {
     title: "Testimonials",
     description: "Read what founders and teams say about building their products with 21 Spheres.",

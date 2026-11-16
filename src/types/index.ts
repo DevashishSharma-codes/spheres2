@@ -49,18 +49,18 @@ export interface PortfolioItem {
 }
 
 export interface IndustryItem {
+  /** Also the industry's address on the home page, as /#id. */
   id: string;
+  /** The sector, shown beside the count: "01 / 07 · Healthcare". */
+  label: string;
   name: string;
-  description: string;
-  /** Shown in search results and link previews. */
-  seoDescription?: string;
-  impactMetric?: string;
+  /** Fits a closed panel or a tab. */
+  shortName: string;
+  subhead: string;
+  paragraphs: string[];
   capabilities: string[];
-  subhead?: string;
-  image?: string;
-  category?: string;
-  architectureNotes?: string[];
-  clientSnippet?: string;
+  /** The request shown in the small app mock-up. */
+  prompt: string;
 }
 
 export interface InsightItem {

@@ -19,6 +19,7 @@ import {
   ChevronDown
 } from "lucide-react";
 import { ServiceItem } from "@/types";
+import { SERVICES_CONTENT } from "@/content/services";
 
 interface OpenBoxServicesVisualProps {
   services: ServiceItem[];
@@ -38,78 +39,74 @@ interface ServiceVisualData {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-const ALL_SERVICES_DATA: ServiceVisualData[] = [
+// The box's own extras for each service. Names and order come from the content file.
+const VISUAL_EXTRAS: Omit<ServiceVisualData, "title">[] = [
   {
     id: "mobile-application-development",
-    title: "Mobile Application development",
     subtitle: "120Hz ProMotion & Action Button Haptics",
     actionText: "Native iOS & Android apps",
     icon: Smartphone,
   },
   {
     id: "web-application-development",
-    title: "Web Application development",
     subtitle: "Full-Stack React 19 & Sub-20ms Edge Platforms",
     actionText: "Sub-20ms Global Edge Platform",
     icon: Globe,
   },
   {
     id: "custom-ai-development",
-    title: "Custom AI development",
     subtitle: "Proprietary models & intelligent systems",
     actionText: "Proprietary models & intelligent systems",
     icon: Cpu,
   },
   {
     id: "llm-integration",
-    title: "LLM Integration",
     subtitle: "Deterministic RAG & autonomous agents",
     actionText: "Deterministic RAG & autonomous agents",
     icon: Sparkles,
   },
   {
     id: "chatbot-development",
-    title: "Chatbot development",
     subtitle: "Episodic user memory & sub-280ms voice",
     actionText: "Sub-280ms voice turnaround",
     icon: MessageSquare,
   },
   {
     id: "workflow-automation",
-    title: "Workflow automation",
     subtitle: "Temporal, Kafka DAGs & self-healing events",
     actionText: "Deterministic event queues",
     icon: Workflow,
   },
   {
     id: "website-development",
-    title: "Website development",
     subtitle: "Three.js kinetic WebGL & 100/100 Lighthouse",
     actionText: "100/100 Lighthouse score",
     icon: Layout,
   },
   {
     id: "saas-development",
-    title: "SaaS development",
     subtitle: "Multi-tenant cloud, Stripe & enterprise SSO",
     actionText: "Zero-downtime multi-tenant scale",
     icon: Rocket,
   },
   {
     id: "enterprise-software-development",
-    title: "Enterprise software development",
     subtitle: "Mission-critical mesh & gRPC microservices",
     actionText: "99.999% high availability",
     icon: Building2,
   },
   {
     id: "custom-software-development",
-    title: "Custom software development",
     subtitle: "Bespoke mathematical engines in Rust & C++",
     actionText: "Bespoke core runtime",
     icon: Terminal,
   },
 ];
+
+const ALL_SERVICES_DATA: ServiceVisualData[] = SERVICES_CONTENT.services.flatMap((service) => {
+  const extras = VISUAL_EXTRAS.find((item) => item.id === service.id);
+  return extras ? [{ ...extras, title: service.title }] : [];
+});
 
 const PARTICLES = [
   { id: 1, left: "44%", top: "28%", size: 2.5, delay: 0, duration: 4.0 },
@@ -496,7 +493,7 @@ export function OpenBoxServicesVisual({
 
                     {/* Service Title & Subtitle */}
                     <div className="flex flex-col text-left truncate">
-                      <span className="text-[12px] sm:text-[14px] font-semibold text-[#18181B] tracking-tight leading-snug truncate">
+                      <span title={card.title} className="text-[12px] sm:text-[14px] font-semibold text-[#18181B] tracking-tight leading-snug truncate">
                         {card.title}
                       </span>
                       <span className="text-[9.5px] sm:text-[11px] text-[#71717A] font-light truncate mt-0.5">

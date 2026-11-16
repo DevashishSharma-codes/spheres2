@@ -5,115 +5,41 @@ import { motion, useMotionTemplate, useMotionValueEvent, useReducedMotion, useSp
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
-import { 
+import {
   X,
   ChevronLeft,
   ChevronRight,
-  Layers,
-  ShieldCheck,
-  Zap,
-  Cpu,
-  Users
+  Briefcase,
+  Gauge,
+  Workflow,
+  BrainCircuit,
+  Users,
+  Target,
+  Flag,
+  Eye,
 } from "lucide-react";
 import { CompanyStatisticsSection } from "@/components/about/CompanyStatisticsSection";
-import { FolderTabCard } from "@/components/ui/FolderTabCard";
+import { AboutCard as AboutCarouselCard } from "@/components/about/AboutCard";
+import { ABOUT_CARDS, ABOUT_INTRO, type AboutCard } from "@/content/about";
 import { useHashLink } from "@/lib/useHashLink";
 import { useRouter } from "next/navigation";
 
-export interface CardStat {
-  value: string;
-  label: string;
-}
-
-export interface AboutCardItem {
-  id: string;
-  pill: string;
-  title: string;
-  description: string;
-  image: string;
+export interface AboutCardItem extends AboutCard {
   icon: React.ComponentType<{ className?: string }>;
-  modalParagraph1: string;
-  modalParagraph2: string;
-  stats: CardStat[];
 }
 
-const BASE_CARDS: AboutCardItem[] = [
-  {
-    id: "seamless-integration",
-    pill: "Effortless Connectivity",
-    title: "Seamless Integration",
-    description: "Our autonomous AI services seamlessly integrate with legacy platforms and cloud apps, unifying cross-enterprise workflows.",
-    image: "/about/card-integration.jpg",
-    icon: Layers,
-    modalParagraph1: "Our seamless integration ecosystem unifies legacy platforms, modern cloud applications, and distributed databases into a single, cohesive intelligent mesh. We bridge organizational silos with zero downtime.",
-    modalParagraph2: "Through continuous telemetry synchronization and automated API reconciliation, 21Spheres ensures that data flows effortlessly across every department, turning complex architecture into pure velocity.",
-    stats: [
-      { value: "99.9%", label: "Uptime SLA" },
-      { value: "250+", label: "Ecosystem Connectors" },
-      { value: "10x", label: "Faster Deployment" },
-    ],
-  },
-  {
-    id: "exceptional-security",
-    pill: "Exceptional Security",
-    title: "Exceptional Security",
-    description: "21Spheres delivers enterprise-grade deterministic guardrails and encrypted pipelines to protect mission-critical operations.",
-    image: "/about/card-security.jpg",
-    icon: ShieldCheck,
-    modalParagraph1: "Security is engineered into every layer of our platform. We deploy deterministic guardrails, zero-trust cryptographic boundaries, and isolated execution enclaves to safeguard mission-critical workloads.",
-    modalParagraph2: "Real-time threat monitoring and automated regulatory compliance ensure your operations consistently satisfy SOC2 Type II, ISO 27001, and global data privacy standards without sacrificing performance.",
-    stats: [
-      { value: "SOC2", label: "Type II Certified" },
-      { value: "256-bit", label: "Quantum Encryption" },
-      { value: "0", label: "Security Breaches" },
-    ],
-  },
-  {
-    id: "high-performance",
-    pill: "Speedy Experience",
-    title: "High Performance",
-    description: "Our resilient infrastructure is architected for peak velocity, sub-second latency, and continuous high-throughput execution.",
-    image: "/about/card-performance.jpg",
-    icon: Zap,
-    modalParagraph1: "Engineered for uncompromising velocity, our distributed computational network executes petabyte-scale transactions with sub-millisecond latencies across global edge points of presence.",
-    modalParagraph2: "Hardware-accelerated processing pipelines and adaptive caching algorithms guarantee that your enterprise applications scale fluidly during peak demand surges without a single dropped packet.",
-    stats: [
-      { value: "< 12ms", label: "Global Edge Latency" },
-      { value: "1.8M", label: "Operations / Sec" },
-      { value: "99.99%", label: "High Availability" },
-    ],
-  },
-  {
-    id: "intelligent-automation",
-    pill: "Self-Healing Workflows",
-    title: "Intelligent Automation",
-    description: "Designing self-healing automated telemetry workflows that reduce operational overhead across distributed pipelines.",
-    image: "/about/automation-code.jpg",
-    icon: Cpu,
-    modalParagraph1: "Our journey started with a simple idea — to use autonomous automation and innovation to solve real-world operational bottlenecks. What began as an experimental framework has now matured into an enterprise-standard system.",
-    modalParagraph2: "Through continuous self-healing graphs and proactive telemetry mitigation, 21Spheres minimizes operational friction, freeing strategic talent to focus on groundbreaking opportunities.",
-    stats: [
-      { value: "5+", label: "Years of Innovation" },
-      { value: "100+", label: "Talented Professionals" },
-      { value: "20+", label: "Global Partners" },
-    ],
-  },
-  {
-    id: "multi-agent-swarms",
-    pill: "Autonomous Swarms",
-    title: "Multi-Agent Swarms",
-    description: "Deploying self-coordinating AI agent swarms that autonomously collaborate and execute complex multi-step tasks.",
-    image: "/about/card-swarms.jpg",
-    icon: Users,
-    modalParagraph1: "Deploy swarms of specialized, self-coordinating AI agents that negotiate, align context, and execute complex cross-enterprise tasks autonomously with synchronized operational awareness.",
-    modalParagraph2: "Each agent brings specialized domain expertise, collaborating symbiotically across departments to solve multi-step challenges while maintaining absolute transparency and auditability.",
-    stats: [
-      { value: "50+", label: "Swarm Topologies" },
-      { value: "100+", label: "Autonomous Agents" },
-      { value: "4.8x", label: "Productivity Boost" },
-    ],
-  },
-];
+const CARD_ICONS: Record<string, AboutCardItem["icon"]> = {
+  "built-around-your-business": Briefcase,
+  "engineering-that-scales": Gauge,
+  "automation-that-works": Workflow,
+  "connected-intelligence": BrainCircuit,
+  "people-behind-the-technology": Users,
+  "our-purpose": Target,
+  "our-mission": Flag,
+  "our-vision": Eye,
+};
+
+const BASE_CARDS: AboutCardItem[] = ABOUT_CARDS.map((card) => ({ ...card, icon: CARD_ICONS[card.id] ?? Briefcase }));
 
 const ARROW_CLASS =
   "absolute top-[calc(50%-12px)] z-30 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-[#19191C] to-[#573EBF] text-white shadow-[0_8px_20px_-8px_rgba(43,39,53,0.6)] transition-[filter] duration-200 hover:brightness-125";
@@ -130,6 +56,8 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
   const [visibleCenter, setVisibleCenter] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [selectedCard, setSelectedCard] = useState<AboutCardItem | null>(null);
+  const [introOpen, setIntroOpen] = useState(false);
+  const [lead, second, third] = ABOUT_INTRO.paragraphs;
   const router = useRouter();
 
   // Each card's detail has its own address, so Back and Forward open and close it.
@@ -317,8 +245,8 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
         ))}
 
         <div className="relative z-10 mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-4 border-b border-[#E7E5EB] pb-5 lg:grid-cols-12 lg:items-end lg:gap-8">
-            <div className="flex flex-col items-start lg:col-span-6">
+          <div className="grid grid-cols-1 gap-4 border-b border-[#E7E5EB] pb-5 sm:gap-6 lg:grid-cols-12 lg:items-center lg:gap-10">
+            <div className="flex flex-col items-start lg:col-span-5">
               <span className="mb-2 text-[10px] font-semibold uppercase tracking-[0.19em] text-[#7057D9] sm:text-[11px]">
                 OUR STORY
               </span>
@@ -326,18 +254,33 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                 About Us
               </h2>
               <p className="mt-2.5 text-sm font-light text-[#6E6D78]">
-                Building a better, brighter and more connected tomorrow.
+                {ABOUT_INTRO.tagline}
               </p>
             </div>
-            <div className="flex lg:col-span-6 lg:justify-end">
-              <p className="max-w-[540px] text-sm font-light leading-relaxed text-[#6E6D78]">
-                At 21 Spheres, we believe in the power of ideas, people and technology to create meaningful change. Our journey began with a simple vision — to deliver innovative solutions that make life easier, smarter and more connected. Today, we are a passionate team of creators, thinkers and doers, working together to turn possibilities into reality.
+            {/* Centred against the heading. The first paragraph leads; the other two sit side by side beneath it. On phones the
+                last one waits behind "Read more", so the cards still show without much scrolling. */}
+            <div className="lg:col-span-7">
+              <p className="text-[15.5px] font-light leading-[1.5] tracking-[-0.01em] text-[#2A2A2E] sm:text-[17px] lg:text-[18px]">
+                {lead}
               </p>
+              <div className="mt-3 grid gap-2.5 text-[13px] font-light leading-relaxed text-[#6E6D78] sm:grid-cols-2 sm:gap-8 sm:text-[13.5px]">
+                <p>{second}</p>
+                <p className={introOpen ? "" : "hidden sm:block"}>{third}</p>
+              </div>
+              {!introOpen && (
+                <button
+                  type="button"
+                  onClick={() => setIntroOpen(true)}
+                  className="mt-2 text-[13px] font-medium text-[#7057D9] underline-offset-4 hover:underline sm:hidden"
+                >
+                  Read more
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Runs edge to edge, with the outer cards fading away instead of being cut off */}
+        {/* Runs edge to edge, with the outer cards fading away instead of being cut off. Swipe on phones. */}
         <div
           className="relative z-10 mt-1 w-full"
           onMouseEnter={() => setIsHovered(true)}
@@ -360,7 +303,19 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
             <ChevronRight className="h-4 w-4" />
           </button>
 
-          <div className="overflow-hidden pb-9 pt-6 [--about-card:280px] [--about-step:294px] [mask-image:linear-gradient(to_right,transparent,black_7%,black_93%,transparent)] sm:[--about-card:300px] sm:[--about-step:320px] lg:[--about-card:320px] lg:[--about-step:340px]">
+          {/* A faint violet and blue glow behind the cards, so the white section has some depth */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-[12%] h-[70%]"
+            style={{ background: "radial-gradient(55% 70% at 30% 55%, rgba(167,139,250,.28), transparent 72%), radial-gradient(45% 65% at 72% 50%, rgba(150,170,255,.22), transparent 72%)" }}
+          />
+          <motion.div
+            onPanEnd={(_, info) => {
+              if (info.offset.x < -40) handleNext();
+              else if (info.offset.x > 40) handlePrev();
+            }}
+            style={{ touchAction: "pan-y" }}
+            className="relative overflow-hidden pb-12 pt-6 [--about-card:280px] [--about-step:294px] [mask-image:linear-gradient(to_right,transparent,black_7%,black_93%,transparent)] sm:[--about-card:300px] sm:[--about-step:320px] lg:[--about-card:320px] lg:[--about-step:340px]">
             <div className="relative h-[400px]">
               <motion.div
                 className="absolute inset-y-0 left-1/2 w-0 will-change-transform"
@@ -382,15 +337,12 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                         marginLeft: "calc(var(--about-card) / -2)",
                       }}
                     >
-                      <FolderTabCard
-                        theme="contrast"
-                        id={`about-${index}`}
-                        number={String(baseIndex + 1).padStart(2, "0")}
-                        category={card.pill}
+                      <AboutCarouselCard
+                        active={isActive}
                         title={card.title}
-                        description={card.description}
-                        image={card.image}
+                        summary={card.summary}
                         icon={card.icon}
+                        image={card.image}
                         onClick={() => {
                           if (isActive) openCard(card);
                           else setCurrentIndex(index);
@@ -401,7 +353,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                 })}
               </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           <div className="flex items-center justify-center gap-1.5">
             {BASE_CARDS.map((_, i) => (
@@ -476,34 +428,18 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                   </div>
 
                   {/* Title */}
+                  <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7057D9]">{selectedCard.pill}</p>
                   <h3 className="text-2xl sm:text-[28px] font-light text-[#111114] tracking-[-0.035em] leading-tight mb-4 pr-8">
                     {selectedCard.title}
                   </h3>
+                  {selectedCard.headline && (
+                    <p className="-mt-1 mb-4 text-[15px] font-normal leading-snug text-[#2A2A2E]">{selectedCard.headline}</p>
+                  )}
 
                   {/* Narrative paragraphs */}
-                  <div className="space-y-3.5 text-gray-600 text-xs sm:text-[13px] font-light leading-relaxed">
-                    <p>{selectedCard.modalParagraph1}</p>
-                    <p>{selectedCard.modalParagraph2}</p>
+                  <div className="space-y-3.5 text-gray-600 text-[13px] sm:text-sm font-light leading-relaxed">
+                    {selectedCard.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                   </div>
-                </div>
-
-                {/* Bottom 3-Column Stats Row with Vertical Dividers */}
-                <div className="mt-8 pt-5 border-t border-gray-100 flex items-stretch justify-between">
-                  {selectedCard.stats.map((stat, i) => (
-                    <React.Fragment key={i}>
-                      <div className="flex-1 flex flex-col">
-                        <span className="text-xl sm:text-2xl font-light text-[#111114] tracking-[-0.04em]">
-                          {stat.value}
-                        </span>
-                        <span className="text-[10px] sm:text-[11.5px] text-gray-500 font-light leading-snug mt-0.5">
-                          {stat.label}
-                        </span>
-                      </div>
-                      {i < selectedCard.stats.length - 1 && (
-                        <div className="w-[1px] bg-gray-200 self-stretch my-0.5 mx-3 sm:mx-4" />
-                      )}
-                    </React.Fragment>
-                  ))}
                 </div>
 
               </div>

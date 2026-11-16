@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { ServiceHeroIntro } from "./ServiceHeroIntro";
+import { FooterClosingLine } from "@/components/layout/FooterClosingLine";
 import { PageBackButton } from "@/components/ui/PageBackButton";
 import { PillLink } from "@/components/ui/PillLink";
 import { CursorDotField } from "@/components/ui/CursorDotField";
@@ -109,7 +111,8 @@ function GridProof({ proof }: { proof: ServiceProof }) {
 
 function GlobeProof({ proof }: { proof: ServiceProof }) {
   return (
-    <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+    // The globe is kept about as tall as the stats beside it, so neither side leaves a gap.
+    <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-10">
       <div>
         <dl className="grid grid-cols-2 gap-x-6 gap-y-8">
           {proof.stats.map((stat) => (
@@ -120,7 +123,7 @@ function GlobeProof({ proof }: { proof: ServiceProof }) {
           ))}
         </dl>
       </div>
-      <div className="mx-auto w-full max-w-[560px]"><DotGlobe /></div>
+      <div className="mx-auto w-full max-w-[280px] sm:max-w-[340px] lg:mr-0 lg:max-w-[380px]"><DotGlobe /></div>
     </div>
   );
 }
@@ -131,7 +134,7 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
   const Proof = PROOF_LAYOUTS[detail.proof.layout];
 
   return (
-    <div className="relative isolate overflow-hidden bg-[#0A0910] text-white">
+    <div data-footer-dark className="relative isolate overflow-hidden bg-[#0A0910] text-white">
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-20"
@@ -141,22 +144,32 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
       <CursorDotField />
 
       <Container wide className="relative">
-        <PageBackButton className="absolute left-4 top-4 z-10 sm:left-6 lg:left-8" />
         {/* Hero */}
-        <section className="grid items-center gap-10 pb-10 pt-[72px] sm:pt-20 lg:h-[calc(100svh-137px)] lg:min-h-[460px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-12 lg:py-5">
+        <section className="grid items-center gap-10 pb-10 pt-6 sm:pt-10 lg:h-[calc(100svh-137px)] lg:min-h-[600px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-12 lg:py-5">
           <div>
-            <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-white/65">
-              <Link href="/" className="transition-colors hover:text-white">Home</Link>
-              <span aria-hidden="true">/</span>
-              <Link href="/services" className="transition-colors hover:text-white">Services</Link>
-              <span aria-hidden="true">/</span>
-              <span aria-current="page" className="text-[#C9BBFF]">{service.category}</span>
-            </nav>
+            {/* The back button leads the breadcrumb, in the same row, so the two never overlap */}
+            <div className="flex items-center gap-3.5">
+              <PageBackButton />
+              <nav aria-label="Breadcrumb" className="flex min-w-0 flex-wrap items-center gap-2 text-sm text-white/65">
+                <Link href="/" className="transition-colors hover:text-white">Home</Link>
+                <span aria-hidden="true">/</span>
+                <Link href="/services" className="transition-colors hover:text-white">Services</Link>
+                <span aria-hidden="true">/</span>
+                <span aria-current="page" className="text-[#C9BBFF]">{service.category}</span>
+              </nav>
+            </div>
             <h1 className="mt-5 w-fit bg-gradient-to-r from-white via-[#E4DCFF] to-[#9D85F2] bg-clip-text pb-1 text-[42px] font-light leading-[1.06] tracking-[-0.05em] text-transparent sm:text-6xl xl:text-[68px]">
               {detail.heroTitle}
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">{detail.lead}</p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            {detail.tagline && (
+              <p className="mt-4 max-w-xl text-[19px] font-light leading-snug tracking-[-0.015em] text-white/90 sm:text-[22px]">{detail.tagline}</p>
+            )}
+            {detail.intro ? (
+              <ServiceHeroIntro paragraphs={detail.intro} />
+            ) : (
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">{detail.lead}</p>
+            )}
+            <div className="mt-7 flex flex-wrap items-center gap-3">
               <PillLink href="/contact">Start a project</PillLink>
               <Link href="/case-studies" className="inline-flex h-12 items-center rounded-full border border-white/20 px-6 text-sm text-white/85 transition-colors hover:border-white/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8]">
                 See our work
@@ -180,9 +193,10 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
             </div>
             <p className="max-w-xl text-[15px] leading-relaxed text-white/70 lg:justify-self-end">{detail.sectionLead}</p>
           </div>
-          <div className="mt-10 grid gap-y-10 sm:grid-cols-2 sm:gap-x-8 xl:grid-cols-4 xl:gap-x-0 xl:divide-x xl:divide-white/15">
+          {/* On phones the offerings swipe sideways, one and a bit at a time, instead of stacking into a long scroll */}
+          <div className="-mx-4 mt-8 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:mt-10 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 sm:overflow-visible sm:px-0 sm:pb-0 xl:grid-cols-4 xl:gap-x-0 xl:divide-x xl:divide-white/15 [&::-webkit-scrollbar]:hidden">
             {detail.offerings.map(({ title, description, icon: Icon, includes, image, bestFor }, index) => (
-              <article key={title} className="flex flex-col border-t border-white/15 pt-5 xl:border-t-0 xl:px-6 xl:pt-0 xl:first:pl-0 xl:last:pr-0">
+              <article key={title} className="flex w-[84%] shrink-0 snap-start flex-col border-t border-white/15 pt-5 sm:w-auto xl:border-t-0 xl:px-6 xl:pt-0 xl:first:pl-0 xl:last:pr-0">
                 <div className="relative aspect-[16/10] overflow-hidden rounded-[14px] bg-white/5 xl:aspect-auto xl:h-[180px]">
                   <Image src={image} alt="" fill sizes="(max-width: 639px) 92vw, (max-width: 1279px) 46vw, 24vw" className="object-cover" />
                 </div>
@@ -190,7 +204,8 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
                   <span className="text-xs tabular-nums text-white/50">0{index + 1}</span>
                   <Icon aria-hidden="true" className="h-5 w-5" />
                 </div>
-                <h3 className="mt-3 text-[19px] font-normal leading-[1.25] tracking-[-0.01em]">{title}</h3>
+                {/* Room for two lines, so the descriptions start level across the row */}
+                <h3 className="mt-3 text-[19px] font-normal leading-[1.25] tracking-[-0.01em] sm:min-h-[2.5em]">{title}</h3>
                 <p className="mt-2.5 text-sm leading-relaxed text-white/70">{description}</p>
                 <dl className="mt-auto pt-4 text-[13px]">
                   <dt className="border-t border-white/10 pt-3 text-xs text-white/50">What&apos;s included</dt>
@@ -210,7 +225,8 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
         {SERVICE_CAPABILITIES[service.id] && <ServiceCapabilitiesSection service={service} content={SERVICE_CAPABILITIES[service.id]} />}
 
         {/* Results close the page, just before the next step */}
-        <section aria-labelledby="service-results" className="py-14 sm:py-20">
+        {/* With a closing line, little space below: the line and thread below continue this section */}
+        <section aria-labelledby="service-results" className={detail.closingTitle ? "pb-8 pt-14 sm:pb-10 sm:pt-20" : "py-14 sm:py-20"}>
           <div className="mb-8 flex flex-col justify-between gap-2 sm:mb-10 sm:flex-row sm:items-baseline sm:gap-6">
             <ResultsTitle />
             <SourceNote>{detail.proof.source}</SourceNote>
@@ -218,11 +234,16 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
           <Proof proof={detail.proof} />
         </section>
 
-        {/* Next step */}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-white/15 py-10 sm:py-12">
-          <PillLink href="/contact">Talk about your project</PillLink>
-          <Link href="/services" className="text-sm text-[#C9BBFF] underline decoration-[#C9BBFF]/30 underline-offset-4 transition hover:text-white hover:decoration-white">View all services</Link>
-        </div>
+        {/* Next step. A closing line goes into the footer, right above its thread and
+            "Start a project" button; without one, the page keeps its own button row. */}
+        {detail.closingTitle ? (
+          <FooterClosingLine lead={detail.closingLead}>{detail.closingTitle}</FooterClosingLine>
+        ) : (
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-white/15 py-10 sm:py-12">
+            <PillLink href="/contact">Talk about your project</PillLink>
+            <Link href="/services" className="text-sm text-[#C9BBFF] underline decoration-[#C9BBFF]/30 underline-offset-4 transition hover:text-white hover:decoration-white">View all services</Link>
+          </div>
+        )}
       </Container>
     </div>
   );

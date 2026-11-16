@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
       { source: "/about", destination: "/#about", permanent: false },
       { source: "/how-we-work", destination: "/#how-we-work", permanent: false },
       { source: "/industries", destination: "/#industries", permanent: false },
+      // The industry detail pages were retired; each industry now lives in the home page section.
+      { source: "/industries/:slug", destination: "/#:slug", permanent: true },
       { source: "/testimonials", destination: "/#testimonials", permanent: false },
       { source: "/portfolio", destination: "/case-studies", permanent: true },
     ];

@@ -19,41 +19,41 @@ export interface LandingProjectItem {
 
 /** Which published case study each landing card opens. */
 const CASE_STUDY_IDS: Record<string, string> = {
+  "hahnemann-ai": "hahnemann-ai",
   "bimakart-connect": "bimakart-connect",
-  "on-demand-mobile": "urbanflow-dispatch",
-  "hahnnemen-ai": "hahnnemen-clinical-ai",
+  "wealth-wisdom-goals-planner": "wealth-wisdom-goals-planner",
 };
 
 const FEATURED_3_PROJECTS: LandingProjectItem[] = [
   {
-    id: "bimakart-connect",
+    id: "hahnemann-ai",
     index: "01",
+    category: "Clinical AI",
+    client: "Hahnemann AI",
+    title: "Hahnemann AI",
+    image: "/portfolio/photos/landing-hahnnemen-ai.jpg",
+    description1: "Autonomous intelligence agent utilizing deterministic RAG to resolve multi-tier customer workflows.",
+    description2: "Achieved 99.4% guardrail accuracy and 68% first-contact resolution, cutting ticket turnaround by 4.8x.",
+  },
+  {
+    id: "bimakart-connect",
+    index: "02",
     category: "InsurTech Gateway",
-    client: "Bimakart Technologies",
-    title: "Bimakart Connect API Gateway",
+    client: "Bimakart",
+    title: "Bimakart Connect",
     image: "/portfolio/photos/landing-bimakart-connect.jpg",
     description1: "Real-time streaming platform querying 100+ carriers with automated underwriting reconciliation.",
     description2: "Reduced quote lookup times to under 2.4s, scaling to 2.5M+ daily risk queries with enterprise reliability.",
   },
   {
-    id: "on-demand-mobile",
-    index: "02",
-    category: "Mobile Ecosystem",
-    client: "UrbanFlow Logistics",
-    title: "On-Demand Logistics & Service App",
-    image: "/portfolio/photos/landing-on-demand-mobile.jpg",
-    description1: "Cross-platform mobile application with real-time geospatial dispatch and offline-first data sync.",
-    description2: "Engineered sub-16ms touch responsiveness, powering 450,000+ monthly bookings across 14 metropolitan hubs.",
-  },
-  {
-    id: "hahnnemen-ai",
+    id: "wealth-wisdom-goals-planner",
     index: "03",
-    category: "Autonomous AI Agent",
-    client: "Clinical Therapeutics Group",
-    title: "Hahnnemen Clinical & Support AI",
-    image: "/portfolio/photos/landing-hahnnemen-ai.jpg",
-    description1: "Autonomous intelligence agent utilizing deterministic RAG to resolve multi-tier customer workflows.",
-    description2: "Achieved 99.4% guardrail accuracy and 68% first-contact resolution, cutting ticket turnaround by 4.8x.",
+    category: "WealthTech",
+    client: "Wealth Wisdom",
+    title: "Wealth Wisdom Goals Planner",
+    image: "/portfolio/photos/wealth-wisdom-application.png",
+    description1: "A goals planner that helps investors map what they are saving for and track progress over time.",
+    description2: "Brings portfolio data, plans and milestones together in one clear view for clients and advisors.",
   },
 ];
 
