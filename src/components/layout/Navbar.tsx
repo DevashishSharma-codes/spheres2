@@ -121,7 +121,8 @@ export function Navbar() {
 
   const isHomePage = pathname === "/";
   const isDarkPage = DARK_PAGES.some((page) => pathname.startsWith(page));
-  const isDarkHero = (isHomePage && !scrolled) || isDarkPage;
+  // The home hero is now a light video, so the navbar keeps its light style there too.
+  const isDarkHero = isDarkPage;
 
   const handleMouseEnter = (key: string) => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
@@ -241,11 +242,8 @@ export function Navbar() {
       className={`z-50 w-full transition-all duration-300 ease-out ${isDarkPage ? "-mb-[57px] sm:-mb-[65px]" : ""} ${
         isHomePage
           ? `fixed top-0 left-0 right-0 ${
-              isDarkHero
-                ? hoveredKey
-                  ? "bg-[rgba(18,18,22,0.42)] backdrop-blur-2xl border-b border-white/[0.10] shadow-[0_4px_30px_rgba(0,0,0,0.35)]"
-                  : "bg-transparent border-b border-transparent"
-                : "bg-white/80 backdrop-blur-xl border-b border-[#DADADD]/70 shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
+              // Frosted white over the hero video, which is light for most of its length and dark near the end.
+              "bg-white/80 backdrop-blur-xl border-b border-[#DADADD]/70 shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
             }`
           : `sticky top-0 ${
               isDarkPage

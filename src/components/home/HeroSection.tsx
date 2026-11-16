@@ -1,176 +1,239 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { preload } from "react-dom";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowDown, Volume2, VolumeX } from "lucide-react";
+import { pillClassName } from "@/components/ui/PillLink";
 
-const ROTATING_WORDS = ["Products", "Startups", "Tools", "Companies"];
+/* The explainer video, compressed for the web from the 4K master (kept out of Git):
+   phones get 720p (about 11 MB), larger screens 1080p (about 24 MB), both 30fps with the narration.
+   Both are encoded to start playing while they download. The poster is the video's own first
+   frame, a soft lavender gradient, so the hero looks right from the first paint and the switch to
+   the moving video is seamless. */
+const VIDEO = {
+  small: "/hero/explainer-720.mp4",
+  large: "/hero/explainer-1080.mp4",
+  poster: "/hero/explainer-poster.webp",
+};
+// The colour of the video's first frame, shown even before the poster arrives.
+const HERO_BACKGROUND = "#F5F2FD";
 
-/* Fine film grain. The noise is drawn once as a small tile; the layer is then nudged to a new
-   position a few times a second, so it shimmers like film without redrawing anything. That keeps
-   it crisp on large and low-density screens, and light on slower machines. */
-const FILM_GRAIN = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.6 -0.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")`;
-const FILM_GRAIN_CSS = `
-.hero-grain { animation: hero-grain 0.9s steps(1) infinite; }
-@keyframes hero-grain {
-  0% { transform: translate3d(0, 0, 0); }
-  12% { transform: translate3d(-37px, 21px, 0); }
-  25% { transform: translate3d(23px, -44px, 0); }
-  37% { transform: translate3d(-58px, -13px, 0); }
-  50% { transform: translate3d(41px, 52px, 0); }
-  62% { transform: translate3d(-19px, 67px, 0); }
-  75% { transform: translate3d(63px, 9px, 0); }
-  87% { transform: translate3d(-48px, -61px, 0); }
-}
-@media (prefers-reduced-motion: reduce) { .hero-grain { animation: none; } }
-`;
+/* The whole frame is always shown (the video's text runs close to its edges), and its edges ease
+   into the matching background so it sits in the page rather than in a box. The fades are kept to
+   the outer few percent, clear of the chapter pills along the bottom of the video. */
+const easeOut = (side: "bottom" | "top" | "right" | "left", from: number) => {
+  const stops = [1, 0.9, 0.7, 0.45, 0.22, 0.07, 0];
+  return `linear-gradient(to ${side}, #000 0%, #000 ${from}%, ${stops
+    .map((a, i) => `rgba(0,0,0,${a}) ${(from + ((100 - from) * i) / (stops.length - 1)).toFixed(2)}%`)
+    .join(", ")})`;
+};
+const EDGE_MASKS = [easeOut("bottom", 96.5), easeOut("top", 97), easeOut("right", 97.5), easeOut("left", 97.5)];
+const VIDEO_FADE = {
+  maskImage: EDGE_MASKS.join(", "),
+  WebkitMaskImage: EDGE_MASKS.join(", "),
+  maskComposite: "intersect",
+  WebkitMaskComposite: "source-in",
+} as const;
+
+const GLASS_BASE =
+  "inline-flex h-11 items-center gap-2 rounded-full border px-4 text-[13px] font-medium shadow-[0_8px_24px_-12px_rgba(43,39,53,0.45)] backdrop-blur-xl transition-colors duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7057D9]";
+const GLASS_LIGHT = `${GLASS_BASE} border-white/70 bg-white/70 text-[#19191C] hover:bg-white`;
+const GLASS_DARK = `${GLASS_BASE} border-white/20 bg-white/10 text-white hover:bg-white/20`;
 
 export function HeroSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [wordIdx, setWordIdx] = useState(0);
+  // Ask the browser for the poster first, before anything else on the page.
+  preload(VIDEO.poster, { as: "image", fetchPriority: "high" });
 
-  // Rotate the last word smoothly every 2.8s
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const glowRef = useRef<HTMLCanvasElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [onDark, setOnDark] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const [muted, setMuted] = useState(true);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setWordIdx((prev) => (prev + 1) % ROTATING_WORDS.length);
-    }, 2800);
-    return () => clearInterval(interval);
+    const video = videoRef.current;
+    if (!video) return;
+    // React doesn't write the muted attribute into the server's HTML, and browsers only autoplay
+    // muted video, so set it directly and start playback as soon as possible.
+    video.muted = true;
+    if (reduceMotion) {
+      video.pause();
+    } else {
+      video.play().catch(() => undefined);
+    }
+  }, [reduceMotion]);
+
+  /* Everything around the video continues the video's own edges: each side carries on the colour
+     of the frame's outermost pixels, and the space below carries on its bottom row. It's drawn
+     small from the video already playing (no second download) and softened, so the frame flows
+     into the page in light and dark scenes alike. The text below switches to white on dark ones. */
+  useEffect(() => {
+    const video = videoRef.current;
+    const canvas = glowRef.current;
+    const section = sectionRef.current;
+    const context = canvas?.getContext("2d", { willReadFrequently: true });
+    if (!video || !canvas || !section || !context) return;
+    const sample = document.createElement("canvas");
+    sample.width = 96;
+    sample.height = 54;
+    const sampled = sample.getContext("2d", { willReadFrequently: true });
+    if (!sampled) return;
+
+    let frame = 0;
+    let last = 0;
+    let onScreen = true;
+    let dark = false;
+    const draw = (now: number) => {
+      frame = requestAnimationFrame(draw);
+      if (!onScreen || now - last < 66 || video.readyState < 2) return; // about 15 times a second
+      last = now;
+      const box = canvas.getBoundingClientRect();
+      const frameBox = video.getBoundingClientRect();
+      if (box.width === 0 || frameBox.width === 0) return;
+      // Work at an eighth of the size: the result is blurred anyway.
+      const scale = 1 / 8;
+      const W = Math.max(1, Math.round(box.width * scale));
+      const H = Math.max(1, Math.round(box.height * scale));
+      if (canvas.width !== W || canvas.height !== H) {
+        canvas.width = W;
+        canvas.height = H;
+      }
+      const x = (frameBox.left - box.left) * scale;
+      const y = (frameBox.top - box.top) * scale;
+      const w = frameBox.width * scale;
+      const h = frameBox.height * scale;
+      const sw = sample.width;
+      const sh = sample.height;
+      sampled.drawImage(video, 0, 0, sw, sh);
+      context.imageSmoothingEnabled = true;
+      context.drawImage(sample, 0, 0, sw, sh, x, y, w, h); // the frame itself
+      context.drawImage(sample, 0, 0, 1, sh, 0, y, x, h); // left side
+      context.drawImage(sample, sw - 1, 0, 1, sh, x + w, y, W - x - w, h); // right side
+      context.drawImage(sample, 0, 0, sw, 1, x, 0, w, y); // above
+      context.drawImage(sample, 0, sh - 1, sw, 1, x, y + h, w, H - y - h); // below
+      context.drawImage(sample, 0, 0, 1, 1, 0, 0, x, y); // corners
+      context.drawImage(sample, sw - 1, 0, 1, 1, x + w, 0, W - x - w, y);
+      context.drawImage(sample, 0, sh - 1, 1, 1, 0, y + h, x, H - y - h);
+      context.drawImage(sample, sw - 1, sh - 1, 1, 1, x + w, y + h, W - x - w, H - y - h);
+
+      // How light it actually is behind the text row, so the text there stays readable.
+      const top = Math.min(H - 1, Math.round(y + h));
+      const area = context.getImageData(0, top, W, Math.max(1, H - top)).data;
+      let light = 0;
+      for (let i = 0; i < area.length; i += 4) light += 0.2126 * area[i] + 0.7152 * area[i + 1] + 0.0722 * area[i + 2];
+      light /= area.length / 4;
+      const nowDark = dark ? light < 140 : light < 120; // a little hysteresis, so it doesn't flicker
+      if (nowDark !== dark) {
+        dark = nowDark;
+        setOnDark(nowDark);
+      }
+    };
+    const visibility = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+    });
+    visibility.observe(section);
+    frame = requestAnimationFrame(draw);
+    return () => {
+      cancelAnimationFrame(frame);
+      visibility.disconnect();
+    };
   }, []);
 
-  const handleScrollDown = () => {
-    const nextSection = document.getElementById("partner-marquee") || document.getElementById("about");
-    if (nextSection) {
-      nextSection.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
-    }
+  const toggleSound = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const nextMuted = !video.muted;
+    // Turning the sound on restarts the tour, so the narration is heard from the beginning.
+    if (!nextMuted && video.muted) video.currentTime = 0;
+    video.muted = nextMuted;
+    setMuted(nextMuted);
+    if (video.paused) video.play().catch(() => undefined);
+  }, []);
+
+  const explore = () => {
+    const next = document.getElementById("partner-marquee") ?? document.getElementById("about");
+    next?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
   };
+
+  const rise = (delay: number) => ({
+    initial: reduceMotion ? false : { opacity: 0, y: 16 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] as const },
+  });
 
   return (
     <section
       ref={sectionRef}
       id="hero"
       data-testid="product-hero-section"
-      className="hero relative z-10 w-full min-h-screen h-[100dvh] bg-black text-white flex flex-col justify-end overflow-hidden select-none font-['Manrope','Inter',sans-serif]"
+      aria-label="21 Spheres in 50 seconds"
+      className="relative z-10 flex w-full flex-col overflow-hidden pt-14 sm:pt-16 md:h-[100svh] md:min-h-[560px]"
+      style={{ backgroundColor: HERO_BACKGROUND }}
     >
-      {/* LAYER 0: HERO BACKGROUND IMAGE */}
-      <img
-        src="/product-hero-bg.png"
-        alt="21Spheres - Turning Ideas into real Products"
-        loading="eager"
-        fetchPriority="high"
-        className="hero-bg absolute inset-0 w-full h-full object-cover object-top brightness-[0.97] contrast-[1.08] z-0 pointer-events-none select-none"
-      />
-
-      {/* LAYER 1: FINE FILM GRAIN. Larger than the hero, so moving it never shows an edge */}
-      <style href="hero-film-grain" precedence="default">{FILM_GRAIN_CSS}</style>
-      <div
-        aria-hidden="true"
-        className="hero-grain absolute -inset-20 z-[1] pointer-events-none opacity-[0.2] will-change-transform"
-        style={{ backgroundImage: FILM_GRAIN, backgroundRepeat: "repeat", backgroundSize: "180px 180px" }}
-      />
-
-      {/* LAYER 2: HERO PSEUDO VIGNETTE (RADIAL GRADIENT) */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 z-[2] pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.35) 100%)",
-        }}
-      />
-
-      {/* LAYER 3: HERO CONTENT (EXACT 1:1 REPLICA) */}
-      <div className="hero-content relative z-[3] flex flex-col justify-end h-full w-full pointer-events-auto">
-
-        {/* Main Headline & Subtitle */}
-        <div className="w-full px-6 sm:px-10 md:px-14 lg:px-16 pb-12 sm:pb-16 mt-auto flex flex-col justify-end pointer-events-auto">
-          <div className="max-w-5xl">
-            {/* Main Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-4xl sm:text-6xl md:text-7xl lg:text-[5.8rem] xl:text-[6.6rem] 2xl:text-[7.2rem] font-normal tracking-[-0.035em] text-white leading-[1.06]"
-            >
-              Turning Ideas into
-              <br />
-              <span className="inline-flex items-baseline">
-                <span className="text-white/35 font-light mr-3 sm:mr-4">real</span>
-                <span className="text-white font-medium inline-block">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={ROTATING_WORDS[wordIdx]}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.26, ease: "easeOut" }}
-                      className="inline-block"
-                    >
-                      {ROTATING_WORDS[wordIdx]}
-                    </motion.span>
-                  </AnimatePresence>
-                </span>
-              </span>
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.22, ease: "easeOut" }}
-              className="mt-6 sm:mt-8 max-w-lg lg:max-w-xl"
-            >
-              <p className="text-sm sm:text-base md:text-[15px] lg:text-[16px] text-white/70 font-light leading-relaxed">
-                A product studio building AI-native tools for founders, operators,
-                <br />
-                and the people who refuse to wait for the future.
-              </p>
-            </motion.div>
-          </div>
-
-          {/* Bottom Right Large Geometric Arrow */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-            className="absolute right-6 sm:right-10 md:right-14 lg:right-16 bottom-6 sm:bottom-12 z-20 pointer-events-auto"
-          >
-            <button
-              onClick={handleScrollDown}
-              aria-label="Scroll down"
-              className="group relative flex items-center justify-center p-2 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer focus:outline-none"
-            >
-              <svg
-                width="140"
-                height="140"
-                viewBox="0 0 140 140"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-44 lg:h-44 text-white/20 group-hover:text-white/60 transition-all duration-300 transform group-hover:translate-x-1.5 group-hover:translate-y-1.5"
-              >
-                <line
-                  x1="16"
-                  y1="16"
-                  x2="124"
-                  y2="124"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                />
-                <polyline
-                  points="64,124 124,124 124,64"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </motion.div>
-        </div>
+      {/* The video's edges, carried out across the whole hero, including behind the text row */}
+      <div aria-hidden="true" className="pointer-events-none absolute -inset-16">
+        <canvas ref={glowRef} width={184} height={104} className="h-full w-full blur-xl" />
       </div>
+
+      {/* Never cropped: as large as the screen allows at its true 16:9 shape, with nothing laid over it */}
+      <div className="relative flex w-full items-center justify-center md:min-h-0 md:flex-1 md:[container-type:size]">
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative aspect-video w-full md:w-[min(100cqw,calc(100cqh*16/9))]"
+        style={VIDEO_FADE}
+      >
+        <video
+          ref={videoRef}
+          poster={VIDEO.poster}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-label="A 50-second tour of what 21 Spheres builds"
+          className="absolute inset-0 h-full w-full object-contain"
+        >
+          <source src={VIDEO.small} type="video/mp4" media="(max-width: 767px)" />
+          <source src={VIDEO.large} type="video/mp4" />
+        </video>
+      </motion.div>
+      </div>
+
+      {/* Below the video, never on it */}
+      <motion.div
+        {...rise(0.3)}
+        className="relative flex w-full flex-col gap-4 px-5 pb-6 pt-3 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-14"
+      >
+        <p className={`max-w-md text-sm leading-relaxed transition-colors duration-500 ${onDark ? "text-white/75" : "text-[#4A4955]"}`}>
+          <span className={`font-medium transition-colors duration-500 ${onDark ? "text-white" : "text-[#19191C]"}`}>21 Spheres</span> is a product studio building software and AI
+          that people love to use.
+        </p>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={toggleSound}
+            aria-pressed={!muted}
+            aria-label={muted ? "Turn the sound on" : "Turn the sound off"}
+            title={muted ? "Sound on" : "Sound off"}
+            className={`${onDark ? GLASS_DARK : GLASS_LIGHT} w-11 justify-center px-0`}
+          >
+            {muted ? <VolumeX aria-hidden="true" className="h-4 w-4" /> : <Volume2 aria-hidden="true" className={`h-4 w-4 ${onDark ? "text-[#C9BBFF]" : "text-[#573EBF]"}`} />}
+          </button>
+          {/* The site's pill, with a down arrow since it scrolls the page */}
+          <button type="button" onClick={explore} className={`group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8] ${pillClassName("md")}`}>
+            Explore our work
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-black">
+              <ArrowDown aria-hidden="true" className="h-[18px] w-[18px] transition-transform duration-300 group-hover:translate-y-0.5 motion-reduce:transition-none" />
+            </span>
+          </button>
+        </div>
+      </motion.div>
     </section>
   );
 }
+
 export default HeroSection;

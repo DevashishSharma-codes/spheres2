@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# The 4K master of the hero video is far too large for Git (GitHub rejects files over 100 MB)
+# and for the web. The site uses the compressed copies in public/hero/ instead.
+/21spheres-explainer-4K60-new-audio.mp4
+/public/21spheres-explainer-4K60-new-audio.mp4
