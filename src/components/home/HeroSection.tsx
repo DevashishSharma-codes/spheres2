@@ -70,11 +70,10 @@ export function HeroSection() {
      small from the video already playing (no second download) and softened, so the frame flows
      into the page in light and dark scenes alike. The text below switches to white on dark ones. */
   useEffect(() => {
-    const video = videoRef.current;
     const canvas = glowRef.current;
     const section = sectionRef.current;
     const context = canvas?.getContext("2d", { willReadFrequently: true });
-    if (!video || !canvas || !section || !context) return;
+    if (!canvas || !section || !context) return;
     const sample = document.createElement("canvas");
     sample.width = 96;
     sample.height = 54;
@@ -87,7 +86,8 @@ export function HeroSection() {
     let dark = false;
     const draw = (now: number) => {
       frame = requestAnimationFrame(draw);
-      if (!onScreen || now - last < 66 || video.readyState < 2) return; // about 15 times a second
+      const video = videoRef.current;
+      if (!video || !onScreen || now - last < 66 || video.readyState < 2) return; // about 15 times a second
       last = now;
       const box = canvas.getBoundingClientRect();
       const frameBox = video.getBoundingClientRect();
