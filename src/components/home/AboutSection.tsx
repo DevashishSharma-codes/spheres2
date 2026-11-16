@@ -303,12 +303,6 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
             <ChevronRight className="h-4 w-4" />
           </button>
 
-          {/* A faint violet and blue glow behind the cards, so the white section has some depth */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-[12%] h-[70%]"
-            style={{ background: "radial-gradient(55% 70% at 30% 55%, rgba(167,139,250,.28), transparent 72%), radial-gradient(45% 65% at 72% 50%, rgba(150,170,255,.22), transparent 72%)" }}
-          />
           <motion.div
             onPanEnd={(_, info) => {
               if (info.offset.x < -40) handleNext();
