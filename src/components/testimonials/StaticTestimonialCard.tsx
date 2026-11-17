@@ -18,9 +18,12 @@ interface StaticTestimonialCardProps {
   card: TestimonialCardData;
   /** Which way the hover layers grow: pick the side with room around the card. */
   bricks: "up" | "down";
+  /** Phones: the same card made smaller for the bento, as a half-width "tile" or a full-width "wide" card. */
+  size?: "full" | "tile" | "wide";
 }
 
-export function StaticTestimonialCard({ card, bricks }: StaticTestimonialCardProps) {
+export function StaticTestimonialCard({ card, bricks, size = "full" }: StaticTestimonialCardProps) {
+  const small = size !== "full";
   // Use restrained violet color washes over the existing artwork. Keep copy neutral.
   const getThemeStyles = () => {
     switch (card.themeVariant) {
@@ -88,11 +91,11 @@ export function StaticTestimonialCard({ card, bricks }: StaticTestimonialCardPro
 
   return (
     <div
-      className={`group relative rounded-none p-2 shadow-none backdrop-blur-md transition-shadow duration-300 ease-out hover:z-10 motion-reduce:transition-none sm:p-2.5 ${bricks === "up" ? BRICKS_UP : BRICKS_DOWN}`}
+      className={`group relative h-full rounded-none shadow-none transition-shadow duration-300 ease-out hover:z-10 motion-reduce:transition-none ${small ? "p-1.5" : `p-2 backdrop-blur-md sm:p-2.5 ${bricks === "up" ? BRICKS_UP : BRICKS_DOWN}`}`}
       style={{ backgroundColor: theme.frameBg, "--brick-near": theme.brickNear, "--brick-far": theme.brickFar } as React.CSSProperties}
     >
       {/* Inner Card Body with Color-Graded Watercolor Background */}
-      <div className="relative w-full min-h-[340px] sm:min-h-[370px] lg:min-h-[390px] p-6 sm:p-7 rounded-none flex flex-col justify-between overflow-hidden">
+      <div className={`relative flex h-full w-full flex-col justify-between overflow-hidden rounded-none ${small ? "p-3.5" : "min-h-[340px] p-6 sm:min-h-[370px] sm:p-7 lg:min-h-[390px]"}`}>
         
         {/* Soft Background Watercolor Image with Purple / Grayish / White / Black Grading */}
         <img
@@ -115,30 +118,30 @@ export function StaticTestimonialCard({ card, bricks }: StaticTestimonialCardPro
         />
 
         {/* TOP BLOCK: Company Logo + Quote Text right at top */}
-        <div className="relative z-10 flex flex-col items-start gap-4">
+        <div className={`relative z-10 flex flex-col items-start ${small ? "gap-2" : "gap-4"}`}>
           {/* Company Logo / Name */}
-          <span className={`text-lg sm:text-xl font-bold tracking-tight ${theme.titleColor}`}>
+          <span className={`font-bold tracking-tight ${small ? "text-[14px] leading-tight" : "text-lg sm:text-xl"} ${theme.titleColor}`}>
             {card.company}
           </span>
 
           {/* Quote Text immediately at top under logo */}
-          <p className={`text-sm sm:text-base font-normal leading-snug tracking-tight text-left ${theme.quoteColor}`}>
+          <p className={`font-normal leading-snug tracking-tight text-left ${small ? (size === "wide" ? "line-clamp-4 text-[13.5px]" : "line-clamp-5 text-[12px]") : "text-sm sm:text-base"} ${theme.quoteColor}`}>
             {card.subhead}
           </p>
         </div>
 
         {/* BOTTOM BLOCK: Author Avatar + Name & Role */}
-        <div className="relative z-10 flex items-center gap-3 pt-6">
+        <div className={`relative z-10 flex items-center ${small ? "gap-2 pt-3" : "gap-3 pt-6"}`}>
           <img
             src={card.avatar}
             alt={card.name}
-            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shrink-0 border ${theme.avatarBorder} shadow-xs`}
+            className={`rounded-full object-cover shrink-0 border ${theme.avatarBorder} shadow-xs ${small ? "h-7 w-7" : "w-10 h-10 sm:w-11 sm:h-11"}`}
           />
-          <div className="flex flex-col leading-tight">
-            <span className={`text-xs sm:text-sm font-semibold ${theme.nameColor}`}>
+          <div className="flex min-w-0 flex-col leading-tight">
+            <span className={`font-semibold ${small ? "truncate text-[11.5px]" : "text-xs sm:text-sm"} ${theme.nameColor}`}>
               {card.name}
             </span>
-            <span className={`text-[11px] font-medium mt-0.5 ${theme.roleColor}`}>
+            <span className={`font-medium mt-0.5 ${small ? "truncate text-[10px]" : "text-[11px]"} ${theme.roleColor}`}>
               {card.role}
             </span>
           </div>

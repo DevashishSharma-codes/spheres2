@@ -131,7 +131,8 @@ function heldByHands(width: number, hands: Record<HandName, Hand>): Thread {
   const lower = targets["bottom-left"];
   // How far the round side swings out beyond the hands.
   const radius = (lower.y - upper.y) / 2;
-  const side = { x: Math.min(upper.x, lower.x) - radius * 0.75, y: (upper.y + lower.y) / 2 };
+  // On narrow screens the swing is kept on screen, a little in from the edge.
+  const side = { x: Math.max(10, Math.min(upper.x, lower.x) - radius * 0.75), y: (upper.y + lower.y) / 2 };
 
   const stops = [
     { at: fist, dir: { x: -1, y: 0 } },
@@ -160,7 +161,7 @@ function heldByHands(width: number, hands: Record<HandName, Hand>): Thread {
   };
 }
 
-/** Other pages, and phones where the hands crowd together: two strings run in from the page edges. */
+/** Pages without the hands: two strings run in from the page edges. */
 function fromEdges(width: number): Thread {
   const height = width < 640 ? 84 : 110;
   const tip = { x: width / 2, y: height - 5 };
@@ -225,7 +226,8 @@ function ThreadAndCallToAction() {
     const layout = () => {
       const rect = box.getBoundingClientRect();
       if (rect.width === 0) return;
-      const hands = rect.width >= 768 ? findHands(rect) : null;
+      // Phones get the same thread as larger screens: held by every hand, with the paper plane flight.
+      const hands = findHands(rect);
       if (!hands) HAND_NAMES.forEach((name) => nudge(name, 0, 0));
       setThread(hands ? heldByHands(rect.width, hands) : fromEdges(rect.width));
     };

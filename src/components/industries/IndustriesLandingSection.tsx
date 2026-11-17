@@ -128,12 +128,21 @@ function IndustryModel({ industry, className = "" }: { industry: IndustryItem; c
 /* ------------------------------------------------------------------ */
 
 function IndustryWords({ industry, compact = false }: { industry: IndustryItem; compact?: boolean }) {
+  const [more, setMore] = useState(false);
+  const hasMore = compact && industry.paragraphs.length > 1;
   return (
     <>
       <p className={`font-medium leading-snug tracking-[-0.01em] text-[#C9BBFF] ${compact ? "text-[14.5px]" : "text-[14px] xl:text-[15px]"}`}>{industry.subhead}</p>
       <div className={`mt-2.5 space-y-2 text-white/80 ${compact ? "text-[13px] leading-[1.6]" : "border-l-2 border-[#D9CCFF]/30 pl-3 text-[12.5px] leading-relaxed xl:text-[13px]"}`}>
-        {industry.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        {industry.paragraphs.map((paragraph, i) => (
+          <p key={paragraph} className={hasMore && i > 0 && !more ? "hidden md:block" : ""}>{paragraph}</p>
+        ))}
       </div>
+      {hasMore && !more && (
+        <button type="button" onClick={() => setMore(true)} className="mt-1.5 text-[13px] font-medium text-[#C9BBFF] underline-offset-4 hover:underline md:hidden">
+          Read more
+        </button>
+      )}
       <ul aria-label="What we build" className="mt-3 flex flex-wrap gap-1.5">
         {industry.capabilities.map((capability) => (
           <li key={capability} className="rounded-full border border-white/15 bg-white/[.08] px-2.5 py-1 text-[11px] leading-none text-white/90">
@@ -256,7 +265,7 @@ function MobileCard({ industries, activeIdx, setActiveIdx }: { industries: Indus
         ref={tabsRef}
         role="tablist"
         aria-label="Industries"
-        className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-3 [scrollbar-width:none] sm:-mx-6 sm:px-6 [&::-webkit-scrollbar]:hidden"
+        className="flex flex-wrap gap-2 pb-4"
       >
         {industries.map((industry, index) => {
           const isActive = index === activeIdx;
@@ -267,7 +276,7 @@ function MobileCard({ industries, activeIdx, setActiveIdx }: { industries: Indus
               role="tab"
               aria-selected={isActive}
               onClick={() => setActiveIdx(index)}
-              className={`h-9 shrink-0 whitespace-nowrap rounded-full border px-3.5 text-[13px] transition-colors duration-200 ${
+              className={`h-8 shrink-0 whitespace-nowrap rounded-full border px-3 text-[12.5px] transition-colors duration-200 ${
                 isActive ? "border-white bg-white font-medium text-[#1d1533]" : "border-white/15 bg-white/[.06] text-white/75"
               }`}
             >
@@ -290,15 +299,14 @@ function MobileCard({ industries, activeIdx, setActiveIdx }: { industries: Indus
         <div aria-hidden="true" className="absolute inset-0" style={{ background: PANEL_BACKGROUND }} />
         {industries.map((industry, index) => {
           const isActive = index === activeIdx;
+          if (!isActive) return null;
           return (
             <div
               key={industry.id}
               role="tabpanel"
-              aria-hidden={!isActive}
-              inert={!isActive}
-              className={`relative col-start-1 row-start-1 flex flex-col px-5 pt-5 transition-opacity duration-300 sm:px-7 sm:pt-7 md:grid md:grid-cols-[1.35fr_1fr] md:gap-7 ${isActive ? "opacity-100" : "pointer-events-none opacity-0"}`}
+              className="relative flex flex-col px-5 pt-5 sm:px-7 sm:pt-7 md:grid md:grid-cols-[1.35fr_1fr] md:gap-7"
             >
-              <div className="min-w-0 pb-5 md:pb-7">
+              <div className="min-w-0 pb-6 md:pb-7">
                 <div className="flex items-center justify-between gap-3">
                   <span className="truncate font-mono text-[10px] uppercase tracking-[0.16em] text-[#C9BBFF]">{countLabel(index, total, industry)}</span>
                   <span className="flex shrink-0 gap-1.5">
@@ -317,7 +325,8 @@ function MobileCard({ industries, activeIdx, setActiveIdx }: { industries: Indus
                   <IndustryWords industry={industry} compact />
                 </div>
               </div>
-              <IndustryModel industry={industry} className="mx-auto mt-auto h-[132px] max-w-[340px] shrink-0 sm:h-[160px] md:mt-0 md:h-[230px] md:self-end" />
+              {/* The illustration is for tablets; phones keep to the words */}
+              <IndustryModel industry={industry} className="mx-auto mt-auto hidden h-[160px] max-w-[340px] shrink-0 sm:block md:mt-0 md:h-[230px] md:self-end" />
             </div>
           );
         })}

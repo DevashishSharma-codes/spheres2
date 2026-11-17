@@ -1,7 +1,7 @@
 import type { CSSProperties, ComponentType, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Bot, ListChecks, SendHorizontal, ShieldCheck, UserCheck } from "lucide-react";
+import { ArrowUpRight, Bot, ChartLine, Globe, ListChecks, SendHorizontal, ShieldCheck, UserCheck } from "lucide-react";
 import { PillLink } from "@/components/ui/PillLink";
 import { INSIGHTS_CONTENT } from "@/content/insights";
 import { MARK_DOTS, MARK_SIZE } from "@/components/layout/logoShapes";
@@ -34,24 +34,33 @@ function FlowLine({ d, duration = 4, delay = 0 }: { d: string; duration?: number
   );
 }
 
-function CardWords({ article }: { article: InsightItem }) {
+function CardWords({ article, tile = false }: { article: InsightItem; tile?: boolean }) {
   return (
-    <div className="px-5 pb-5 pt-1 sm:px-6 sm:pb-6">
-      <h3 className="flex items-start justify-between gap-3 text-[18px] font-medium leading-[1.25] tracking-[-0.02em] text-[#19191C]">
-        {article.title}
-        <ArrowUpRight aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-[#6E6D78] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#19191C] motion-reduce:transition-none" />
+    <div className={tile ? "px-4 pb-4 pt-3 md:px-6 md:pb-6 md:pt-1" : "px-5 pb-5 pt-1 sm:px-6 sm:pb-6"}>
+      <h3 className={`flex items-start justify-between gap-3 font-medium tracking-[-0.02em] text-[#19191C] ${tile ? "text-[14px] leading-[1.3] md:text-[18px] md:leading-[1.25]" : "text-[17px] leading-[1.25] md:text-[18px]"}`}>
+        <span className={tile ? "line-clamp-3 md:line-clamp-none" : ""}>{article.title}</span>
+        <ArrowUpRight aria-hidden="true" className={`mt-0.5 shrink-0 text-[#6E6D78] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#19191C] motion-reduce:transition-none ${tile ? "h-4 w-4 md:h-5 md:w-5" : "h-5 w-5"}`} />
       </h3>
-      <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-[#6E6D78]">{article.excerpt}</p>
+      <p className={`mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-[#6E6D78] md:text-sm ${tile ? "max-md:hidden" : ""}`}>{article.excerpt}</p>
     </div>
   );
 }
 
-function ArticleCard({ article, className = "", stage, wide = false }: { article: InsightItem; className?: string; stage: ReactNode; wide?: boolean }) {
+function ArticleCard({ article, className = "", stage, wide = false, icon: TileIcon }: { article: InsightItem; className?: string; stage: ReactNode; wide?: boolean; icon?: Icon }) {
+  const tile = !wide && !!TileIcon;
   return (
     <article className={`group ${FRAME} ${className}`}>
       <Link href={`/insights/${article.slug}`} className={`flex h-full flex-col justify-between rounded-[22px] ${wide ? "xl:flex-row xl:items-center xl:justify-start" : ""} ${FOCUS}`}>
-        <div aria-hidden="true" className={`${STAGE} ${wide ? "w-full shrink-0 xl:h-full xl:min-h-[184px] xl:w-[54%]" : ""}`}>{stage}</div>
-        <CardWords article={article} />
+        <div aria-hidden="true" className={`${STAGE} ${tile ? "max-md:hidden" : "max-md:h-[168px]"} ${wide ? "w-full shrink-0 xl:h-full xl:min-h-[184px] xl:w-[54%]" : ""}`}>{stage}</div>
+        {/* Phone tile: a small badge on the same soft stage colour, so the bento keeps its rhythm */}
+        {tile && TileIcon && (
+          <div aria-hidden="true" className="flex items-start justify-between bg-gradient-to-b from-[#F7F7FA] to-white px-4 pb-1 pt-4 md:hidden">
+            <span className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#6D54F1] text-white shadow-[3px_3px_0_#4E38C4,8px_8px_16px_rgba(109,84,241,0.25)]">
+              <TileIcon className="h-5 w-5" strokeWidth={1.75} />
+            </span>
+          </div>
+        )}
+        <CardWords article={article} tile={tile} />
       </Link>
     </article>
   );
@@ -134,15 +143,15 @@ function GlobeVisual() {
 /** The portrait is shown whole: the frame matches the photo's square shape, and nothing sits on top of it. */
 function FounderCard() {
   return (
-    <article className={`${FRAME} flex flex-col gap-1 p-2 md:col-span-2 md:flex-row md:gap-3 xl:col-span-4 xl:row-span-2 xl:flex-col xl:gap-1`}>
-      <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-[15px] bg-[#F4F4F8] md:w-[42%] xl:w-full">
+    <article className={`${FRAME} col-span-2 flex flex-row items-start gap-3 p-3 md:col-span-2 md:items-stretch md:p-2 xl:col-span-4 xl:row-span-2 xl:flex-col xl:gap-1`}>
+      <div className="relative aspect-square w-[84px] shrink-0 overflow-hidden rounded-[12px] bg-[#F4F4F8] md:w-[42%] md:rounded-[15px] xl:w-full">
         <Image src="/om-bawal-photo.jpg" alt="Om Bawal, Founder and Chief Architect at 21Spheres" fill sizes="(max-width: 767px) 100vw, (max-width: 1279px) 42vw, 31vw" className="object-cover" />
       </div>
-      <div className="flex min-w-0 flex-1 flex-col px-3 pb-2 pt-3">
+      <div className="flex min-w-0 flex-1 flex-col px-0 pb-0 pt-0 md:px-3 md:pb-2 md:pt-3">
         <p className={LABEL}>Founder&apos;s perspective</p>
-        <blockquote className="mt-2.5 text-[17px] font-light leading-[1.4] tracking-[-0.01em] text-[#171717] md:text-[24px] xl:text-[17px]">“Most software fails not from a lack of features, but from friction and slowness. We architect every product for sub-second performance and resilient scale.”</blockquote>
-        <div className="mt-auto pt-4">
-          <div className="border-t border-[#7057D9]/20 pt-3">
+        <blockquote className="mt-1.5 text-[14px] font-light leading-[1.45] tracking-[-0.01em] text-[#171717] md:mt-2.5 md:text-[24px] md:leading-[1.4] xl:text-[17px]">“Most software fails not from a lack of features, but from friction and slowness. We architect every product for sub-second performance and resilient scale.”</blockquote>
+        <div className="mt-auto pt-3 md:pt-4">
+          <div className="border-t border-[#7057D9]/20 pt-2 md:pt-3">
             <p className="text-[15px] font-medium text-[#171717]">Om Bawal</p>
             <p className="mt-0.5 text-[13px] text-black/60">Founder &amp; Chief Architect, 21Spheres</p>
           </div>
@@ -157,7 +166,7 @@ export function InsightsBentoSection() {
   const article = (slug: string) => items.find((item) => item.slug === slug) ?? items[0];
 
   return (
-    <section id="insights" aria-label="Insights and field notes" className="relative w-full scroll-mt-14 pb-12 pt-6 text-black sm:scroll-mt-16 sm:pb-16"
+    <section id="insights" aria-label="Insights and field notes" className="relative w-full scroll-mt-14 pb-10 pt-6 text-black sm:scroll-mt-16 sm:pb-16"
       style={{ background: "radial-gradient(ellipse 55% 45% at 88% 62%, rgba(112,87,217,.05) 0%, transparent 100%), linear-gradient(180deg, #ffffff 0%, #fdfcff 50%, #f9f7ff 100%)" }}
     >
       <style href="insights-bento-flow" precedence="default">{FLOW_CSS}</style>
@@ -170,14 +179,15 @@ export function InsightsBentoSection() {
           <p className="max-w-lg text-xs leading-relaxed text-[#383842] sm:text-right sm:text-sm">Ideas and field notes on building thoughtful, dependable digital products.</p>
         </header>
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-12 xl:gap-4">
+        {/* Phones: a two-column bento. The founder and the featured essay run full width, the other two sit side by side. */}
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-2 xl:grid-cols-12 xl:gap-4">
           <FounderCard />
-          <ArticleCard article={article("zero-hallucination-multi-agent-graphs")} className="md:col-span-2 xl:col-span-8" stage={<IsometricVisual />} wide />
-          <ArticleCard article={article("architecting-multi-carrier-gateways")} className="xl:col-span-4" stage={<GlobeVisual />} />
-          <ArticleCard article={article("120-fps-react-19-financial-dashboards")} className="xl:col-span-4" stage={<ChartVisual />} />
+          <ArticleCard article={article("zero-hallucination-multi-agent-graphs")} className="col-span-2 xl:col-span-8" stage={<IsometricVisual />} wide />
+          <ArticleCard article={article("architecting-multi-carrier-gateways")} className="xl:col-span-4" stage={<GlobeVisual />} icon={Globe} />
+          <ArticleCard article={article("120-fps-react-19-financial-dashboards")} className="xl:col-span-4" stage={<ChartVisual />} icon={ChartLine} />
         </div>
 
-        <div className="mt-8 flex justify-center">
+        <div className="mt-6 flex justify-center md:mt-8">
           <PillLink href="/insights">See all insights</PillLink>
         </div>
       </div>

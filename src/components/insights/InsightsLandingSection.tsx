@@ -71,13 +71,13 @@ export function InsightsLandingSection({ archive = false }: { archive?: boolean 
   if (!archive) {
     return (
       <>
-        <section aria-label="Insights introduction" className="relative flex min-h-[70svh] items-center overflow-hidden bg-white text-white">
+        <section aria-label="Insights introduction" className="relative flex items-center overflow-hidden bg-white text-white md:min-h-[70svh]">
           <HeroBackdrop />
-          <div className="relative mx-auto w-full max-w-[1380px] px-6 py-20 sm:px-10 lg:px-16">
-            <p className="mb-6 text-xs font-semibold uppercase tracking-[0.24em] text-white/75">Insights / Points of view</p>
-            <div className="mb-7 h-px w-full bg-white/30" />
-            <h2 className="max-w-5xl text-4xl font-light leading-[1.08] tracking-[-0.045em] sm:text-6xl lg:text-[76px]">Ideas that move your business forward.</h2>
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">Perspectives on AI, product strategy, and the engineering behind meaningful digital experiences.</p>
+          <div className="relative mx-auto w-full max-w-[1380px] px-5 py-12 sm:px-10 md:py-20 lg:px-16">
+            <p className="mb-4 md:mb-6 text-xs font-semibold uppercase tracking-[0.24em] text-white/75">Insights / Points of view</p>
+            <div className="mb-5 h-px w-full bg-white/30 md:mb-7" />
+            <h2 className="max-w-5xl text-[32px] font-light leading-[1.08] tracking-[-0.045em] sm:text-6xl lg:text-[76px]">Ideas that move your business forward.</h2>
+            <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-white/80 sm:text-lg md:mt-6">Perspectives on AI, product strategy, and the engineering behind meaningful digital experiences.</p>
           </div>
         </section>
         <InsightsBentoSection />

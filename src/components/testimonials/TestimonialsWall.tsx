@@ -121,6 +121,30 @@ interface MarkerPosition {
   zIndex: number;
 }
 
+/* ------------------------------------------------------------------ */
+/* Phones: every testimonial in a two-column bento                     */
+/* ------------------------------------------------------------------ */
+
+/** Order and shape for phones: a wide feature, four tiles, another wide feature, two tiles. */
+const BENTO = [
+  { index: 0, wide: true },
+  { index: 2 }, { index: 3 }, { index: 4 }, { index: 5 },
+  { index: 7, wide: true },
+  { index: 1 }, { index: 6 },
+];
+
+function MobileTestimonialsBento() {
+  return (
+    <div className="relative z-10 grid w-full grid-cols-2 gap-2 pb-2 md:hidden">
+      {BENTO.map(({ index, wide }) => (
+        <div key={CARDS[index].id} className={wide ? "col-span-2" : ""}>
+          <StaticTestimonialCard card={CARDS[index]} bricks="up" size={wide ? "wide" : "tile"} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function TestimonialsWall() {
   const [activePhraseIndex, setActivePhraseIndex] = useState(0);
   const [markerPositions, setMarkerPositions] = useState<MarkerPosition[]>([]);
@@ -131,8 +155,9 @@ export function TestimonialsWall() {
   const rotationRef = useRef(0);
   const animFrameRef = useRef<number | null>(null);
 
-  // 1. 3D Wireframe Rotating Ellipses (requestAnimationFrame)
+  // 1. 3D Wireframe Rotating Ellipses (requestAnimationFrame). Phones keep the globe still.
   useEffect(() => {
+    if (window.matchMedia("(max-width: 767px)").matches) return;
     let isVisible = false;
     const animate = () => {
       if (!isVisible) return;
@@ -205,6 +230,12 @@ export function TestimonialsWall() {
       setMarkerPositions(positions);
     };
 
+    // Phones place the markers once and leave them there.
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      const frame = requestAnimationFrame(updateMarkers);
+      return () => cancelAnimationFrame(frame);
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -241,7 +272,7 @@ export function TestimonialsWall() {
   return (
     <section
       ref={sectionRef}
-      className="relative z-10 text-[#18181B] py-6 sm:py-8 lg:py-12 min-h-screen flex flex-col justify-between select-none overflow-hidden border-t border-[#DADADD]/70"
+      className="relative z-10 text-[#18181B] py-8 sm:py-8 lg:py-12 md:min-h-screen flex flex-col justify-between select-none overflow-hidden border-t border-[#DADADD]/70"
       style={{ background: "#FFFFFF" }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full relative z-10 flex flex-col items-center pt-2 sm:pt-4 mb-auto">
@@ -365,7 +396,9 @@ export function TestimonialsWall() {
         {/* =========================================================
             3. STAGGERED 4-COLUMN TESTIMONIAL CARDS GRID (8 CARDS)
             ========================================================= */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 items-start relative z-10 pb-6">
+        <MobileTestimonialsBento />
+
+        <div className="relative z-10 hidden w-full grid-cols-1 items-start gap-4 pb-6 sm:gap-5 md:grid md:grid-cols-2 lg:grid-cols-4">
           {/* Column 1 (Leftmost - Shifted Upwards) */}
           <div className="flex flex-col gap-4 sm:gap-5 lg:-mt-16">
             <StaticTestimonialCard card={CARDS[0]} bricks="up" />
