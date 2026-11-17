@@ -37,11 +37,15 @@ export default function Page() {
               <span aria-current="page" className="text-[#C9BBFF]">Case Studies</span>
             </nav>
             <h1 className="mt-4 w-fit bg-gradient-to-r from-white via-[#E4DCFF] to-[#9D85F2] bg-clip-text pb-1 text-[36px] font-light leading-[1.06] tracking-[-0.05em] text-transparent sm:text-6xl xl:text-[68px]">
-              Products we&rsquo;ve shipped.
+              Case Studies
             </h1>
-            <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/70 sm:mt-5 sm:text-lg">
-              Thoughtful engineering, steady momentum, and products built to do meaningful work.
+            <p className="mt-3 max-w-xl text-[19px] font-light leading-snug tracking-[-0.015em] text-white/90 sm:mt-5 sm:text-[22px]">
+              The Work Speaks. The Engineering Proves It.
             </p>
+            <div className="mt-3 max-w-xl space-y-3 text-[14.5px] leading-relaxed text-white/65 sm:mt-4 sm:text-[15.5px]">
+              <p>Behind every product is a requirement, a challenge, and a series of engineering decisions that determine what gets built.</p>
+              <p>Explore how 21 Spheres approaches different business and technical challenges through artificial intelligence, software engineering, document intelligence, and digital product development.</p>
+            </div>
             {/* Tablets and up: the buttons sit under the text, beside the illustration */}
             <div className="mt-8 hidden flex-wrap items-center gap-3 sm:flex">
               <PillLink href="#case-studies">Explore case studies</PillLink>

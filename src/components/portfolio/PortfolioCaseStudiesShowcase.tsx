@@ -22,7 +22,7 @@ const DISCIPLINE_CARD_META: Record<string, { icon: LucideIcon; label: string }> 
   "Autonomous AI & Agents": { icon: Bot, label: "AI & Agents" },
   "Fintech & WealthTech": { icon: Landmark, label: "Fintech & WealthTech" },
   "InsurTech & Cloud Platforms": { icon: ShieldCheck, label: "InsurTech & Cloud" },
-  "Mobile & High-Concurrency": { icon: Smartphone, label: "Mobile" },
+  "Digital Products & Platforms": { icon: Smartphone, label: "Digital Products" },
 };
 
 /* ------------------------------------------------------------------ */
@@ -230,38 +230,37 @@ export function PortfolioCaseStudiesSection() {
     }
   });
 
-  const stats: [string, string][] = [
-    [String(PORTFOLIO_CASE_STUDIES.length), "Case studies published"],
-    ["4", "Disciplines covered"],
-    ["3–14", "Weeks, brief to launch"],
+  const stats: [string, string, string?][] = [
+    [String(PORTFOLIO_CASE_STUDIES.length), "Projects showcased", "Across our engineering portfolio"],
+    ["06", "Project disciplines", "Different areas of technology"],
+    ["AI +", "Software engineering", "Intelligence and product development"],
     ["100%", "Handed over with code & docs"],
   ];
+  // "01 Autonomous AI & Agents" and so on; "All work" has no number.
+  const tabLabel = (index: number, label: string) => (index === 0 ? label : `${String(index).padStart(2, "0")}  ${label}`);
 
   return (
     <section id="case-studies" className="relative scroll-mt-16 text-white">
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
-        <div className="border-t border-white/15 py-10 sm:py-20">
-        <header className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.19em] text-[#C9BBFF]">Case studies</p>
-            <h2 className="mt-3 w-fit bg-gradient-to-r from-white via-[#E4DCFF] to-[#9D85F2] bg-clip-text pb-1 text-3xl font-light leading-[1.1] tracking-[-0.04em] text-transparent sm:text-[44px]">
-              Built to make a difference.
-            </h2>
-          </div>
-          <p className="max-w-xl text-[15px] leading-relaxed text-white/70 lg:justify-self-end">
-            Websites, custom software platforms and mobile apps we have designed, built and launched. Filter by discipline, or ask us about the work we cannot publish.
-          </p>
-        </header>
+        <div className="border-t border-white/15 pb-10 pt-6 sm:pb-20 sm:pt-10">
 
         {/* Stats */}
-        <dl className="mt-6 grid grid-cols-2 gap-y-5 border-y border-white/15 py-5 sm:mt-10 sm:gap-y-8 sm:py-7 md:grid-cols-4 md:divide-x md:divide-white/15">
-          {stats.map(([value, label]) => (
+        <dl className="grid grid-cols-2 gap-y-5 border-b border-white/15 pb-5 sm:gap-y-8 sm:pb-7 md:grid-cols-4 md:divide-x md:divide-white/15">
+          {stats.map(([value, label, detail]) => (
             <div key={label} className="flex flex-col-reverse md:px-6 md:first:pl-0 md:last:pr-0">
-              <dt className="mt-1.5 text-[13px] text-white/65 sm:mt-2 sm:text-sm">{label}</dt>
+              <dt className="mt-1.5 text-[13px] leading-snug sm:mt-2 sm:text-sm">
+                <span className="block text-white/85">{label}</span>
+                {detail && <span className="mt-0.5 block text-[12px] text-white/50 sm:text-[13px]">{detail}</span>}
+              </dt>
               <dd className="text-[30px] font-light leading-none tracking-[-0.04em] sm:text-[40px]">{value}</dd>
             </div>
           ))}
         </dl>
+
+        {/* What this is, before the filter */}
+        <p className="mt-6 max-w-2xl text-[14.5px] leading-relaxed text-white/65 sm:mt-8 sm:text-[15.5px]">
+          A portfolio of digital products and technology solutions, thoughtfully designed, engineered and delivered. Explore by discipline or contact us to discuss our confidential projects.
+        </p>
 
         {/* Filter */}
         {/* Phones: one dropdown, so nothing is hidden off-screen */}
@@ -273,7 +272,7 @@ export function PortfolioCaseStudiesSection() {
               onChange={(event) => setActiveTab(event.target.value)}
               className="h-11 w-full appearance-none rounded-xl border border-white/15 bg-white/[.06] pl-3 pr-9 text-[14px] text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#C9BBFF]"
             >
-              {DISCIPLINE_TABS.map((tab) => <option key={tab.id} value={tab.id} className="bg-[#15131f]">{tab.label}</option>)}
+              {DISCIPLINE_TABS.map((tab, index) => <option key={tab.id} value={tab.id} className="bg-[#15131f]">{tabLabel(index, tab.label)}</option>)}
             </select>
             <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/55" />
           </span>
@@ -283,7 +282,7 @@ export function PortfolioCaseStudiesSection() {
 
         <div className="mb-10 mt-8 hidden items-end justify-between gap-6 border-b border-white/15 sm:flex">
           <nav aria-label="Filter case studies" className="flex flex-wrap gap-x-8">
-            {DISCIPLINE_TABS.map((tab) => {
+            {DISCIPLINE_TABS.map((tab, index) => {
               const on = activeTab === tab.id;
               return (
                 <button
@@ -293,6 +292,7 @@ export function PortfolioCaseStudiesSection() {
                   aria-pressed={on}
                   className={`relative shrink-0 py-2.5 text-[13px] font-medium transition-colors ${on ? "text-[#C9BBFF]" : "text-white/60 hover:text-white"}`}
                 >
+                  {index > 0 && <span className="mr-1.5 tabular-nums text-white/40">{String(index).padStart(2, "0")}</span>}
                   {tab.label}
                   {on && <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[2px] bg-[#9D85F2]" />}
                 </button>

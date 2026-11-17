@@ -56,7 +56,7 @@ export const DISCIPLINE_TABS = [
   { id: "ai-agents", label: "Autonomous AI & Agents" },
   { id: "fintech", label: "Fintech & WealthTech" },
   { id: "insurtech", label: "InsurTech & Cloud Platforms" },
-  { id: "mobile", label: "Mobile & High-Concurrency" },
+  { id: "digital-products", label: "Digital Products & Platforms" },
 ];
 
 /* Content below is taken from public/portfolio/Case Studies.docx. */
@@ -124,70 +124,8 @@ export const PORTFOLIO_CASE_STUDIES: DetailedCaseStudy[] = [
     cardImage: "/portfolio/case-studies/enspire-card.webp",
   },
   {
-    id: "wtmf-ai-emotional-wellness",
-    index: "03 / WELLBEING",
-    title: "WTMF.ai",
-    client: "WTMF.ai",
-    year: "2025",
-    category: "AI · Mental Wellness · Multilingual Conversational AI",
-    discipline: "Autonomous AI & Agents",
-    featured: false,
-    headline: "Your AI Friend. Your Space. No Fear of Being Judged.",
-    summary:
-      "An AI-powered mental wellness companion offering 33+ unique AI personas, designed to create a safe, judgment-free space where people can express themselves, share their thoughts, and feel heard in their own language.",
-    brief: {
-      problemStatement:
-        "Talking about personal struggles, emotions, and everyday challenges isn't always easy. Fear of judgment, social stigma, and the lack of accessible emotional support often prevent people from expressing what they truly feel.\n\nThe challenge was to build an AI companion that goes beyond conventional chatbot interactions—one that offers diverse personalities, relatable conversations, and the freedom to express oneself without fear of judgment.",
-    },
-    technology: {
-      stack: ["LLMs", "Generative AI", "Persona-Based AI Architecture", "NLP", "Multilingual AI", "Voice AI", "Contextual Memory", "Python", "API Integrations"],
-    },
-    whatChanged: {
-      empiricalOutcome:
-        "We developed WTMF.ai, a personalized AI companion platform built around emotional expression and mental wellness.\n\nThe platform features 33+ distinct AI personas, each available in male and female variants, allowing users to connect with a personality that feels comfortable and relatable.\n\nWith support for 12+ languages, users can communicate naturally in the language they feel most comfortable with. The experience brings together personalized AI conversations and voice interactions, creating an accessible space to vent, reflect, share personal experiences, and navigate everyday emotional challenges.\n\nWTMF.ai transforms the traditional chatbot experience into a more personal, inclusive, and approachable AI friendship.",
-      metrics: [
-        { label: "AI Personas", value: "33+", context: "Distinct conversational personalities" },
-        { label: "Languages", value: "12+", context: "Multilingual interactions" },
-        { label: "Persona Variants", value: "2", context: "Male and female versions of each persona" },
-      ],
-    },
-    image: "/portfolio/case-studies/wtmf.webp",
-    cardImage: "/portfolio/case-studies/wtmf-card.webp",
-  },
-  {
-    id: "bimakart-insurance-quote-bot",
-    index: "04 / QUOTE BOT",
-    title: "Bimakart Quotation Bot",
-    client: "Bimakart",
-    year: "2025",
-    category: "InsurTech · Intelligent Automation",
-    discipline: "InsurTech & Cloud Platforms",
-    featured: false,
-    headline: "From Hours to Minutes. Insurance Quotations at Scale.",
-    summary:
-      "An intelligent quotation automation solution designed to streamline insurance quotation generation across multiple insurer portals, reducing manual processing and accelerating customer response times.",
-    brief: {
-      problemStatement:
-        "Generating insurance quotations across multiple insurer portals involved repetitive data entry, manual navigation, and time-consuming retrieval processes. This resulted in longer customer wait times, operational bottlenecks, and missed opportunities for timely conversions.\n\nBimakart needed an automated solution to simplify multi-insurer quotation generation and help its sales team respond to customers faster.",
-    },
-    technology: {
-      stack: ["Python", "Browser Automation", "Web Scraping", "Workflow Automation", "Data Processing", "API Integration"],
-    },
-    whatChanged: {
-      empiricalOutcome:
-        "We engineered an automated quotation retrieval system that interacts with insurer portals, processes customer and vehicle information, and retrieves insurance quotations with minimal manual intervention.\n\nBy automating repetitive portal interactions and consolidating quotation workflows, the solution transformed the customer quotation journey.",
-      metrics: [
-        { label: "Quotation Turnaround", value: "8 hrs → 5 min", context: "Faster customer quotation delivery" },
-        { label: "Sales Conversion", value: "+27%", context: "Improvement in sales conversion rate" },
-        { label: "Target Insurers", value: "8+", context: "Expanded multi-insurer integration scope" },
-      ],
-    },
-    image: "/portfolio/case-studies/bimakart-quotation-bot.webp",
-    cardImage: "/portfolio/case-studies/bimakart-quotation-bot-card.webp",
-  },
-  {
     id: "the-repertory",
-    index: "05 / KNOWLEDGE",
+    index: "03 / KNOWLEDGE",
     title: "The Repertory",
     client: "The Repertory",
     year: "2025",
@@ -215,6 +153,68 @@ export const PORTFOLIO_CASE_STUDIES: DetailedCaseStudy[] = [
     },
     image: "/portfolio/case-studies/the-repertory.webp",
     cardImage: "/portfolio/case-studies/the-repertory-card.webp",
+  },
+  {
+    id: "wealth-wisdom-goals-planner",
+    index: "04 / FINTECH",
+    title: "Wealth Wisdom",
+    client: "Wealth Wisdom",
+    year: "2026",
+    category: "FinTech · Financial Planning · Intelligent Automation",
+    discipline: "Fintech & WealthTech",
+    featured: true,
+    headline: "Turning Financial Data into Financial Futures.",
+    summary:
+      "An intelligent financial planning and report generation platform that transforms complex client financial profiles into personalized financial roadmaps, enabling financial advisors to deliver planning at scale and drive informed investment decisions.",
+    brief: {
+      problemStatement:
+        "Traditional financial planning involves extensive data collection, financial calculations, personalized recommendations, and preparation of detailed client reports. Creating these reports manually is time-consuming and limits the ability of financial advisors to serve clients at scale.\n\nWealth Wisdom needed a scalable solution to automate personalized financial planning reports while maintaining detailed financial analysis, consistent presentation, and actionable investment recommendations.",
+    },
+    technology: {
+      stack: ["Python", "FastAPI", "Pydantic", "ReportLab", "PyPDF", "Matplotlib", "Pillow", "JSON-Driven Architecture", "PDF Automation"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We engineered a dynamic financial planning and report generation engine that transforms structured client data into comprehensive, personalized financial reports. The platform automates financial calculations, goal-based planning, retirement projections, insurance analysis, education planning, and investment recommendations. Using a JSON-driven architecture, it dynamically generates professionally designed PDF reports with personalized sections, financial charts, tables, and visual roadmaps. By converting a manually intensive reporting process into an automated financial planning ecosystem, the platform has enabled the generation of over 1,00,000 reports, supported more than ₹14 crore in investments, and facilitated financial planning exceeding ₹213 crore.",
+      metrics: [
+        { label: "Reports Generated", value: "1,00,000+", context: "Personalized financial reports delivered" },
+        { label: "Investments Made", value: "₹14 Cr+", context: "Investments facilitated through generated reports" },
+        { label: "Financial Planning", value: "₹213 Cr+", context: "Total value of financial planning enabled" },
+      ],
+    },
+    image: "/portfolio/case-studies/wealth-wisdom.webp",
+    cardImage: "/portfolio/case-studies/wealth-wisdom-card.webp",
+  },
+  {
+    id: "bimakart-insurance-quote-bot",
+    index: "05 / QUOTE BOT",
+    title: "Bimakart Quotation Bot",
+    client: "Bimakart",
+    year: "2025",
+    category: "InsurTech · Intelligent Automation",
+    discipline: "InsurTech & Cloud Platforms",
+    featured: false,
+    headline: "From Hours to Minutes. Insurance Quotations at Scale.",
+    summary:
+      "An intelligent quotation automation solution designed to streamline insurance quotation generation across multiple insurer portals, reducing manual processing and accelerating customer response times.",
+    brief: {
+      problemStatement:
+        "Generating insurance quotations across multiple insurer portals involved repetitive data entry, manual navigation, and time-consuming retrieval processes. This resulted in longer customer wait times, operational bottlenecks, and missed opportunities for timely conversions.\n\nBimakart needed an automated solution to simplify multi-insurer quotation generation and help its sales team respond to customers faster.",
+    },
+    technology: {
+      stack: ["Python", "Browser Automation", "Web Scraping", "Workflow Automation", "Data Processing", "API Integration"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We engineered an automated quotation retrieval system that interacts with insurer portals, processes customer and vehicle information, and retrieves insurance quotations with minimal manual intervention.\n\nBy automating repetitive portal interactions and consolidating quotation workflows, the solution transformed the customer quotation journey.",
+      metrics: [
+        { label: "Quotation Turnaround", value: "8 hrs → 5 min", context: "Faster customer quotation delivery" },
+        { label: "Sales Conversion", value: "+27%", context: "Improvement in sales conversion rate" },
+        { label: "Target Insurers", value: "8+", context: "Expanded multi-insurer integration scope" },
+      ],
+    },
+    image: "/portfolio/case-studies/bimakart-quotation-bot.webp",
+    cardImage: "/portfolio/case-studies/bimakart-quotation-bot-card.webp",
   },
   {
     id: "insurance-ocr",
@@ -341,70 +341,8 @@ export const PORTFOLIO_CASE_STUDIES: DetailedCaseStudy[] = [
     cardImage: "/portfolio/case-studies/bimakart-ocr-suite-card.webp",
   },
   {
-    id: "futureogy",
-    index: "10 / PLATFORM",
-    title: "Futureogy",
-    client: "Futureogy",
-    year: "2026",
-    category: "AstroTech · AI · Relationship Wellness · Live Consultations",
-    discipline: "Mobile & High-Concurrency",
-    featured: false,
-    headline: "More Than Astrology. An Entire Digital Universe of Personalized Guidance.",
-    summary:
-      "A next-generation AstroTech ecosystem combining AI-powered astrology, real expert consultations, relationship counselling, personalized spiritual services, and intelligent wellness experiences within one connected digital platform.",
-    brief: {
-      problemStatement:
-        "Traditional astrology, relationship counselling, and spiritual services are fragmented across different platforms. Users often need separate services to consult astrologers, explore compatibility, seek relationship guidance, access personalized remedies, and receive spiritual assistance.\n\nFutureogy envisioned a unified ecosystem that brings traditional astrological expertise, AI-driven personalization, and human-led wellness services together, making personalized guidance accessible through a seamless digital experience.",
-    },
-    technology: {
-      stack: ["Flutter", "NestJS", "TypeScript", "PostgreSQL", "Redis", "Socket.IO", "Next.js", "AWS ECS", "AWS CDK", "WebRTC", "Cashfree", "Razorpay"],
-    },
-    whatChanged: {
-      empiricalOutcome:
-        "We engineered Futureogy as a comprehensive digital ecosystem comprising dedicated User and Expert applications for Android and iOS, a web platform, an extensive administrative command center, and a scalable cloud backend. Users can discover and consult real astrologers through one-to-one in-app chat, voice calls, and live video consultations, powered by real-time communication and per-minute wallet-based billing. The platform combines AI-generated astrological predictions, automated horoscope and Love Report generation, numerology, matchmaking, and a dedicated Love Guru module connecting users with relationship counsellors. Going beyond conventional astrology experiences, Futureogy also brings personalized remedies, poojas, spells, and healing services into the same ecosystem through live expert interactions. The Expert application enables astrologers to manage availability, consultations, and earnings, while the extensive administrative infrastructure provides centralized control over users, experts, transactions, payouts, refunds, service catalogues, and operational workflows. With real-time consultation monitoring, abuse prevention across chat and calls, and comprehensive financial oversight, the platform is supported by an enterprise-grade backend comprising 38 modules, 470+ REST API endpoints, and production AWS infrastructure.",
-      metrics: [
-        { label: "API Endpoints", value: "470+", context: "Powering interconnected platform services" },
-        { label: "Admin Screens", value: "210+", context: "Comprehensive administrative and operational interfaces" },
-        { label: "Integrated Builds", value: "6", context: "Backend, Admin, User App, Expert App, Website and AWS Platform" },
-      ],
-    },
-    image: "/portfolio/case-studies/futureogy.webp",
-    cardImage: "/portfolio/case-studies/futureogy-card.webp",
-  },
-  {
-    id: "wealth-wisdom-goals-planner",
-    index: "11 / FINTECH",
-    title: "Wealth Wisdom",
-    client: "Wealth Wisdom",
-    year: "2026",
-    category: "FinTech · Financial Planning · Intelligent Automation",
-    discipline: "Fintech & WealthTech",
-    featured: true,
-    headline: "Turning Financial Data into Financial Futures.",
-    summary:
-      "An intelligent financial planning and report generation platform that transforms complex client financial profiles into personalized financial roadmaps, enabling financial advisors to deliver planning at scale and drive informed investment decisions.",
-    brief: {
-      problemStatement:
-        "Traditional financial planning involves extensive data collection, financial calculations, personalized recommendations, and preparation of detailed client reports. Creating these reports manually is time-consuming and limits the ability of financial advisors to serve clients at scale.\n\nWealth Wisdom needed a scalable solution to automate personalized financial planning reports while maintaining detailed financial analysis, consistent presentation, and actionable investment recommendations.",
-    },
-    technology: {
-      stack: ["Python", "FastAPI", "Pydantic", "ReportLab", "PyPDF", "Matplotlib", "Pillow", "JSON-Driven Architecture", "PDF Automation"],
-    },
-    whatChanged: {
-      empiricalOutcome:
-        "We engineered a dynamic financial planning and report generation engine that transforms structured client data into comprehensive, personalized financial reports. The platform automates financial calculations, goal-based planning, retirement projections, insurance analysis, education planning, and investment recommendations. Using a JSON-driven architecture, it dynamically generates professionally designed PDF reports with personalized sections, financial charts, tables, and visual roadmaps. By converting a manually intensive reporting process into an automated financial planning ecosystem, the platform has enabled the generation of over 1,00,000 reports, supported more than ₹14 crore in investments, and facilitated financial planning exceeding ₹213 crore.",
-      metrics: [
-        { label: "Reports Generated", value: "1,00,000+", context: "Personalized financial reports delivered" },
-        { label: "Investments Made", value: "₹14 Cr+", context: "Investments facilitated through generated reports" },
-        { label: "Financial Planning", value: "₹213 Cr+", context: "Total value of financial planning enabled" },
-      ],
-    },
-    image: "/portfolio/case-studies/wealth-wisdom.webp",
-    cardImage: "/portfolio/case-studies/wealth-wisdom-card.webp",
-  },
-  {
     id: "bimakart-centre",
-    index: "12 / OPERATIONS",
+    index: "10 / OPERATIONS",
     title: "Bimakart Center",
     client: "Bimakart",
     year: "2026",
@@ -432,5 +370,67 @@ export const PORTFOLIO_CASE_STUDIES: DetailedCaseStudy[] = [
     },
     image: "/portfolio/case-studies/bimakart-center.webp",
     cardImage: "/portfolio/case-studies/bimakart-center-card.webp",
+  },
+  {
+    id: "wtmf-ai-emotional-wellness",
+    index: "11 / WELLBEING",
+    title: "WTMF.ai",
+    client: "WTMF.ai",
+    year: "2025",
+    category: "AI · Mental Wellness · Multilingual Conversational AI",
+    discipline: "Digital Products & Platforms",
+    featured: false,
+    headline: "Your AI Friend. Your Space. No Fear of Being Judged.",
+    summary:
+      "An AI-powered mental wellness companion offering 33+ unique AI personas, designed to create a safe, judgment-free space where people can express themselves, share their thoughts, and feel heard in their own language.",
+    brief: {
+      problemStatement:
+        "Talking about personal struggles, emotions, and everyday challenges isn't always easy. Fear of judgment, social stigma, and the lack of accessible emotional support often prevent people from expressing what they truly feel.\n\nThe challenge was to build an AI companion that goes beyond conventional chatbot interactions—one that offers diverse personalities, relatable conversations, and the freedom to express oneself without fear of judgment.",
+    },
+    technology: {
+      stack: ["LLMs", "Generative AI", "Persona-Based AI Architecture", "NLP", "Multilingual AI", "Voice AI", "Contextual Memory", "Python", "API Integrations"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We developed WTMF.ai, a personalized AI companion platform built around emotional expression and mental wellness.\n\nThe platform features 33+ distinct AI personas, each available in male and female variants, allowing users to connect with a personality that feels comfortable and relatable.\n\nWith support for 12+ languages, users can communicate naturally in the language they feel most comfortable with. The experience brings together personalized AI conversations and voice interactions, creating an accessible space to vent, reflect, share personal experiences, and navigate everyday emotional challenges.\n\nWTMF.ai transforms the traditional chatbot experience into a more personal, inclusive, and approachable AI friendship.",
+      metrics: [
+        { label: "AI Personas", value: "33+", context: "Distinct conversational personalities" },
+        { label: "Languages", value: "12+", context: "Multilingual interactions" },
+        { label: "Persona Variants", value: "2", context: "Male and female versions of each persona" },
+      ],
+    },
+    image: "/portfolio/case-studies/wtmf.webp",
+    cardImage: "/portfolio/case-studies/wtmf-card.webp",
+  },
+  {
+    id: "futureogy",
+    index: "12 / PLATFORM",
+    title: "Futureogy",
+    client: "Futureogy",
+    year: "2026",
+    category: "AstroTech · AI · Relationship Wellness · Live Consultations",
+    discipline: "Digital Products & Platforms",
+    featured: false,
+    headline: "More Than Astrology. An Entire Digital Universe of Personalized Guidance.",
+    summary:
+      "A next-generation AstroTech ecosystem combining AI-powered astrology, real expert consultations, relationship counselling, personalized spiritual services, and intelligent wellness experiences within one connected digital platform.",
+    brief: {
+      problemStatement:
+        "Traditional astrology, relationship counselling, and spiritual services are fragmented across different platforms. Users often need separate services to consult astrologers, explore compatibility, seek relationship guidance, access personalized remedies, and receive spiritual assistance.\n\nFutureogy envisioned a unified ecosystem that brings traditional astrological expertise, AI-driven personalization, and human-led wellness services together, making personalized guidance accessible through a seamless digital experience.",
+    },
+    technology: {
+      stack: ["Flutter", "NestJS", "TypeScript", "PostgreSQL", "Redis", "Socket.IO", "Next.js", "AWS ECS", "AWS CDK", "WebRTC", "Cashfree", "Razorpay"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We engineered Futureogy as a comprehensive digital ecosystem comprising dedicated User and Expert applications for Android and iOS, a web platform, an extensive administrative command center, and a scalable cloud backend. Users can discover and consult real astrologers through one-to-one in-app chat, voice calls, and live video consultations, powered by real-time communication and per-minute wallet-based billing. The platform combines AI-generated astrological predictions, automated horoscope and Love Report generation, numerology, matchmaking, and a dedicated Love Guru module connecting users with relationship counsellors. Going beyond conventional astrology experiences, Futureogy also brings personalized remedies, poojas, spells, and healing services into the same ecosystem through live expert interactions. The Expert application enables astrologers to manage availability, consultations, and earnings, while the extensive administrative infrastructure provides centralized control over users, experts, transactions, payouts, refunds, service catalogues, and operational workflows. With real-time consultation monitoring, abuse prevention across chat and calls, and comprehensive financial oversight, the platform is supported by an enterprise-grade backend comprising 38 modules, 470+ REST API endpoints, and production AWS infrastructure.",
+      metrics: [
+        { label: "API Endpoints", value: "470+", context: "Powering interconnected platform services" },
+        { label: "Admin Screens", value: "210+", context: "Comprehensive administrative and operational interfaces" },
+        { label: "Integrated Builds", value: "6", context: "Backend, Admin, User App, Expert App, Website and AWS Platform" },
+      ],
+    },
+    image: "/portfolio/case-studies/futureogy.webp",
+    cardImage: "/portfolio/case-studies/futureogy-card.webp",
   },
 ];
