@@ -131,7 +131,7 @@ export function Footer() {
           already lead to contact (the contact page, the 404) hide it with a `data-no-footer-cone` marker.
           Pages whose last section is dark add `data-footer-dark`, and this whole zone turns dark with
           a white line and white text, so it continues the section above it. */}
-      <div className="[body:has([data-no-footer-cone])_&]:hidden [body:has([data-footer-dark])_&]:bg-[#0A0910] [body:has([data-footer-dark])_&]:[--cone-heading:#FFFFFF] [body:has([data-footer-dark])_&]:[--cone-ink:#FFFFFF]">
+      <div className="no-footer-cone:hidden footer-dark:bg-[#0A0910] footer-dark:[--cone-heading:#FFFFFF] footer-dark:[--cone-ink:#FFFFFF]">
         {/* A page's closing line (see FooterClosingLine) appears here, right above the thread */}
         <FooterClosingSlot />
         <FooterCone />

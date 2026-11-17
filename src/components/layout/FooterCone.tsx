@@ -543,7 +543,7 @@ function ThreadAndCallToAction() {
             {/* The site's pill, built here so its circle can show the progress: arrow, spinner, then tick */}
             <Link
               href="/contact"
-              className={`group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8] [body:has([data-footer-dark])_&]:shadow-[0_0_0_1px_rgba(255,255,255,0.18)] ${pillClassName("md")}`}
+              className={`group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8] footer-dark:shadow-[0_0_0_1px_rgba(255,255,255,0.18)] ${pillClassName("md")}`}
             >
               <span className="grid">
                 {(["start", "sending", "sent"] as const).map((state) => (

@@ -84,10 +84,12 @@ export function HeroSection() {
     let last = 0;
     let onScreen = true;
     let dark = false;
+    // About 15 times a second on larger screens; phones only need about 4, which saves their battery.
+    const interval = window.matchMedia("(max-width: 767px)").matches ? 250 : 66;
     const draw = (now: number) => {
       frame = requestAnimationFrame(draw);
       const video = videoRef.current;
-      if (!video || !onScreen || now - last < 66 || video.readyState < 2) return; // about 15 times a second
+      if (!video || !onScreen || now - last < interval || video.readyState < 2) return;
       last = now;
       const box = canvas.getBoundingClientRect();
       const frameBox = video.getBoundingClientRect();
@@ -169,7 +171,7 @@ export function HeroSection() {
       id="hero"
       data-testid="product-hero-section"
       aria-label="21 Spheres in 50 seconds"
-      className="relative z-10 flex w-full flex-col overflow-hidden pt-14 sm:pt-16 md:h-[100svh] md:min-h-[560px]"
+      className="relative z-10 flex min-h-[100svh] w-full flex-col overflow-hidden pt-14 sm:pt-16 md:h-[100svh] md:min-h-[560px]"
       style={{ backgroundColor: HERO_BACKGROUND }}
     >
       {/* The video's edges, carried out across the whole hero, including behind the text row */}
@@ -178,7 +180,8 @@ export function HeroSection() {
       </div>
 
       {/* Never cropped: as large as the screen allows at its true 16:9 shape, with nothing laid over it */}
-      <div className="relative flex w-full items-center justify-center md:min-h-0 md:flex-1 md:[container-type:size]">
+      {/* Phones: the full-width video sits centred in the space above the text, its edges carried out by the glow */}
+      <div className="relative flex w-full flex-1 items-center justify-center md:min-h-0 md:[container-type:size]">
       <motion.div
         initial={reduceMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -206,25 +209,27 @@ export function HeroSection() {
       {/* Below the video, never on it */}
       <motion.div
         {...rise(0.3)}
-        className="relative flex w-full flex-col gap-4 px-5 pb-6 pt-3 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-14"
+        className="relative flex w-full flex-col gap-6 px-5 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-8 sm:pb-6 sm:pt-3 lg:px-14"
       >
-        <p className={`max-w-md text-sm leading-relaxed transition-colors duration-500 ${onDark ? "text-white/75" : "text-[#4A4955]"}`}>
+        {/* A headline on phones, a quiet caption beside the buttons on larger screens */}
+        <p className={`max-w-md text-[22px] font-light leading-[1.3] tracking-[-0.02em] transition-colors duration-500 sm:text-sm sm:font-normal sm:leading-relaxed sm:tracking-normal ${onDark ? "text-white/75" : "text-[#4A4955]"}`}>
           <span className={`font-medium transition-colors duration-500 ${onDark ? "text-white" : "text-[#19191C]"}`}>21 Spheres</span> is a product studio building software and AI
           that people love to use.
         </p>
-        <div className="flex items-center gap-3">
+        {/* Phones: Explore fills the row for an easy tap, with the sound toggle beside it */}
+        <div className="flex w-full items-center gap-3 sm:w-auto">
           <button
             type="button"
             onClick={toggleSound}
             aria-pressed={!muted}
             aria-label={muted ? "Turn the sound on" : "Turn the sound off"}
             title={muted ? "Sound on" : "Sound off"}
-            className={`${onDark ? GLASS_DARK : GLASS_LIGHT} w-11 justify-center px-0`}
+            className={`${onDark ? GLASS_DARK : GLASS_LIGHT} order-2 w-11 shrink-0 justify-center px-0 sm:order-none`}
           >
             {muted ? <VolumeX aria-hidden="true" className="h-4 w-4" /> : <Volume2 aria-hidden="true" className={`h-4 w-4 ${onDark ? "text-[#C9BBFF]" : "text-[#573EBF]"}`} />}
           </button>
           {/* The site's pill, with a down arrow since it scrolls the page */}
-          <button type="button" onClick={explore} className={`group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8] ${pillClassName("md")}`}>
+          <button type="button" onClick={explore} className={`group order-1 flex-1 justify-between focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8] sm:order-none sm:flex-none ${pillClassName("md")}`}>
             Explore our work
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-black">
               <ArrowDown aria-hidden="true" className="h-[18px] w-[18px] transition-transform duration-300 group-hover:translate-y-0.5 motion-reduce:transition-none" />
