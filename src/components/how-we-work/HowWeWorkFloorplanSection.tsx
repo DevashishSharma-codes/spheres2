@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Check, Plus, X } from "lucide-react";
@@ -387,6 +387,150 @@ function StageCard({
         {outline(dL, lenL, "l")}
         {outline(dR, lenR, "r")}
       </svg>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * Phones and tablets: the stages as a winding roadmap.
+ * Rows run left to right, then right to left, then left to right, joined
+ * by short drops at the ends, so the road snakes down the screen.
+ * ------------------------------------------------------------------ */
+
+/** Which stage sits in each cell of the map, row by row (left, right). */
+const ROAD_ROWS: [number, number][] = [
+  [0, 1],
+  [3, 2],
+  [4, 5],
+];
+const ROAD = "#9D85F2";
+
+/** A stretch of road with an arrow showing which way it runs. */
+function RoadHorizontal({ toLeft = false, row }: { toLeft?: boolean; row: number }) {
+  return (
+    <span aria-hidden="true" className="relative flex items-center" style={{ gridColumn: 2, gridRow: row }}>
+      <span className="h-[2px] w-full rounded-full" style={{ background: `repeating-linear-gradient(90deg, ${ROAD} 0 6px, transparent 6px 10px)` }} />
+      <svg viewBox="0 0 8 10" className={`absolute h-2.5 w-2 ${toLeft ? "left-0 rotate-180" : "right-0"}`} fill={ROAD}>
+        <path d="M0 0 L8 5 L0 10 Z" />
+      </svg>
+    </span>
+  );
+}
+
+function RoadDown({ column, row }: { column: 1 | 3; row: number }) {
+  return (
+    <span aria-hidden="true" className="relative flex h-7 justify-center" style={{ gridColumn: column, gridRow: row }}>
+      <span className="h-full w-[2px] rounded-full" style={{ background: `repeating-linear-gradient(180deg, ${ROAD} 0 6px, transparent 6px 10px)` }} />
+      <svg viewBox="0 0 10 8" className="absolute bottom-0 h-2 w-2.5" fill={ROAD}>
+        <path d="M0 0 L10 0 L5 8 Z" />
+      </svg>
+    </span>
+  );
+}
+
+const ROADMAP_STEP_MS = 1800; // how long each stage stays highlighted while the map plays
+
+function MobileRoadmap() {
+  const [selected, setSelected] = useState(0);
+  // Once someone taps a stop, the map stops moving on its own.
+  const [picked, setPicked] = useState(false);
+  const [onScreen, setOnScreen] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const mapRef = useRef<HTMLDivElement>(null);
+  const step = WORK_FLOORPLAN_STEPS[selected];
+
+  // Only plays while the map is on screen.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const observer = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting), { threshold: 0.4 });
+    observer.observe(map);
+    return () => observer.disconnect();
+  }, []);
+
+  // Steps quickly through the stages, round and round.
+  useEffect(() => {
+    if (picked || !onScreen || reduceMotion) return;
+    const timer = window.setInterval(() => setSelected((index) => (index + 1) % TOTAL), ROADMAP_STEP_MS);
+    return () => window.clearInterval(timer);
+  }, [picked, onScreen, reduceMotion]);
+
+  // Each stop is placed on the grid explicitly, so the page reads 01 to 06 in order
+  // even where the road runs right to left.
+  const stop = (index: number, column: 1 | 3, gridRow: number) => {
+    const item = WORK_FLOORPLAN_STEPS[index];
+    const isOn = index === selected;
+    return (
+      <button
+        type="button"
+        style={{ gridColumn: column, gridRow }}
+        onClick={() => {
+          setPicked(true);
+          setSelected(index);
+        }}
+        aria-pressed={isOn}
+        className={`flex min-h-[96px] flex-col rounded-[14px] border p-3 text-left transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60 ${
+          isOn ? "border-[#C8B4FF]/70 bg-[#C8B4FF]/[.13]" : "border-white/12 bg-white/[.04]"
+        }`}
+      >
+        <span className="flex items-center gap-2">
+          <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] tabular-nums ${isOn ? "bg-[#C8B4FF] text-[#170E29]" : "border border-[#B79CFF]/60 text-[#C8B4FF]"}`}>
+            {item.step}
+          </span>
+          <span className="truncate text-[10.5px] text-white/45">{HOW_WE_WORK_CONTENT.steps[index]?.duration}</span>
+        </span>
+        <span className={`mt-2 text-[13.5px] leading-[1.25] ${isOn ? "text-white" : "text-white/85"}`}>{item.title}</span>
+      </button>
+    );
+  };
+
+  return (
+    <div ref={mapRef} className="lg:hidden">
+      <ol aria-label="Our process, stage by stage" className="grid grid-cols-[minmax(0,1fr)_28px_minmax(0,1fr)] items-center sm:mx-auto sm:max-w-xl">
+        {ROAD_ROWS.map(([left, right], row) => {
+          const rightToLeft = row % 2 === 1;
+          const gridRow = row * 2 + 1;
+          // In reading order: the stop the road reaches first, then the next.
+          const [first, second] = rightToLeft ? [right, left] : [left, right];
+          return (
+            <Fragment key={row}>
+              <li className="contents">{stop(first, rightToLeft ? 3 : 1, gridRow)}</li>
+              <li className="contents">{stop(second, rightToLeft ? 1 : 3, gridRow)}</li>
+              <li aria-hidden="true" className="contents">
+                <RoadHorizontal toLeft={rightToLeft} row={gridRow} />
+              </li>
+              {/* The drop to the next row: down the right after a left-to-right row, down the left after a right-to-left one */}
+              {row < ROAD_ROWS.length - 1 && (
+                <li aria-hidden="true" className="contents">
+                  <RoadDown column={rightToLeft ? 1 : 3} row={gridRow + 1} />
+                </li>
+              )}
+            </Fragment>
+          );
+        })}
+      </ol>
+
+      {/* The selected stop, swapped with a quick fade */}
+      <motion.div
+        key={selected}
+        initial={reduceMotion ? false : { opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
+        className="mt-4 rounded-[16px] border border-[#B79CFF]/35 p-4 sm:mx-auto sm:max-w-xl"
+        style={{ background: CARD_BG }}
+      >
+        <p className="flex items-center justify-between text-[11px] tabular-nums tracking-[0.04em] text-[#C8B4FF]">
+          <span>Stage {step.step} / 0{TOTAL}</span>
+          <span className="text-white/45">{HOW_WE_WORK_CONTENT.steps[selected]?.duration}</span>
+        </p>
+        <h3 className="mt-1.5 text-[16px] font-medium leading-snug tracking-[-0.01em] text-white">{step.title}</h3>
+        <p className="mt-1.5 text-[13.5px] font-light leading-relaxed text-white/70">{STAGE_SUMMARIES[selected]}</p>
+        <ul aria-label={`${step.title} deliverables`} className="mt-3 flex flex-wrap gap-1.5">
+          {STAGE_DELIVERABLES[selected].map((item) => (
+            <li key={item} className="rounded-full border border-white/12 bg-white/[.06] px-2.5 py-1 text-[11px] leading-none text-white/80">{item}</li>
+          ))}
+        </ul>
+      </motion.div>
     </div>
   );
 }
@@ -846,37 +990,9 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
         </div>
 
         {/* ------------------------------ phones and tablets ------------------------------
-            Every stage at once, as a quiet vertical timeline: a thin line with a marker per stage,
-            and beside it the stage's number, duration, name, summary and deliverables. Nothing to
-            tap and nothing animating, so the whole process reads top to bottom. */}
-        <ol aria-label="Our process, stage by stage" className="max-w-2xl lg:hidden">
-          {WORK_FLOORPLAN_STEPS.map((step, index) => {
-            const last = index === TOTAL - 1;
-            return (
-              <li key={step.id} className="relative grid grid-cols-[22px_minmax(0,1fr)] gap-x-4">
-                {/* Marker, and the line running down to the next stage */}
-                <span aria-hidden="true" className="relative flex justify-center">
-                  <span className="relative z-10 mt-[3px] h-[11px] w-[11px] rounded-full border border-[#C8B4FF] bg-[#C8B4FF]/25" />
-                  {!last && <span className="absolute bottom-0 top-[14px] w-px bg-gradient-to-b from-[#B79CFF]/50 to-[#B79CFF]/15" />}
-                </span>
-
-                <div className={last ? "pb-1" : "pb-8"}>
-                  <p className="flex items-baseline justify-between gap-3 text-[11px] tabular-nums tracking-[0.04em]">
-                    <span className="text-[#C8B4FF]">{step.step} / 0{TOTAL}</span>
-                    <span className="text-white/45">{HOW_WE_WORK_CONTENT.steps[index]?.duration}</span>
-                  </p>
-                  <h3 className="mt-1 text-[17px] font-medium leading-snug tracking-[-0.01em] text-white">{step.title}</h3>
-                  <p className="mt-1.5 text-[14px] font-light leading-relaxed text-white/65">{STAGE_SUMMARIES[index]}</p>
-                  <ul aria-label={`${step.title} deliverables`} className="mt-3 flex flex-wrap gap-1.5">
-                    {STAGE_DELIVERABLES[index].map((item) => (
-                      <li key={item} className="rounded-full border border-white/12 bg-white/[.05] px-2.5 py-1 text-[11px] leading-none text-white/75">{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
+            The process as a roadmap that winds across two columns: 01 → 02, down, 04 ← 03,
+            down, 05 → 06. Tapping a stop shows its detail in the panel under the map. No motion. */}
+        <MobileRoadmap />
 
         <span className="sr-only" aria-live="polite">
           Stage {activeStep.step}: {activeStep.title}

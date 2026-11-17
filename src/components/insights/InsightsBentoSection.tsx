@@ -1,7 +1,7 @@
 import type { CSSProperties, ComponentType, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Bot, ChartLine, Globe, ListChecks, SendHorizontal, ShieldCheck, UserCheck } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Bot, ChartLine, Globe, ListChecks, SendHorizontal, ShieldCheck, UserCheck, Users } from "lucide-react";
 import { PillLink } from "@/components/ui/PillLink";
 import { INSIGHTS_CONTENT } from "@/content/insights";
 import { MARK_DOTS, MARK_SIZE } from "@/components/layout/logoShapes";
@@ -161,33 +161,189 @@ function FounderCard() {
   );
 }
 
+
+/* ------------------------------------------------------------------ *
+ * Phones and tablets: a calm "latest writing" layout.
+ * A featured post, a compact list of recent posts, then the founder's
+ * perspective as a pull-quote. Everything renders from LANDING_POSTS.
+ * ------------------------------------------------------------------ */
+
+interface LandingPost {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  /** e.g. "Nov 2026" */
+  date: string;
+  /** e.g. "8 min read" */
+  readTime: string;
+  icon: Icon;
+  illustration?: ReactNode;
+  featured: boolean;
+}
+
+const monthYear = (date: string) => date.toLowerCase().replace(/^(\w)(\w*)/, (_, a: string, b: string) => a.toUpperCase() + b);
+const minRead = (readTime: string) => readTime.toLowerCase();
+
+/** Which posts the landing page shows, in order. Exactly one is featured. */
+const LANDING_PICKS: { slug: string; icon: Icon; featured?: boolean; illustration?: ReactNode }[] = [
+  { slug: "zero-hallucination-multi-agent-graphs", icon: Bot, featured: true, illustration: <IsometricVisual /> },
+  { slug: "architecting-multi-carrier-gateways", icon: Globe },
+  { slug: "120-fps-react-19-financial-dashboards", icon: ChartLine },
+  { slug: "human-centered-enterprise-ai", icon: Users },
+];
+
+const LANDING_POSTS: LandingPost[] = LANDING_PICKS.flatMap(({ slug, icon, featured = false, illustration }) => {
+  const item = INSIGHTS_CONTENT.items.find((entry) => entry.slug === slug);
+  if (!item) return [];
+  return [{
+    slug,
+    title: item.title,
+    excerpt: item.excerpt,
+    category: item.category,
+    date: monthYear(item.date),
+    readTime: minRead(item.readTime ?? "5 MIN READ"),
+    icon,
+    illustration,
+    featured,
+  }];
+});
+
+const TAG = "text-[12px] font-medium uppercase tracking-[0.1em] text-[#6248CA]";
+const META = "text-[13px] text-[#6E6D78]";
+const CARD = "rounded-2xl border border-[#E9E7F0] bg-white";
+
+function FeaturedPost({ post }: { post: LandingPost }) {
+  return (
+    <Link
+      href={`/insights/${post.slug}`}
+      aria-label={`${post.title}. ${post.date}, ${post.readTime}`}
+      className={`group flex flex-col overflow-hidden md:flex-row ${CARD} ${FOCUS}`}
+    >
+      {/* A short banner on phones; the left 40% on tablets */}
+      <div aria-hidden="true" className="relative aspect-[2/1] max-h-[180px] w-full shrink-0 overflow-hidden bg-gradient-to-b from-[#F7F7FA] to-white md:aspect-auto md:max-h-none md:min-h-[220px] md:w-[40%]">
+        <div className="absolute inset-0 scale-[0.8] md:scale-90">{post.illustration}</div>
+      </div>
+      <div className="flex flex-1 flex-col p-4 md:p-6">
+        <span className={`w-fit rounded-full bg-[#F1EEFB] px-2.5 py-1 ${TAG}`}>{post.category}</span>
+        <h3 className="mt-3 text-[19px] font-medium leading-[1.3] tracking-[-0.02em] text-[#19191C] group-hover:underline group-hover:decoration-[#6248CA]/40 group-hover:underline-offset-4 md:text-[22px]">
+          {post.title}
+        </h3>
+        <p className="mt-2 line-clamp-2 text-[14px] leading-relaxed text-[#5E5D68]">{post.excerpt}</p>
+        <p className={`mt-auto flex items-center justify-between pt-4 ${META}`}>
+          <span>{post.date} &middot; {post.readTime}</span>
+          <ArrowUpRight aria-hidden="true" className="h-4 w-4 text-[#6248CA] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+        </p>
+      </div>
+    </Link>
+  );
+}
+
+/** A row on phones (icon | meta + title | arrow); a compact card from tablets up. */
+function PostRow({ post }: { post: LandingPost }) {
+  const PostIcon = post.icon;
+  return (
+    <li className="md:flex">
+      <Link
+        href={`/insights/${post.slug}`}
+        aria-label={`${post.title}. ${post.category}, ${post.readTime}`}
+        className={`group grid min-h-[44px] w-full grid-cols-[40px_minmax(0,1fr)_16px] items-start gap-x-3 py-4 md:flex md:flex-col md:rounded-2xl md:border md:border-[#E9E7F0] md:bg-white md:p-5 ${FOCUS}`}
+      >
+        <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#F1EEFB] text-[#6248CA] md:h-11 md:w-11">
+          <PostIcon className="h-5 w-5" strokeWidth={1.75} />
+        </span>
+        <span className="min-w-0 md:mt-4">
+          <span className={`block ${META} md:hidden`}>
+            <span className="uppercase tracking-[0.08em] text-[12px] text-[#6248CA]">{post.category}</span> &middot; {post.readTime}
+          </span>
+          <span className={`hidden md:block ${TAG}`}>{post.category}</span>
+          <span className="mt-1 block text-[16px] font-medium leading-snug tracking-[-0.01em] text-[#19191C] group-hover:underline group-hover:decoration-[#6248CA]/40 group-hover:underline-offset-4 md:mt-2">
+            {post.title}
+          </span>
+          <span className="mt-1.5 hidden line-clamp-2 text-[14px] leading-relaxed text-[#5E5D68] md:block">{post.excerpt}</span>
+        </span>
+        <ArrowUpRight aria-hidden="true" className="mt-0.5 h-4 w-4 text-[#9A99A3] group-hover:text-[#6248CA] md:hidden" />
+        <span className={`mt-auto hidden items-center justify-between pt-4 md:flex ${META}`}>
+          <span>{post.date} &middot; {post.readTime}</span>
+          <ArrowUpRight aria-hidden="true" className="h-4 w-4 text-[#6248CA]" />
+        </span>
+      </Link>
+    </li>
+  );
+}
+
+function FounderPullQuote() {
+  return (
+    <figure className="mb-8 border-l-[3px] border-[#7057D9] bg-[#F8F7FC] py-6 pl-5 pr-4">
+      <p className={TAG}>Founder&apos;s perspective</p>
+      <blockquote className="mt-3 text-[18px] font-light leading-[1.5] tracking-[-0.01em] text-[#19191C] md:text-[22px]">
+        &ldquo;Most software fails not from a lack of features, but from friction and slowness. We architect every product for sub-second performance and resilient scale.&rdquo;
+      </blockquote>
+      <figcaption className="mt-5 flex items-center gap-3">
+        <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
+          <Image src="/om-bawal-photo.jpg" alt="" fill sizes="40px" className="object-cover object-[50%_22%]" />
+        </span>
+        <span>
+          <span className="block text-[15px] font-medium text-[#19191C]">Om Bawal</span>
+          <span className={`block ${META}`}>Founder &amp; Chief Architect, 21Spheres</span>
+        </span>
+      </figcaption>
+    </figure>
+  );
+}
+
+function LatestWriting() {
+  const featured = LANDING_POSTS.find((post) => post.featured) ?? LANDING_POSTS[0];
+  const recent = LANDING_POSTS.filter((post) => post !== featured);
+  return (
+    <div className="lg:hidden">
+      {/* The founder's perspective leads, then the writing */}
+      <FounderPullQuote />
+      <FeaturedPost post={featured} />
+      <ul aria-label="Recent insights" className="mt-6 divide-y divide-[#ECEAF2] border-b border-[#ECEAF2] md:mt-8 md:grid md:grid-cols-2 md:gap-4 md:divide-y-0 md:border-0">
+        {recent.map((post) => <PostRow key={post.slug} post={post} />)}
+      </ul>
+    </div>
+  );
+}
+
 export function InsightsBentoSection() {
   const items = INSIGHTS_CONTENT.items;
   const article = (slug: string) => items.find((item) => item.slug === slug) ?? items[0];
 
   return (
-    <section id="insights" aria-label="Insights and field notes" className="relative w-full scroll-mt-14 pb-10 pt-6 text-black sm:scroll-mt-16 sm:pb-16"
-      style={{ background: "radial-gradient(ellipse 55% 45% at 88% 62%, rgba(112,87,217,.05) 0%, transparent 100%), linear-gradient(180deg, #ffffff 0%, #fdfcff 50%, #f9f7ff 100%)" }}
-    >
+    <section id="insights" aria-label="Insights and field notes" className="relative isolate w-full scroll-mt-14 bg-white py-12 text-black sm:scroll-mt-16 md:py-16 lg:pb-16 lg:pt-6">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 hidden lg:block"
+        style={{ background: "radial-gradient(ellipse 55% 45% at 88% 62%, rgba(112,87,217,.05) 0%, transparent 100%), linear-gradient(180deg, #ffffff 0%, #fdfcff 50%, #f9f7ff 100%)" }}
+      />
       <style href="insights-bento-flow" precedence="default">{FLOW_CSS}</style>
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
-        <header className="mb-6 flex flex-col justify-between gap-3 border-b border-[#7057D9]/20 pb-4 sm:flex-row sm:items-baseline lg:mb-8">
+        <header className="mb-6 flex flex-col justify-between gap-2 md:flex-row md:items-end md:gap-6 lg:mb-8 lg:items-baseline lg:gap-3 lg:border-b lg:border-[#7057D9]/20 lg:pb-4">
           <div className="shrink-0">
             <p className="mb-1 text-[12px] font-bold uppercase tracking-[0.18em] text-[#7C3AED] sm:text-[13px]">Our Insights</p>
-            <h2 className="text-3xl font-light leading-none tracking-[-0.04em] sm:text-4xl md:text-5xl lg:text-[52px]">Insights</h2>
+            <h2 className="text-[clamp(2rem,1.6rem+2vw,3.25rem)] font-light leading-none tracking-[-0.04em]">Insights</h2>
           </div>
-          <p className="max-w-lg text-xs leading-relaxed text-[#383842] sm:text-right sm:text-sm">Ideas and field notes on building thoughtful, dependable digital products.</p>
+          <div className="flex flex-col gap-2 md:items-end lg:block">
+            <p className="max-w-lg text-[14px] leading-relaxed text-[#5E5D68] md:text-right lg:text-sm lg:text-[#383842]">Ideas and field notes on building thoughtful, dependable digital products.</p>
+            <Link href="/insights" className="inline-flex min-h-[44px] w-fit items-center gap-1.5 text-[14px] font-medium text-[#6248CA] underline-offset-4 hover:underline lg:hidden">
+              View all <ArrowRight aria-hidden="true" className="h-4 w-4" />
+            </Link>
+          </div>
         </header>
 
+        <LatestWriting />
+
         {/* Phones: a two-column bento. The founder and the featured essay run full width, the other two sit side by side. */}
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-2 xl:grid-cols-12 xl:gap-4">
+        <div className="hidden gap-3 lg:grid lg:grid-cols-2 xl:grid-cols-12 xl:gap-4">
           <FounderCard />
           <ArticleCard article={article("zero-hallucination-multi-agent-graphs")} className="col-span-2 xl:col-span-8" stage={<IsometricVisual />} wide />
           <ArticleCard article={article("architecting-multi-carrier-gateways")} className="xl:col-span-4" stage={<GlobeVisual />} icon={Globe} />
           <ArticleCard article={article("120-fps-react-19-financial-dashboards")} className="xl:col-span-4" stage={<ChartVisual />} icon={ChartLine} />
         </div>
 
-        <div className="mt-6 flex justify-center md:mt-8">
+        <div className="mt-8 hidden justify-center lg:flex">
           <PillLink href="/insights">See all insights</PillLink>
         </div>
       </div>

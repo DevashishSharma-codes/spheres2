@@ -34,9 +34,8 @@ const LINK_GROUPS = [
   },
   {
     title: "Services",
-    // Shares a full row on phones, so its links run in two columns there.
-    className: "col-span-2 sm:col-span-1",
-    listClassName: "columns-2 gap-x-6 sm:columns-1",
+    className: "",
+    listClassName: "",
     links: [
       { label: "Custom AI", href: "/services/custom-ai-development" },
       { label: "Web Applications", href: "/services/web-application-development" },
@@ -106,11 +105,13 @@ function IconGradients() {
   );
 }
 
-function IconRow({ title, items }: { title: string; items: readonly { label: string; href: string; icon: keyof typeof SOCIAL_ICON_PATHS; fill: string; ariaLabel: string }[] }) {
+function IconRow({ title, shortTitle, items }: { title: string; shortTitle?: string; items: readonly { label: string; href: string; icon: keyof typeof SOCIAL_ICON_PATHS; fill: string; ariaLabel: string }[] }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-      <h2 className={labelClass}>{title}</h2>
-      <ul className="flex items-center gap-2.5">
+    <div className="flex items-center justify-between gap-4 sm:justify-start sm:gap-5">
+      <h2 className={labelClass}>
+        {shortTitle ? <><span className="sm:hidden">{shortTitle}</span><span className="hidden sm:inline">{title}</span></> : title}
+      </h2>
+      <ul className="flex items-center gap-2 sm:gap-2.5">
         {items.map((item) => (
           <li key={item.label}>
             <a href={item.href} target="_blank" rel="noopener noreferrer" aria-label={item.ariaLabel} title={item.label} className={ROUND_ICON}>
@@ -141,8 +142,8 @@ export function Footer() {
 
       <Container wide>
         {/* Contact details on the left, the site's pages on the right */}
-        <div className="grid gap-8 border-t border-[#E7E5EB] py-6 lg:grid-cols-12 lg:gap-8">
-          <address className="grid gap-y-3 text-[17px] font-medium tracking-[-0.01em] not-italic text-[#19191C] lg:col-span-4 lg:self-start">
+        <div className="grid gap-6 border-t border-[#E7E5EB] py-5 sm:gap-8 sm:py-6 lg:grid-cols-12 lg:gap-8">
+          <address className="grid divide-y divide-[#E7E5EB] border-y border-[#E7E5EB] text-[15px] font-medium tracking-[-0.01em] not-italic text-[#19191C] sm:gap-y-3 sm:divide-y-0 sm:border-0 sm:text-[17px] lg:col-span-4 lg:self-start [&>div]:py-2.5 sm:[&>div]:py-0">
             <div>
               <div className={contactLabelClass}>
                 <span className="flex items-center gap-1.5">
@@ -184,11 +185,11 @@ export function Footer() {
             </div>
           </address>
 
-          <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:col-span-7 lg:col-start-6">
+          <div className="grid grid-cols-3 gap-x-4 gap-y-8 sm:gap-x-6 lg:col-span-7 lg:col-start-6">
             {LINK_GROUPS.map((group) => (
               <nav key={group.title} aria-label={group.title} className={group.className}>
                 <h2 className={labelClass}>{group.title}</h2>
-                <ul className={`mt-4 text-sm [&>li]:break-inside-avoid [&>li]:pb-2.5 ${group.listClassName}`}>
+                <ul className={`mt-3 text-[13px] leading-snug sm:mt-4 sm:text-sm [&>li]:break-inside-avoid [&>li]:pb-2.5 ${group.listClassName}`}>
                   {group.links.map((link) => (
                     <li key={link.href}>
                       <Link href={link.href} className={linkClass}>
@@ -203,14 +204,14 @@ export function Footer() {
         </div>
 
         {/* Where else to find us, and a quick way to ask an AI about us */}
-        <div className="flex flex-col gap-5 border-t border-[#E7E5EB] py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-t border-[#E7E5EB] py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-5 sm:py-5">
           <IconGradients />
           <IconRow title="Follow us" items={SOCIALS} />
-          <IconRow title="Ask AI for a summary of 21 Spheres" items={ASK_AI} />
+          <IconRow title="Ask AI for a summary of 21 Spheres" shortTitle="Ask AI about us" items={ASK_AI} />
         </div>
 
         {/* The name sits bottom-left, with the copyright and the way back up beside it */}
-        <div className="flex flex-col gap-5 border-t border-[#E7E5EB] pt-4 pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-4 border-t border-[#E7E5EB] pb-6 pt-4 sm:flex-row sm:items-end sm:justify-between sm:gap-5">
           <FooterWordmark className="w-full max-w-[520px]" />
           <div className="flex shrink-0 items-center justify-between gap-4 text-xs text-[#2A2A2E]/60 sm:flex-col sm:items-end">
             <BackToTopButton />
