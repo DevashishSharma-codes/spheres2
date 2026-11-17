@@ -47,7 +47,7 @@ function Laptop({ project }: { project: DetailedCaseStudy }) {
           {/* Window content: the project photo with its caption */}
           <div className="relative min-h-0 flex-1">
             <Image
-              src={project.cardImage}
+              src={project.image}
               alt={`${project.title} project photo`}
               fill
               sizes="(max-width: 1024px) 90vw, 45vw"
@@ -77,10 +77,23 @@ function Laptop({ project }: { project: DetailedCaseStudy }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* One case study: laptop on the left, details on the right            */
+/* One case study, in three zones:                                     */
+/*  1. an intro band: the visual beside the short facts, level pair    */
+/*  2. the story as an editorial spread: the brief | what changed      */
+/*  3. the results across the full width                               */
 /* ------------------------------------------------------------------ */
+function StoryLabel({ children }: { children: string }) {
+  return (
+    <h4 className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.18em] text-[#C9BBFF]">
+      <span aria-hidden="true" className="h-px w-6 bg-[#C9BBFF]/60" />
+      {children}
+    </h4>
+  );
+}
+
 function CaseStudyCard({ project }: { project: DetailedCaseStudy }) {
   const [full, setFull] = useState(false);
+  const clamp = full ? "" : "max-sm:line-clamp-5";
   return (
     <motion.article
       layout
@@ -89,61 +102,61 @@ function CaseStudyCard({ project }: { project: DetailedCaseStudy }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35 }}
     >
-      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-        {/* Laptop over the dusk image */}
-        <div className="relative isolate flex items-center justify-center overflow-hidden rounded-[26px] border border-white/10 px-6 py-10 sm:px-10 sm:py-14">
+      {/* 1. Intro band: only the short facts sit beside the visual, so the two halves stay level */}
+      <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-14">
+        <div className="relative isolate flex items-center justify-center overflow-hidden rounded-[26px] border border-white/10 px-6 py-10 sm:px-10 sm:py-12">
           <div className="absolute inset-0 -z-10"><DuskBackdrop /></div>
           <div className="w-full"><Laptop project={project} /></div>
         </div>
 
-        {/* Details in ruled rows */}
-        <div className="flex min-w-0 flex-col justify-center">
-          <p className="text-sm text-white/60">{project.category} · {project.year}</p>
-          <h3 className="mt-3 text-3xl font-light leading-[1.1] tracking-[-0.04em] sm:text-[40px]">{project.title}</h3>
-          <p className="mt-3 max-w-xl text-[17px] leading-snug text-white/90">{project.headline}</p>
-          <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-white/65">{project.summary}</p>
+        <div className="min-w-0">
+          <p className="text-[12px] font-medium uppercase tracking-[0.16em] text-white/50">
+            {project.category} <span className="px-1.5 text-white/25">/</span> {project.year}
+          </p>
+          <h3 className="mt-4 text-[32px] font-light leading-[1.05] tracking-[-0.04em] sm:text-[44px]">{project.title}</h3>
+          <p className="mt-4 max-w-[34ch] text-[18px] leading-snug tracking-[-0.01em] text-white/90 sm:text-[20px]">{project.headline}</p>
+          <p className="mt-4 max-w-[58ch] text-[15px] leading-relaxed text-white/60">{project.summary}</p>
 
-          <dl className="mt-6 border-t border-white/15 text-sm">
-            <div className="grid gap-1 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
-              <dt className="text-white/50">The brief</dt>
-              <dd className={`whitespace-pre-line leading-relaxed text-white/85 ${full ? "" : "max-sm:line-clamp-4"}`}>{project.brief.problemStatement}</dd>
+          <div className="mt-7 border-t border-white/10 pt-5">
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/40">Built with</p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {project.technology.stack.map((tech) => <TechPill key={tech} name={tech} />)}
             </div>
-            <div className="grid gap-1 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
-              <dt className="text-white/50">What changed</dt>
-              <dd className={`whitespace-pre-line leading-relaxed text-white/85 ${full ? "" : "max-sm:line-clamp-4"}`}>{project.whatChanged.empiricalOutcome}</dd>
-            </div>
-            <div className="grid gap-2 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
-              <dt className="text-white/50">Technology</dt>
-              <dd className="flex flex-wrap gap-1.5">
-                {project.technology.stack.map((tech) => (
-                  <TechPill key={tech} name={tech} />
-                ))}
-              </dd>
-            </div>
-          </dl>
+          </div>
 
-          {/* Phones: the brief and outcome are shortened until asked for */}
-          <button type="button" onClick={() => setFull(!full)} className="mt-3 min-h-[44px] text-left text-[13px] font-medium text-[#C9BBFF] underline-offset-4 hover:underline sm:hidden">
-            {full ? "Show less" : "Read the full story"}
-          </button>
-
-          <div className="mt-6 max-sm:mt-2"><PillLink href="/contact">Talk about a similar project</PillLink></div>
+          <div className="mt-7"><PillLink href="/contact">Talk about a similar project</PillLink></div>
         </div>
       </div>
 
-      {/* Results */}
-      {/* Phones: the three results side by side in one compact row; larger screens keep the full columns */}
-      <dl className="mt-6 grid grid-cols-3 divide-x divide-white/15 border-y border-white/15 py-4 sm:mt-10 sm:border-b-0 sm:py-0 sm:pt-7">
+      {/* 2. The story, as two reading columns: the brief, then the wider "what changed" */}
+      <div className="mt-8 grid gap-8 sm:mt-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+        <section>
+          <StoryLabel>The brief</StoryLabel>
+          <p className={`mt-4 max-w-[62ch] whitespace-pre-line text-[15px] leading-[1.75] text-white/75 ${clamp}`}>{project.brief.problemStatement}</p>
+        </section>
+        <section>
+          <StoryLabel>What changed</StoryLabel>
+          <p className={`mt-4 max-w-[68ch] whitespace-pre-line text-[15px] leading-[1.75] text-white/75 ${clamp}`}>{project.whatChanged.empiricalOutcome}</p>
+        </section>
+      </div>
+
+      {/* Phones: the story is shortened until asked for */}
+      <button type="button" onClick={() => setFull(!full)} className="mt-3 min-h-[44px] text-left text-[13px] font-medium text-[#C9BBFF] underline-offset-4 hover:underline sm:hidden">
+        {full ? "Show less" : "Read the full story"}
+      </button>
+      {/* 3. Results, across the full width, closing the case study */}
+      <dl className="mt-6 grid grid-cols-3 divide-x divide-white/15 border-y border-white/15 py-4 sm:mt-12 sm:py-8">
         {project.whatChanged.metrics.slice(0, 3).map((metric) => (
-          <div key={metric.label} className="flex min-w-0 flex-col-reverse px-3 first:pl-0 last:pr-0 sm:px-6">
-            <dt className="mt-1.5 text-[11px] leading-snug text-white/70 sm:mt-2 sm:text-sm">
+          <div key={metric.label} className="flex min-w-0 flex-col-reverse px-3 first:pl-0 last:pr-0 sm:px-8">
+            <dt className="mt-1.5 text-[11px] leading-snug text-white/70 sm:mt-3 sm:text-sm">
               <span className="block font-medium text-white/80 sm:text-white">{metric.label}</span>
-              {metric.context && <span className="hidden first-letter:uppercase sm:inline">{metric.context}</span>}
+              {metric.context && <span className="hidden text-white/55 first-letter:uppercase sm:inline">{metric.context}</span>}
             </dt>
             <dd className="break-words text-[19px] font-light leading-tight tracking-[-0.03em] sm:text-[48px] sm:leading-none sm:tracking-[-0.04em]">{metric.value}</dd>
           </div>
         ))}
       </dl>
+
     </motion.article>
   );
 }
