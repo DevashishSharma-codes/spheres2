@@ -1,4 +1,4 @@
-import { ServicesSection } from "@/components/services/ServicesSection";
+import { ServicesCatalogPage } from "@/components/services/ServicesCatalogPage";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -10,7 +10,7 @@ export const metadata = pageMetadata({
 export default function ServicesPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      <ServicesSection showAllCatalog />
+      <ServicesCatalogPage />
     </div>
   );
 }

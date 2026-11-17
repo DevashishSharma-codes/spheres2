@@ -29,27 +29,31 @@ export default function Page() {
 
       <Container wide className="relative">
         <PageBackButton className="absolute left-4 top-4 z-10 sm:left-6 lg:left-8" />
-        <section className="grid items-center gap-10 pb-10 pt-[72px] sm:pt-20 lg:h-[calc(100svh-137px)] lg:min-h-[460px] lg:grid-cols-[minmax(0,.85fr)_minmax(0,1.15fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-10 lg:py-5">
+        <section className="grid items-center gap-8 pb-8 pt-[72px] sm:gap-10 sm:pb-10 sm:pt-20 lg:h-[calc(100svh-137px)] lg:min-h-[460px] lg:grid-cols-[minmax(0,.85fr)_minmax(0,1.15fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-10 lg:py-5">
           <div>
             <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-white/65">
               <Link href="/" className="transition-colors hover:text-white">Home</Link>
               <span aria-hidden="true">/</span>
               <span aria-current="page" className="text-[#C9BBFF]">Case Studies</span>
             </nav>
-            <h1 className="mt-5 w-fit bg-gradient-to-r from-white via-[#E4DCFF] to-[#9D85F2] bg-clip-text pb-1 text-[42px] font-light leading-[1.06] tracking-[-0.05em] text-transparent sm:text-6xl xl:text-[68px]">
+            <h1 className="mt-4 w-fit bg-gradient-to-r from-white via-[#E4DCFF] to-[#9D85F2] bg-clip-text pb-1 text-[36px] font-light leading-[1.06] tracking-[-0.05em] text-transparent sm:text-6xl xl:text-[68px]">
               Products we&rsquo;ve shipped.
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
+            <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/70 sm:mt-5 sm:text-lg">
               Thoughtful engineering, steady momentum, and products built to do meaningful work.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <PillLink href="#case-studies">Explore case studies</PillLink>
-              <Link href="/contact" className="inline-flex h-12 items-center rounded-full border border-white/20 px-6 text-sm text-white/85 transition-colors hover:border-white/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8]">
+            {/* Phones: two full-width buttons of equal width; larger screens: side by side */}
+            <div className="mt-6 grid gap-2.5 sm:mt-8 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+              <PillLink href="#case-studies" className="w-full justify-between sm:w-auto">Explore case studies</PillLink>
+              <Link href="/contact" className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 px-6 text-sm text-white/85 transition-colors hover:border-white/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8]">
                 Discuss a product
               </Link>
             </div>
           </div>
-          <FitToHeight><PortfolioDevices /></FitToHeight>
+          {/* The device illustration, on every screen, as on desktop */}
+          <div className="min-w-0 lg:h-full lg:min-h-0">
+            <FitToHeight><PortfolioDevices /></FitToHeight>
+          </div>
         </section>
       </Container>
 

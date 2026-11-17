@@ -1,13 +1,25 @@
 @import "tailwindcss";
 
 /*
- * Page markers the footer reacts to. Next.js keeps recently visited pages in the document, hidden with
- * `display: none` (React Activity), so a marker only counts when its page is the one on screen.
+ * Page markers the footer reacts to (see FooterThemeSync.tsx).
  *  - footer-dark: the page ends on a dark section, so the footer's thread zone turns dark to match.
  *  - no-footer-cone: the page already leads to contact, so the thread and call to action are hidden.
+ * FooterThemeSync checks which markers are on the page actually on screen and sets body attributes.
+ * Before it has run (the very first paint, when only one page is in the document) the markers are
+ * read directly.
  */
-@custom-variant footer-dark (body:has([data-footer-dark]:not([style*="display: none"]):not([style*="display: none"] *)) &);
-@custom-variant no-footer-cone (body:has([data-no-footer-cone]:not([style*="display: none"]):not([style*="display: none"] *)) &);
+@custom-variant footer-dark {
+  body:not([data-footer-synced]):has([data-footer-dark]) &,
+  body[data-footer-dark-on] & {
+    @slot;
+  }
+}
+@custom-variant no-footer-cone {
+  body:not([data-footer-synced]):has([data-no-footer-cone]) &,
+  body[data-footer-no-cone-on] & {
+    @slot;
+  }
+}
 
 :root {
   --purple: #7057D9;

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useHashLink } from "@/lib/useHashLink";
-import { Bot, Landmark, ShieldCheck, Smartphone, type LucideIcon } from "lucide-react";
+import { Bot, ChevronDown, Landmark, ShieldCheck, Smartphone, type LucideIcon } from "lucide-react";
 import { FolderTabCard } from "@/components/ui/FolderTabCard";
 import { LaptopFrame } from "@/components/ui/LaptopFrame";
 import { PillLink } from "@/components/ui/PillLink";
@@ -80,6 +80,7 @@ function Laptop({ project }: { project: DetailedCaseStudy }) {
 /* One case study: laptop on the left, details on the right            */
 /* ------------------------------------------------------------------ */
 function CaseStudyCard({ project }: { project: DetailedCaseStudy }) {
+  const [full, setFull] = useState(false);
   return (
     <motion.article
       layout
@@ -105,11 +106,11 @@ function CaseStudyCard({ project }: { project: DetailedCaseStudy }) {
           <dl className="mt-6 border-t border-white/15 text-sm">
             <div className="grid gap-1 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
               <dt className="text-white/50">The brief</dt>
-              <dd className="whitespace-pre-line leading-relaxed text-white/85">{project.brief.problemStatement}</dd>
+              <dd className={`whitespace-pre-line leading-relaxed text-white/85 ${full ? "" : "max-sm:line-clamp-4"}`}>{project.brief.problemStatement}</dd>
             </div>
             <div className="grid gap-1 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
               <dt className="text-white/50">What changed</dt>
-              <dd className="whitespace-pre-line leading-relaxed text-white/85">{project.whatChanged.empiricalOutcome}</dd>
+              <dd className={`whitespace-pre-line leading-relaxed text-white/85 ${full ? "" : "max-sm:line-clamp-4"}`}>{project.whatChanged.empiricalOutcome}</dd>
             </div>
             <div className="grid gap-2 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
               <dt className="text-white/50">Technology</dt>
@@ -121,23 +122,60 @@ function CaseStudyCard({ project }: { project: DetailedCaseStudy }) {
             </div>
           </dl>
 
-          <div className="mt-6"><PillLink href="/contact">Talk about a similar project</PillLink></div>
+          {/* Phones: the brief and outcome are shortened until asked for */}
+          <button type="button" onClick={() => setFull(!full)} className="mt-3 min-h-[44px] text-left text-[13px] font-medium text-[#C9BBFF] underline-offset-4 hover:underline sm:hidden">
+            {full ? "Show less" : "Read the full story"}
+          </button>
+
+          <div className="mt-6 max-sm:mt-2"><PillLink href="/contact">Talk about a similar project</PillLink></div>
         </div>
       </div>
 
       {/* Results */}
-      <dl className="mt-10 grid gap-8 border-t border-white/15 pt-7 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-white/15">
+      {/* Phones: the three results side by side in one compact row; larger screens keep the full columns */}
+      <dl className="mt-6 grid grid-cols-3 divide-x divide-white/15 border-y border-white/15 py-4 sm:mt-10 sm:border-b-0 sm:py-0 sm:pt-7">
         {project.whatChanged.metrics.slice(0, 3).map((metric) => (
-          <div key={metric.label} className="flex flex-col-reverse sm:px-6 sm:first:pl-0 sm:last:pr-0">
-            <dt className="mt-2 text-sm leading-snug text-white/70">
-              <span className="block font-medium text-white">{metric.label}</span>
-              {metric.context && <span className="first-letter:uppercase">{metric.context}</span>}
+          <div key={metric.label} className="flex min-w-0 flex-col-reverse px-3 first:pl-0 last:pr-0 sm:px-6">
+            <dt className="mt-1.5 text-[11px] leading-snug text-white/70 sm:mt-2 sm:text-sm">
+              <span className="block font-medium text-white/80 sm:text-white">{metric.label}</span>
+              {metric.context && <span className="hidden first-letter:uppercase sm:inline">{metric.context}</span>}
             </dt>
-            <dd className="text-[40px] font-light leading-none tracking-[-0.04em] sm:text-[48px]">{metric.value}</dd>
+            <dd className="break-words text-[19px] font-light leading-tight tracking-[-0.03em] sm:text-[48px] sm:leading-none sm:tracking-[-0.04em]">{metric.value}</dd>
           </div>
         ))}
       </dl>
     </motion.article>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Phones: "More projects" as a two-column grid of tiles               */
+/* ------------------------------------------------------------------ */
+function ProjectTile({ project, onOpen }: { project: DetailedCaseStudy; onOpen: () => void }) {
+  const lead = project.whatChanged.metrics[0];
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex h-full w-full flex-col overflow-hidden rounded-[14px] border border-white/10 bg-white/[.04] text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9BBFF]"
+      >
+        <span className="relative block aspect-[16/10] w-full bg-white/5">
+          <Image src={project.cardImage} alt="" fill sizes="50vw" style={{ objectPosition: project.cardImagePosition }} className="object-cover" />
+          <span className="absolute left-2 top-2 rounded-full bg-black/55 px-1.5 py-0.5 text-[10px] tabular-nums text-white/85 backdrop-blur">{project.index.split(" / ")[0]}</span>
+        </span>
+        <span className="flex flex-1 flex-col p-3">
+          <span className="truncate text-[9.5px] font-medium uppercase tracking-[0.12em] text-[#C9BBFF]">{project.category.split(" · ")[0]}</span>
+          <span className="mt-1 line-clamp-2 text-[14px] leading-snug text-white">{project.title}</span>
+          {lead && (
+            <span className="mt-auto pt-2 text-[11px] leading-tight text-white/55">
+              <span className="block text-[15px] font-light text-white">{lead.value}</span>
+              <span className="line-clamp-1">{lead.label}</span>
+            </span>
+          )}
+        </span>
+      </button>
+    </li>
   );
 }
 
@@ -189,7 +227,7 @@ export function PortfolioCaseStudiesSection() {
   return (
     <section id="case-studies" className="relative scroll-mt-16 text-white">
       <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
-        <div className="border-t border-white/15 py-14 sm:py-20">
+        <div className="border-t border-white/15 py-10 sm:py-20">
         <header className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.19em] text-[#C9BBFF]">Case studies</p>
@@ -203,18 +241,35 @@ export function PortfolioCaseStudiesSection() {
         </header>
 
         {/* Stats */}
-        <dl className="mt-10 grid grid-cols-2 gap-y-8 border-y border-white/15 py-7 md:grid-cols-4 md:divide-x md:divide-white/15">
+        <dl className="mt-6 grid grid-cols-2 gap-y-5 border-y border-white/15 py-5 sm:mt-10 sm:gap-y-8 sm:py-7 md:grid-cols-4 md:divide-x md:divide-white/15">
           {stats.map(([value, label]) => (
             <div key={label} className="flex flex-col-reverse md:px-6 md:first:pl-0 md:last:pr-0">
-              <dt className="mt-2 text-sm text-white/65">{label}</dt>
-              <dd className="text-[40px] font-light leading-none tracking-[-0.04em]">{value}</dd>
+              <dt className="mt-1.5 text-[13px] text-white/65 sm:mt-2 sm:text-sm">{label}</dt>
+              <dd className="text-[30px] font-light leading-none tracking-[-0.04em] sm:text-[40px]">{value}</dd>
             </div>
           ))}
         </dl>
 
         {/* Filter */}
-        <div className="mb-10 mt-8 flex items-end justify-between gap-6 border-b border-white/15">
-          <nav aria-label="Filter case studies" className="flex gap-6 overflow-x-auto overflow-y-hidden [scrollbar-width:none] sm:gap-8">
+        {/* Phones: one dropdown, so nothing is hidden off-screen */}
+        <label className="mb-2 mt-6 flex items-center gap-3 sm:hidden">
+          <span className="shrink-0 text-[12px] text-white/55">Show</span>
+          <span className="relative flex-1">
+            <select
+              value={activeTab}
+              onChange={(event) => setActiveTab(event.target.value)}
+              className="h-11 w-full appearance-none rounded-xl border border-white/15 bg-white/[.06] pl-3 pr-9 text-[14px] text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#C9BBFF]"
+            >
+              {DISCIPLINE_TABS.map((tab) => <option key={tab.id} value={tab.id} className="bg-[#15131f]">{tab.label}</option>)}
+            </select>
+            <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/55" />
+          </span>
+          <span className="shrink-0 text-[12px] tabular-nums text-white/55">{projects.length}</span>
+        </label>
+
+
+        <div className="mb-10 mt-8 hidden items-end justify-between gap-6 border-b border-white/15 sm:flex">
+          <nav aria-label="Filter case studies" className="flex flex-wrap gap-x-8">
             {DISCIPLINE_TABS.map((tab) => {
               const on = activeTab === tab.id;
               return (
@@ -236,7 +291,7 @@ export function PortfolioCaseStudiesSection() {
           </p>
         </div>
 
-        <div ref={featuredRef} className="relative scroll-mt-24">
+        <div ref={featuredRef} className="relative mt-5 scroll-mt-20 sm:mt-0 sm:scroll-mt-24">
           {/* Link targets for each project */}
           {PORTFOLIO_CASE_STUDIES.map(({ id }) => (
             <span key={id} id={id} aria-hidden="true" className="absolute left-0 top-0 scroll-mt-24" />
@@ -246,11 +301,18 @@ export function PortfolioCaseStudiesSection() {
           </AnimatePresence>}
         </div>
 
-        <div className="mt-14 sm:mt-20">
-          <div className="mb-6 flex items-baseline justify-between">
-            <h3 className="text-2xl font-light tracking-[-0.03em] sm:text-[28px]">More projects</h3>
+        <div className="mt-10 sm:mt-20">
+          <div className="mb-4 flex items-baseline justify-between sm:mb-6">
+            <h3 className="text-[22px] font-light tracking-[-0.03em] sm:text-[28px]">More projects</h3>
+            <p className="text-[12px] text-white/50 sm:hidden">Tap one to open it above</p>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {/* Phones: compact tiles; tapping one opens it in the featured spot above */}
+          <ul aria-label="More projects" className="grid grid-cols-2 gap-2.5 sm:hidden">
+            {projects.filter((project) => project.id !== featured?.id).map((project) => (
+              <ProjectTile key={project.id} project={project} onOpen={() => openProject(project.id)} />
+            ))}
+          </ul>
+          <div className="hidden grid-cols-1 gap-4 sm:grid sm:grid-cols-2 xl:grid-cols-4">
             {projects.filter((project) => project.id !== featured?.id).map((project) => (
               <motion.div
                 key={project.id}

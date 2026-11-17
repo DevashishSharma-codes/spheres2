@@ -12,6 +12,7 @@ import { FitToHeight } from "@/components/services/FitToHeight";
 import { StatGraphic } from "@/components/services/StatGraphic";
 import { ServiceCapabilitiesSection } from "@/components/services/ServiceCapabilitiesSection";
 import { TechMarquee } from "@/components/services/TechMarquee";
+import { MobileDisclosureList } from "@/components/services/MobileDisclosureList";
 import { SERVICE_CAPABILITIES } from "@/content/serviceCapabilities";
 import { SERVICE_TECH } from "@/content/serviceTech";
 import type { ServiceDetail, ServiceProof, ServiceProofStat } from "@/content/serviceDetails";
@@ -130,6 +131,20 @@ function GlobeProof({ proof }: { proof: ServiceProof }) {
 
 const PROOF_LAYOUTS = { stepped: SteppedProof, grid: GridProof, globe: GlobeProof };
 
+/** Phones: every result as a plain row, number first, without the charts. */
+function CompactProof({ proof }: { proof: ServiceProof }) {
+  return (
+    <dl className="divide-y divide-white/10 border-y border-white/10">
+      {proof.stats.map((stat) => (
+        <div key={stat.label} className="grid grid-cols-[minmax(96px,auto)_minmax(0,1fr)] items-baseline gap-x-4 py-3.5">
+          <dd className="text-[28px] font-light leading-none tracking-[-0.04em]">{stat.value}</dd>
+          <dt className="text-[13px] leading-snug text-white/65"><span className="block font-medium text-white">{stat.label}</span>{stat.detail}</dt>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 export function ServiceDetailView({ service, detail }: { service: ServiceItem; detail: ServiceDetail }) {
   const Proof = PROOF_LAYOUTS[detail.proof.layout];
 
@@ -145,7 +160,7 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
 
       <Container wide className="relative">
         {/* Hero */}
-        <section className="grid items-center gap-10 pb-10 pt-6 sm:pt-10 lg:h-[calc(100svh-137px)] lg:min-h-[600px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-12 lg:py-5">
+        <section className="grid items-center gap-10 pb-8 pt-6 sm:pb-10 sm:pt-10 lg:h-[calc(100svh-137px)] lg:min-h-[600px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-12 lg:py-5">
           <div>
             {/* The back button leads the breadcrumb, in the same row, so the two never overlap */}
             <div className="flex items-center gap-3.5">
@@ -176,7 +191,10 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
               </Link>
             </div>
           </div>
-          <FitToHeight><ServiceModel kind={detail.model} /></FitToHeight>
+          {/* The illustration is for tablets and up; phones go straight from the buttons to the content */}
+          <div className="hidden min-w-0 sm:block lg:h-full lg:min-h-0">
+            <FitToHeight><ServiceModel kind={detail.model} /></FitToHeight>
+          </div>
         </section>
       </Container>
 
@@ -185,7 +203,7 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
 
       <Container wide>
         {/* What's included: plain ruled columns, no cards */}
-        <section aria-labelledby="service-offerings" className="border-t border-white/15 py-14 sm:py-20">
+        <section aria-labelledby="service-offerings" className="border-t border-white/15 py-10 sm:py-20">
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
             <div>
               <SectionLabel>What&apos;s included</SectionLabel>
@@ -193,10 +211,36 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
             </div>
             <p className="max-w-xl text-[15px] leading-relaxed text-white/70 lg:justify-self-end">{detail.sectionLead}</p>
           </div>
-          {/* On phones the offerings swipe sideways, one and a bit at a time, instead of stacking into a long scroll */}
-          <div className="-mx-4 mt-8 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:mt-10 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 sm:overflow-visible sm:px-0 sm:pb-0 xl:grid-cols-4 xl:gap-x-0 xl:divide-x xl:divide-white/15 [&::-webkit-scrollbar]:hidden">
+          {/* Phones: one compact row per offering, opening in place */}
+          <MobileDisclosureList
+            label="What's included"
+            className="mt-6 sm:hidden"
+            items={detail.offerings.map(({ title, description, icon: Icon, includes, bestFor }, index) => ({
+              key: `offering-${index}`,
+              header: (
+                <span className="flex items-center gap-3">
+                  <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-white/[.07] text-[#C9BBFF]"><Icon className="h-[18px] w-[18px]" /></span>
+                  <span className="min-w-0">
+                    <span className="block text-[15px] leading-snug text-white">{title}</span>
+                    <span className="block truncate text-[12.5px] text-white/55">{description}</span>
+                  </span>
+                </span>
+              ),
+              body: (
+                <div className="space-y-3 pl-12">
+                  <p className="text-[14px] leading-relaxed text-white/70">{description}</p>
+                  <ul className="flex flex-wrap gap-1.5">
+                    {includes.map((item) => <li key={item} className="rounded-full border border-white/12 bg-white/[.06] px-2.5 py-1 text-[12px] leading-none text-white/85">{item}</li>)}
+                  </ul>
+                  <p className="text-[13px] text-white/55">Best for <span className="text-[#C9BBFF]">{bestFor}</span></p>
+                </div>
+              ),
+            }))}
+          />
+          {/* Tablets and up: illustrated columns */}
+          <div className="mt-10 hidden sm:grid sm:grid-cols-2 sm:gap-x-8 sm:gap-y-10 xl:grid-cols-4 xl:gap-x-0 xl:divide-x xl:divide-white/15">
             {detail.offerings.map(({ title, description, icon: Icon, includes, image, bestFor }, index) => (
-              <article key={title} className="flex w-[84%] shrink-0 snap-start flex-col border-t border-white/15 pt-5 sm:w-auto xl:border-t-0 xl:px-6 xl:pt-0 xl:first:pl-0 xl:last:pr-0">
+              <article key={title} className="flex flex-col border-t border-white/15 pt-5 xl:border-t-0 xl:px-6 xl:pt-0 xl:first:pl-0 xl:last:pr-0">
                 <div className="relative aspect-[16/10] overflow-hidden rounded-[14px] bg-white/5 xl:aspect-auto xl:h-[180px]">
                   <Image src={image} alt="" fill sizes="(max-width: 639px) 92vw, (max-width: 1279px) 46vw, 24vw" className="object-cover" />
                 </div>
@@ -226,12 +270,13 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
 
         {/* Results close the page, just before the next step */}
         {/* With a closing line, little space below: the line and thread below continue this section */}
-        <section aria-labelledby="service-results" className={detail.closingTitle ? "pb-8 pt-14 sm:pb-10 sm:pt-20" : "py-14 sm:py-20"}>
-          <div className="mb-8 flex flex-col justify-between gap-2 sm:mb-10 sm:flex-row sm:items-baseline sm:gap-6">
+        <section aria-labelledby="service-results" className={detail.closingTitle ? "pb-8 pt-10 sm:pb-10 sm:pt-20" : "py-10 sm:py-20"}>
+          <div className="mb-5 flex flex-col justify-between gap-2 sm:mb-10 sm:flex-row sm:items-baseline sm:gap-6">
             <ResultsTitle />
             <SourceNote>{detail.proof.source}</SourceNote>
           </div>
-          <Proof proof={detail.proof} />
+          <div className="sm:hidden"><CompactProof proof={detail.proof} /></div>
+          <div className="hidden sm:block"><Proof proof={detail.proof} /></div>
         </section>
 
         {/* Next step. A closing line goes into the footer, right above its thread and

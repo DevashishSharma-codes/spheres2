@@ -5,6 +5,7 @@ import { COMPANY_SOCIALS } from "@/content/company";
 import { BackToTopButton, FooterCone } from "./FooterCone";
 import { FooterWordmark } from "./FooterWordmark";
 import { FooterClosingSlot } from "./FooterClosingLine";
+import { FooterThemeSync } from "./FooterThemeSync";
 import { SOCIAL_ICON_PATHS } from "./socialIconPaths";
 import { SITE_URL } from "@/lib/seo";
 
@@ -127,6 +128,7 @@ function IconRow({ title, items }: { title: string; items: readonly { label: str
 export function Footer() {
   return (
     <footer className="w-full overflow-x-clip bg-white">
+      <FooterThemeSync />
       {/* The thread, the call to action, and the paper plane that flies between them. Pages that
           already lead to contact (the contact page, the 404) hide it with a `data-no-footer-cone` marker.
           Pages whose last section is dark add `data-footer-dark`, and this whole zone turns dark with

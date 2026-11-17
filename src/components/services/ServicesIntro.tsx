@@ -1,16 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Code2, Layers, Rocket, Timer } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { PageBackButton } from "@/components/ui/PageBackButton";
 import { SERVICES_CONTENT } from "@/content/services";
 
-const STATS = [
-  { icon: Layers, value: String(SERVICES_CONTENT.services.length), label: "Specialised services" },
-  { icon: Rocket, value: "15+", label: "Products shipped" },
-  { icon: Timer, value: "3–14", label: "Weeks, brief to launch" },
-  { icon: Code2, value: "100%", label: "In-house code" },
-];
 
 const overview = SERVICES_CONTENT.overview;
 
@@ -29,25 +22,6 @@ export function ServicesIntro() {
             <span aria-current="page">Services</span>
           </nav>
           <h1 className="mt-3 text-4xl font-light leading-[1.05] tracking-[-0.045em] sm:text-5xl lg:text-[64px]">Our Services</h1>
-        </Container>
-      </div>
-
-      {/* Numbers */}
-      <div className="border-b border-[#ECEBF0] bg-white/70">
-        <Container wide>
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-6 py-6 lg:grid-cols-4 lg:py-7">
-            {STATS.map(({ icon: Icon, value, label }) => (
-              <div key={label} className="flex min-w-0 items-center gap-3 lg:justify-center lg:gap-4">
-                <span aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#6248CA] shadow-[0_4px_14px_rgba(60,40,120,.12)] sm:h-14 sm:w-14">
-                  <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
-                </span>
-                <div className="flex min-w-0 flex-col-reverse">
-                  <dt className="text-xs text-[#6E6D78] sm:text-sm">{label}</dt>
-                  <dd className="text-2xl font-light leading-tight tracking-[-0.03em] text-[#232129] sm:text-[32px]">{value}</dd>
-                </div>
-              </div>
-            ))}
-          </dl>
         </Container>
       </div>
 
