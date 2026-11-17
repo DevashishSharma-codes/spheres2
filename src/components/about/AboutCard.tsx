@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
+import { MARK_DOTS, MARK_SIZE } from "@/components/layout/logoShapes";
 
 interface AboutCardProps {
   title: string;
@@ -32,7 +33,17 @@ const GRAIN =
  * "dusk": the light violet alone (from the Industries tabs, lightened towards the logo's violet).
  * "glass": the frosted purple glass above. Switch STYLE to compare them.
  */
-const STYLE: "blend" | "dusk" | "glass" = "blend";
+const STYLE: "industry" | "blend" | "dusk" | "glass" = "industry";
+
+/*
+ * "industry": the Industries panels' look, retuned for a white page. Same angle and violet family,
+ * but it settles to a deep violet instead of near-black (which would sit heavy on white), with the
+ * same soft half-pill shapes rising from the bottom, and a soft violet shadow to lift it off the page.
+ */
+const INDUSTRY = "linear-gradient(172deg, #7b63bb 0%, #634b9c 38%, #4a3579 70%, #33255a 100%)";
+const INDUSTRY_SHEEN = "linear-gradient(180deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,0) 32%)";
+const INDUSTRY_SHADOW = "0 2px 4px rgba(51,37,90,.10), 0 22px 40px -24px rgba(51,37,90,.55)";
+const INDUSTRY_EDGE = "inset 0 1px 0 rgba(255,255,255,.28), inset 0 0 0 1px rgba(255,255,255,.06)";
 // Leans towards the 21 Spheres logo's violet, kept soft.
 const DUSK = "linear-gradient(172deg, #9a89de 0%, #8571cf 40%, #6d58b9 72%, #5641a0 100%)";
 const DUSK_REFLECTION = "linear-gradient(180deg, rgba(255,255,255,.1) 0%, rgba(255,255,255,0) 30%)";
@@ -63,10 +74,20 @@ export function AboutCard({ title, summary, image, icon: Icon, active = false, o
       type="button"
       onClick={onClick}
       aria-label={`${title}: ${active ? "read more" : "show this card"}`}
-      style={{ boxShadow: EDGE_LIGHT }}
+      style={{ boxShadow: STYLE === "industry" ? `${INDUSTRY_EDGE}, ${INDUSTRY_SHADOW}` : EDGE_LIGHT }}
       className="group relative flex h-[372px] w-full cursor-pointer flex-col overflow-hidden rounded-[28px] p-2 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7057D9] motion-reduce:transition-none sm:h-[392px]"
     >
-      {STYLE === "blend" ? (
+      {STYLE === "industry" ? (
+        <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[28px]" style={{ background: `${INDUSTRY_SHEEN}, ${INDUSTRY}` }}>
+          {/* The 21 Spheres mark as a watermark: large, very faint, low on the right and running off the
+              edge, so it reads as a brand detail without ever sitting strongly behind the words.
+              A soft glow behind it lifts the corner a little. */}
+          <span className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-[#B9A6FF]/[.16] blur-3xl" />
+          <svg viewBox={`0 0 ${MARK_SIZE[0]} ${MARK_SIZE[1]}`} className="absolute -bottom-16 -right-16 h-[230px] w-[230px] rotate-[-12deg] text-white opacity-[.09] transition-transform duration-700 ease-out group-hover:rotate-[0deg] motion-reduce:transition-none" fill="currentColor">
+            {MARK_DOTS.map(([cx, cy, r]) => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={r} />)}
+          </svg>
+        </span>
+      ) : STYLE === "blend" ? (
         <>
           <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[28px]" style={{ background: DUSK }}>
             {/* The glass's colour, drifting softly through the violet */}
@@ -96,7 +117,8 @@ export function AboutCard({ title, summary, image, icon: Icon, active = false, o
         </>
       )}
       {/* Rim */}
-      <span aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 rounded-[28px]" style={RIM} />
+      {/* The glass rim belongs to the glass styles; the industry style uses its softer top highlight */}
+      {STYLE !== "industry" && <span aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 rounded-[28px]" style={RIM} />}
       {/* Photo, framed inside the card */}
       <span className="relative z-10 block aspect-[16/11] w-full shrink-0 overflow-hidden rounded-[21px] bg-[#2C1E68] shadow-[0_6px_16px_-8px_rgba(10,6,40,.5)]">
         <Image
