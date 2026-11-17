@@ -42,9 +42,9 @@ export default function Page() {
             <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/70 sm:mt-5 sm:text-lg">
               Thoughtful engineering, steady momentum, and products built to do meaningful work.
             </p>
-            {/* Phones: two full-width buttons of equal width; larger screens: side by side */}
-            <div className="mt-6 grid gap-2.5 sm:mt-8 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
-              <PillLink href="#case-studies" className="w-full justify-between sm:w-auto">Explore case studies</PillLink>
+            {/* Tablets and up: the buttons sit under the text, beside the illustration */}
+            <div className="mt-8 hidden flex-wrap items-center gap-3 sm:flex">
+              <PillLink href="#case-studies">Explore case studies</PillLink>
               <Link href="/contact" className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 px-6 text-sm text-white/85 transition-colors hover:border-white/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8]">
                 Discuss a product
               </Link>
@@ -53,6 +53,13 @@ export default function Page() {
           {/* The device illustration, on every screen, as on desktop */}
           <div className="min-w-0 lg:h-full lg:min-h-0">
             <FitToHeight><PortfolioDevices /></FitToHeight>
+          </div>
+          {/* Phones: the illustration first, then two full-width buttons of equal width */}
+          <div className="-mt-2 grid gap-2.5 sm:hidden">
+            <PillLink href="#case-studies" className="w-full justify-between">Explore case studies</PillLink>
+            <Link href="/contact" className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 px-6 text-sm text-white/85 transition-colors hover:border-white/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8E79E8]">
+              Discuss a product
+            </Link>
           </div>
         </section>
       </Container>
