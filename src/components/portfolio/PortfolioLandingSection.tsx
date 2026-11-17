@@ -61,7 +61,7 @@ export function PortfolioLandingSection() {
   return (
     <section 
       id="case-studies" 
-      className="relative w-full min-h-[calc(100vh-64px)] lg:min-h-[calc(100vh-64px)] flex flex-col justify-between text-[#1D1D1F] py-8 sm:py-10 lg:py-12 overflow-hidden border-b border-[#E5E5EA]"
+      className="relative w-full md:min-h-[calc(100vh-64px)] flex flex-col justify-between text-[#1D1D1F] py-8 sm:py-10 lg:py-12 overflow-hidden border-b border-[#E5E5EA]"
       style={{ background: "#FFFFFF" }}
     >
       <div className="relative z-10 w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between flex-1 min-h-0">
@@ -97,12 +97,35 @@ export function PortfolioLandingSection() {
             - Crisp subtle rounded corners (rounded-[10px])
             - Pinterest AI Customer Support image
             ========================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 items-stretch flex-1 min-h-0 my-auto py-2 sm:py-3">
+        {/* Phones: a compact list, one aligned row per project: photo, then category, name and a short summary */}
+        <ul className="divide-y divide-[#E5E5EA]/80 md:hidden">
+          {FEATURED_3_PROJECTS.map((project) => (
+            <li key={project.id}>
+              <Link
+                href={`/case-studies#${CASE_STUDY_IDS[project.id] ?? ""}`}
+                className="grid grid-cols-[104px_minmax(0,1fr)_16px] items-center gap-x-4 py-4"
+              >
+                <span className="relative aspect-[4/3] w-full overflow-hidden rounded-[8px] border border-[#E5E5EA]/80 bg-[#F5F5F7]">
+                  <Image src={project.image} alt="" fill unoptimized className="object-cover" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#7C3AED]">{project.category}</span>
+                  <span className="mt-1 block text-[15px] font-semibold leading-snug tracking-tight text-[#111114]">{project.title}</span>
+                  <span className="mt-1 line-clamp-2 block text-[12.5px] leading-[1.5] text-[#6E6E73]">{project.description1}</span>
+                </span>
+                <ArrowUpRight aria-hidden="true" className="h-4 w-4 text-[#7C3AED]" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {/* Tablets and up: three columns */}
+        <div className="hidden flex-1 items-stretch md:my-auto md:grid md:min-h-0 md:grid-cols-3 md:gap-8 md:py-3 lg:gap-10">
           {FEATURED_3_PROJECTS.map((project) => (
             <Link
               key={project.id}
               href={`/case-studies#${CASE_STUDY_IDS[project.id] ?? ""}`}
-              className="group flex flex-col text-left select-none cursor-pointer h-full"
+              className="group flex h-full cursor-pointer select-none flex-col text-left"
             >
               {/* Image thumbnail with crisp subtle rounded edges */}
               <div className="relative aspect-[16/9] w-full rounded-[10px] overflow-hidden bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#E5E5EA]/80 group-hover:border-[#7C3AED]/50 transition-all duration-300">

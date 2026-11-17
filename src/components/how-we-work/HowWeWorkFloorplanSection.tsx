@@ -629,14 +629,14 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
       ref={sectionRef}
       id="how-we-work"
       data-embedded={embedded ? "true" : undefined}
-      className="how-we-work-process relative scroll-mt-14 sm:scroll-mt-16 min-h-[calc(100svh-5rem)] w-full overflow-hidden text-white"
+      className="how-we-work-process relative scroll-mt-14 sm:scroll-mt-16 w-full overflow-hidden text-white lg:min-h-[calc(100svh-5rem)]"
       style={{ background: SECTION_BG }}
     >
       {/* Link targets for each stage, so /#stage-id lands on this section */}
       {WORK_FLOORPLAN_STEPS.map((step) => (
         <span key={step.id} id={step.id} aria-hidden="true" className="absolute left-0 top-0 scroll-mt-14 sm:scroll-mt-16" />
       ))}
-      <div className="relative mx-auto flex min-h-[calc(100svh-5.5rem)] w-full max-w-[1600px] flex-col px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:pb-8 lg:pt-12">
+      <div className="relative mx-auto flex w-full max-w-[1600px] flex-col px-5 py-10 lg:min-h-[calc(100svh-5.5rem)] sm:px-8 sm:py-10 lg:px-12 lg:pb-8 lg:pt-12">
         {/* ------------------------------- header (top) ------------------------------- */}
         {/* Heading and tagline on the left, centred against the lead paragraph on the right */}
         <header className="mb-6 flex shrink-0 flex-col gap-3 sm:mb-8 sm:gap-4 lg:mb-6 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
@@ -846,76 +846,37 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
         </div>
 
         {/* ------------------------------ phones and tablets ------------------------------
-            The whole process at a glance: six stage tiles in a two-column grid, and one panel
-            beneath showing the selected stage. The intro walks the panel through the stages. */}
-        <div className="lg:hidden">
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-            {WORK_FLOORPLAN_STEPS.map((step, index) => {
-              const revealed = index < pillCount || finished || skipped;
-              const isComplete = index < completedCount;
-              const isShown = (expandedIndex ?? activeIndex) === index;
-              const duration = HOW_WE_WORK_CONTENT.steps[index]?.duration;
-              return (
-                <button
-                  key={step.id}
-                  type="button"
-                  onClick={() => togglePill(index)}
-                  aria-pressed={isShown}
-                  className={`relative flex min-h-[92px] flex-col rounded-[14px] border p-3 text-left transition-[background-color,border-color,opacity] duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60 ${
-                    isShown ? "border-[#C8B4FF]/70 bg-[#C8B4FF]/[.13]" : "border-white/12 bg-white/[.04]"
-                  } ${revealed ? "opacity-100" : "opacity-35"}`}
-                >
-                  <span className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] tabular-nums tracking-[0.04em] text-[#C8B4FF]">{step.step}</span>
-                    {isComplete ? (
-                      <span aria-label="Completed" className="flex h-4 w-4 items-center justify-center rounded-full bg-[#B79CFF] text-[#170E29]">
-                        <Check className="h-2.5 w-2.5" strokeWidth={3} />
-                      </span>
-                    ) : (
-                      <span className="truncate text-[10.5px] text-white/45">{duration}</span>
-                    )}
-                  </span>
-                  <span className={`mt-auto pt-2 text-[14px] leading-[1.25] ${isShown ? "text-white" : "text-white/85"}`}>
-                    <TwoLineTitle title={step.title} />
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+            Every stage at once, as a quiet vertical timeline: a thin line with a marker per stage,
+            and beside it the stage's number, duration, name, summary and deliverables. Nothing to
+            tap and nothing animating, so the whole process reads top to bottom. */}
+        <ol aria-label="Our process, stage by stage" className="max-w-2xl lg:hidden">
+          {WORK_FLOORPLAN_STEPS.map((step, index) => {
+            const last = index === TOTAL - 1;
+            return (
+              <li key={step.id} className="relative grid grid-cols-[22px_minmax(0,1fr)] gap-x-4">
+                {/* Marker, and the line running down to the next stage */}
+                <span aria-hidden="true" className="relative flex justify-center">
+                  <span className="relative z-10 mt-[3px] h-[11px] w-[11px] rounded-full border border-[#C8B4FF] bg-[#C8B4FF]/25" />
+                  {!last && <span className="absolute bottom-0 top-[14px] w-px bg-gradient-to-b from-[#B79CFF]/50 to-[#B79CFF]/15" />}
+                </span>
 
-          {/* The selected stage */}
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={expandedIndex ?? activeIndex}
-              initial={{ opacity: 0, y: reduced ? 0 : 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: reduced ? 0 : -6 }}
-              transition={{ duration: reduced ? 0 : 0.22, ease: EASE_OUT }}
-              className="mt-3 rounded-[16px] border border-[#B79CFF]/35 p-4 sm:p-5"
-              style={{ background: CARD_BG }}
-            >
-              {(() => {
-                const index = expandedIndex ?? activeIndex;
-                const step = WORK_FLOORPLAN_STEPS[index];
-                return (
-                  <>
-                    <p className="flex items-center justify-between text-[11px] tabular-nums tracking-[0.04em] text-[#C8B4FF]">
-                      <span>{step.step} / 0{TOTAL}</span>
-                      <span className="text-white/45">{HOW_WE_WORK_CONTENT.steps[index]?.duration}</span>
-                    </p>
-                    <h3 className={`mt-1.5 ${CARD_TITLE_CLASS}`}>{step.title}</h3>
-                    <p className={CARD_SUMMARY_CLASS}>{STAGE_SUMMARIES[index]}</p>
-                    <ul aria-label="Deliverables" className="flex flex-wrap gap-1.5">
-                      {STAGE_DELIVERABLES[index].map((item) => (
-                        <li key={item} className="rounded-full border border-white/12 bg-white/[.06] px-2.5 py-1 text-[11px] leading-none text-white/80">{item}</li>
-                      ))}
-                    </ul>
-                  </>
-                );
-              })()}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+                <div className={last ? "pb-1" : "pb-8"}>
+                  <p className="flex items-baseline justify-between gap-3 text-[11px] tabular-nums tracking-[0.04em]">
+                    <span className="text-[#C8B4FF]">{step.step} / 0{TOTAL}</span>
+                    <span className="text-white/45">{HOW_WE_WORK_CONTENT.steps[index]?.duration}</span>
+                  </p>
+                  <h3 className="mt-1 text-[17px] font-medium leading-snug tracking-[-0.01em] text-white">{step.title}</h3>
+                  <p className="mt-1.5 text-[14px] font-light leading-relaxed text-white/65">{STAGE_SUMMARIES[index]}</p>
+                  <ul aria-label={`${step.title} deliverables`} className="mt-3 flex flex-wrap gap-1.5">
+                    {STAGE_DELIVERABLES[index].map((item) => (
+                      <li key={item} className="rounded-full border border-white/12 bg-white/[.05] px-2.5 py-1 text-[11px] leading-none text-white/75">{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
 
         <span className="sr-only" aria-live="polite">
           Stage {activeStep.step}: {activeStep.title}

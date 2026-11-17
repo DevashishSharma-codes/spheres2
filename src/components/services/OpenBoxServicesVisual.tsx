@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import {
@@ -20,6 +20,19 @@ import {
 } from "lucide-react";
 import { ServiceItem } from "@/types";
 import { SERVICES_CONTENT } from "@/content/services";
+
+/* Phones and tablets keep the look but not the endless motion: the ray stops pulsing and the
+   floating particles are left out. Those repaint large blurred layers every frame, which is
+   what made the section stutter on mobile. */
+const SMALL_SCREEN = "(max-width: 1023px)";
+const subscribeSmall = (onChange: () => void) => {
+  const query = window.matchMedia(SMALL_SCREEN);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+};
+function useSmallScreen() {
+  return useSyncExternalStore(subscribeSmall, () => window.matchMedia(SMALL_SCREEN).matches, () => false);
+}
 
 interface OpenBoxServicesVisualProps {
   services: ServiceItem[];
@@ -142,6 +155,7 @@ export function OpenBoxServicesVisual({
   canNextSquad = true,
 }: OpenBoxServicesVisualProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
   const [lightOn, setLightOn] = useState(false);
   const [introStage, setIntroStage] = useState(0);
   const [burstCount, setBurstCount] = useState(0);
@@ -269,10 +283,10 @@ export function OpenBoxServicesVisual({
         >
           <motion.svg
             animate={isLightActive ? {
-              opacity: [0.92, 1.0, 0.94, 0.98, 0.92]
+              opacity: smallScreen ? 0.96 : [0.92, 1.0, 0.94, 0.98, 0.92]
             } : { opacity: 0 }}
             transition={{
-              opacity: { duration: 4.5, repeat: Infinity, ease: "easeInOut" }
+              opacity: smallScreen ? { duration: 0.5 } : { duration: 4.5, repeat: Infinity, ease: "easeInOut" }
             }}
             className="w-full h-full"
             viewBox="0 0 640 760"
@@ -368,7 +382,7 @@ export function OpenBoxServicesVisual({
       {/* ========================================================
           FLOATING ATMOSPHERIC LIGHT PARTICLES
           ======================================================== */}
-      {isLightActive && PARTICLES.map((p) => (
+      {isLightActive && !smallScreen && PARTICLES.map((p) => (
         <motion.div
           key={p.id}
           className="absolute rounded-full bg-white pointer-events-none z-[16]"
@@ -472,7 +486,7 @@ export function OpenBoxServicesVisual({
                   className={`
                     relative w-full rounded-2xl
                     bg-gradient-to-br from-white/95 via-white/88 to-[#FAF8FF]/82
-                    backdrop-blur-xl
+                    lg:backdrop-blur-xl
                     border transition-colors duration-200 p-2 px-3 sm:p-3 sm:px-4
                     flex items-center justify-between gap-3 cursor-pointer
                     overflow-hidden group
@@ -519,7 +533,7 @@ export function OpenBoxServicesVisual({
                 >
                   <div className="w-[1.5px] h-1.5 sm:h-2 bg-gradient-to-b from-[#C084FC] to-white shadow-[0_0_6px_#A855F7]" />
                   <div className="relative flex items-center justify-center">
-                    <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#A855F7]/40 blur-[2.5px] animate-pulse" />
+                    <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#A855F7]/40 blur-[2.5px] lg:animate-pulse" />
                     <div className="absolute w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white shadow-[0_0_6px_#FFFFFF,0_0_12px_#C084FC,0_0_18px_#7C3AED]" />
                   </div>
                   <div className="w-[1.5px] h-1.5 sm:h-2 bg-gradient-to-b from-white to-[#C084FC] shadow-[0_0_6px_#A855F7]" />
