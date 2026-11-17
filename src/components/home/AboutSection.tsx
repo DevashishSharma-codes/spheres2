@@ -42,7 +42,7 @@ const CARD_ICONS: Record<string, AboutCardItem["icon"]> = {
 const BASE_CARDS: AboutCardItem[] = ABOUT_CARDS.map((card) => ({ ...card, icon: CARD_ICONS[card.id] ?? Briefcase }));
 
 const ARROW_CLASS =
-  "absolute top-[calc(50%-12px)] z-30 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-[#19191C] to-[#573EBF] text-white shadow-[0_8px_20px_-8px_rgba(43,39,53,0.6)] transition-[filter] duration-200 hover:brightness-125";
+  "absolute max-sm:hidden top-[calc(50%-12px)] z-30 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-[#19191C] to-[#573EBF] text-white shadow-[0_8px_20px_-8px_rgba(43,39,53,0.6)] transition-[filter] duration-200 hover:brightness-125";
 
 // The carousel position is a plain counter with no start or end. Cards are drawn around wherever
 // the track is on screen, so there is always a card to show, however fast it's clicked.
@@ -118,6 +118,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
   }, []);
 
   const isDismissingRef = useRef(false);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Smoothly close the modal and scroll down (or up) cleanly via requestAnimationFrame
   const smoothDismissAndScroll = useCallback((isDown: boolean) => {
@@ -172,6 +173,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
     }
 
     let touchStartY = 0;
+    let touchInPanel = false;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -188,11 +190,13 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         touchStartY = e.touches[0].clientY;
+        // A swipe inside the card scrolls its text; only a swipe outside it closes the card.
+        touchInPanel = !!panelRef.current?.contains(e.target as Node);
       }
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
+      if (e.touches.length > 0 && !touchInPanel) {
         const deltaY = touchStartY - e.touches[0].clientY;
         if (Math.abs(deltaY) > 15) {
           smoothDismissAndScroll(deltaY > 0);
@@ -216,6 +220,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
   // Auto-play timer (pauses on hover or when modal is open)
   useEffect(() => {
     if (isHovered || selectedCard !== null) return;
+    if (window.matchMedia("(max-width: 767px)").matches) return;
     const interval = setInterval(() => {
       handleNext();
     }, 3800);
@@ -237,7 +242,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
     <div className="relative z-0 w-full overflow-hidden border-b border-[#ECEBF0] bg-white">
       <section
         id="about"
-        className="relative z-10 flex w-full min-h-[calc(100vh-64px)] scroll-mt-14 flex-col justify-center overflow-hidden py-8 sm:scroll-mt-16 lg:py-10"
+        className="relative z-10 flex w-full scroll-mt-14 flex-col justify-center overflow-hidden py-8 md:min-h-[calc(100vh-64px)] sm:scroll-mt-16 lg:py-10"
       >
         {/* Link targets for each card, so /#card-id lands on this section */}
         {BASE_CARDS.map((card) => (
@@ -309,7 +314,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
               else if (info.offset.x > 40) handlePrev();
             }}
             style={{ touchAction: "pan-y" }}
-            className="relative overflow-hidden pb-12 pt-6 [--about-card:280px] [--about-step:294px] [mask-image:linear-gradient(to_right,transparent,black_7%,black_93%,transparent)] sm:[--about-card:300px] sm:[--about-step:320px] lg:[--about-card:320px] lg:[--about-step:340px]">
+            className="relative overflow-hidden pb-8 pt-5 sm:pb-12 sm:pt-6 [--about-card:min(300px,78vw)] [--about-step:calc(min(300px,78vw)+14px)] [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)] sm:[mask-image:linear-gradient(to_right,transparent,black_7%,black_93%,transparent)] sm:[--about-card:300px] sm:[--about-step:320px] lg:[--about-card:320px] lg:[--about-step:340px]">
             <div className="relative h-[400px]">
               <motion.div
                 className="absolute inset-y-0 left-1/2 w-0 will-change-transform"
@@ -356,7 +361,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                 type="button"
                 onClick={() => handleDotClick(i)}
                 aria-label={`Go to slide ${i + 1}`}
-                className={`h-1.5 cursor-pointer rounded-full transition-all duration-300 ${
+                className={`h-1.5 cursor-pointer rounded-full bg-clip-content py-0 transition-all duration-300 max-sm:box-content max-sm:py-2 ${
                   activeBaseIndex === i
                     ? "w-6 bg-gradient-to-r from-[#7057D9] to-[#8E79E8]"
                     : "w-1.5 bg-[#DADADD] hover:bg-black/30"
@@ -375,7 +380,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
             ========================================================= */}
         {mounted && selectedCard && createPortal(
           <div 
-            className="fixed inset-0 z-[9999] bg-black/65 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-hidden cursor-pointer"
+            className="fixed inset-0 z-[9999] bg-black/65 backdrop-blur-md flex items-end justify-center p-0 sm:items-center sm:p-6 overflow-hidden cursor-pointer"
             onClick={closeCard}
             onWheel={(e) => {
               if (Math.abs(e.deltaY) > 5) {
@@ -386,7 +391,8 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
             aria-modal="true"
           >
             <div 
-              className="relative w-full max-w-[860px] my-auto bg-white rounded-[26px] sm:rounded-[30px] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.55)] flex flex-col md:flex-row border border-black/5"
+              ref={panelRef}
+              className="relative flex max-h-[90svh] w-full max-w-[860px] cursor-auto flex-col overflow-hidden rounded-t-[26px] border border-black/5 bg-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.55)] sm:my-auto sm:max-h-[calc(100svh-3rem)] sm:rounded-[30px] md:flex-row"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Top Right Close (Cross) Button */}
@@ -400,7 +406,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
               </button>
 
               {/* Left 48%: Full Photo */}
-              <div className="relative w-full md:w-[48%] min-h-[260px] sm:min-h-[340px] md:min-h-[460px] overflow-hidden bg-slate-100">
+              <div className="relative h-[190px] w-full shrink-0 overflow-hidden bg-slate-100 sm:h-auto sm:min-h-[340px] md:min-h-[460px] md:w-[48%]">
                 <Image
                   src={selectedCard.image}
                   alt={selectedCard.title}
@@ -412,7 +418,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
               </div>
 
               {/* Right 52%: Content section */}
-              <div className="w-full md:w-[52%] p-6 sm:p-8 md:p-9 flex flex-col justify-between bg-white text-left">
+              <div className="flex min-h-0 w-full flex-col justify-between overflow-y-auto overscroll-contain bg-white p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-left sm:p-8 md:w-[52%] md:p-9">
                 <div>
                   {/* Top Row: Circular Icon Badge */}
                   <div className="flex items-center mb-4">
@@ -431,7 +437,7 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                   )}
 
                   {/* Narrative paragraphs */}
-                  <div className="space-y-3.5 text-gray-600 text-[13px] sm:text-sm font-light leading-relaxed">
+                  <div className="space-y-3.5 text-gray-600 text-[14px] sm:text-sm font-light leading-relaxed">
                     {selectedCard.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                   </div>
                 </div>
