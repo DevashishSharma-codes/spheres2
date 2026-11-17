@@ -306,7 +306,7 @@ export function PortfolioCaseStudiesSection() {
 
               <h4 className="mb-3 mt-8 text-sm font-medium">How a request flows</h4>
               <ol className="space-y-2">
-                {selected.blueprint.topology.map((step, i) => (
+                {(selected.blueprint?.topology ?? []).map((step, i) => (
                   <li
                     key={i}
                     className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm leading-relaxed text-white/75"
@@ -318,7 +318,7 @@ export function PortfolioCaseStudiesSection() {
 
               <h4 className="mb-3 mt-8 text-sm font-medium">Benchmarks</h4>
               <div className="grid gap-3 sm:grid-cols-3">
-                {selected.blueprint.benchmarks.map((b) => (
+                {(selected.blueprint?.benchmarks ?? []).map((b) => (
                   <div key={b.metric} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                     <p className="text-xs text-white/55">{b.metric}</p>
                     <p className="my-1 text-2xl font-light tracking-tight">{b.score}</p>
@@ -328,8 +328,8 @@ export function PortfolioCaseStudiesSection() {
               </div>
 
               <div className="mt-8 grid gap-3 border-t border-white/10 pt-6 text-sm text-white/60 sm:grid-cols-2">
-                <p>Timeline: {selected.blueprint.timeline}</p>
-                <p>Security: {selected.blueprint.securityProfile}</p>
+                <p>Timeline: {selected.blueprint?.timeline}</p>
+                <p>Security: {selected.blueprint?.securityProfile}</p>
               </div>
 
               <div className="mt-8 flex justify-end">

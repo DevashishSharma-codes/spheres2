@@ -18,29 +18,37 @@ export interface DetailedCaseStudy {
   title: string;
   client: string;
   year: string;
+  /** The project's tags as written in the case study, e.g. "Healthcare AI". */
+  category: string;
+  /** Used for the filter tabs. */
   discipline: string;
   featured: boolean;
+  /** The one-line tagline. */
   headline: string;
+  /** The short paragraph under the tagline. */
+  summary: string;
   brief: {
+    /** The full brief. Paragraphs are separated by a blank line. */
     problemStatement: string;
-    legacyBottleneck: string;
-    missionScope: string;
+    legacyBottleneck?: string;
+    missionScope?: string;
   };
   technology: {
-    architecturePattern: string;
+    architecturePattern?: string;
     stack: string[];
-    infrastructure: string;
+    infrastructure?: string;
   };
   whatChanged: {
+    /** The full "What changed" text. Paragraphs are separated by a blank line. */
     empiricalOutcome: string;
-    businessImpact: string;
+    businessImpact?: string;
     metrics: EmpiricalMetric[];
   };
   image: string;
   cardImage: string;
   /** CSS object-position for the card crop. Defaults to centered. */
   cardImagePosition?: string;
-  blueprint: ArchitectureBlueprint;
+  blueprint?: ArchitectureBlueprint;
 }
 
 export const DISCIPLINE_TABS = [
@@ -51,47 +59,7 @@ export const DISCIPLINE_TABS = [
   { id: "mobile", label: "Mobile & High-Concurrency" },
 ];
 
-/**
- * Placeholder content for case studies whose write-ups are still to come. Only the name, client,
- * discipline, headline and images are real; replace the rest with the full entry when it's ready.
- */
-function draft(base: Pick<DetailedCaseStudy, "id" | "index" | "title" | "client" | "discipline" | "headline" | "image" | "cardImage" | "cardImagePosition">): DetailedCaseStudy {
-  return {
-    ...base,
-    year: "2025",
-    featured: false,
-    brief: {
-      problemStatement: "Placeholder: the problem this project set out to solve.",
-      legacyBottleneck: "Placeholder: what was slowing the team down before.",
-      missionScope: "Placeholder: what we were asked to build.",
-    },
-    technology: {
-      architecturePattern: "Placeholder: how the solution is put together.",
-      stack: ["Next.js", "TypeScript", "Python", "PostgreSQL", "AWS"],
-      infrastructure: "Placeholder: where and how it runs.",
-    },
-    whatChanged: {
-      empiricalOutcome: "Placeholder: the measurable outcome.",
-      businessImpact: "Placeholder: what changed for the business.",
-      metrics: [
-        { label: "Status", value: "Live", context: "in production" },
-        { label: "Platform", value: "Web", context: "and mobile" },
-        { label: "Engagement", value: "Ongoing", context: "support and updates" },
-      ],
-    },
-    blueprint: {
-      topology: ["Placeholder: client", "Placeholder: application layer", "Placeholder: data layer"],
-      benchmarks: [
-        { metric: "Availability", score: "—", note: "To be added" },
-        { metric: "Response time", score: "—", note: "To be added" },
-        { metric: "Adoption", score: "—", note: "To be added" },
-      ],
-      timeline: "To be added",
-      securityProfile: "To be added",
-    },
-  };
-}
-
+/* Content below is taken from public/portfolio/Case Studies.docx. */
 export const PORTFOLIO_CASE_STUDIES: DetailedCaseStudy[] = [
   {
     id: "hahnemann-ai",
@@ -99,221 +67,373 @@ export const PORTFOLIO_CASE_STUDIES: DetailedCaseStudy[] = [
     title: "Hahnemann AI",
     client: "Hahnemann AI",
     year: "2025",
+    category: "Healthcare AI",
     discipline: "Autonomous AI & Agents",
     featured: false,
-    headline: "Deterministic medical reasoning agent indexing 450+ clinical repertories in sub-180ms.",
+    headline: "Intelligent Medical Reasoning. Faster Clinical Insights.",
+    summary:
+      "An AI-powered medical reasoning platform designed to transform how physicians navigate complex clinical repertories, correlate patient symptoms, and retrieve evidence-backed medical references.",
     brief: {
       problemStatement:
-        "Specialist physicians spent up to 25 minutes per consultation manually cross-referencing complex patient symptom narratives across archaic physical repertories and disparate research journals.",
-      legacyBottleneck:
-        "Off-the-shelf generative AI models regularly hallucinated medical rubrics, made non-existent citations, and leaked private patient data into third-party training pipelines.",
-      missionScope:
-        "Build a deterministic medical reasoning agent utilizing hybrid vector-lexical RAG to cross-index 450+ verified medical texts with strict citation guardrails and sub-200ms lookup speed.",
+        "Physicians traditionally spend considerable time manually navigating physical medical repertories and fragmented research literature to identify symptom correlations and relevant clinical references. This fragmented workflow increases research time, complicates information retrieval, and makes cross-referencing large medical knowledge bases inefficient.",
     },
     technology: {
-      architecturePattern:
-        "Deterministic Hybrid RAG engine combining dense Qdrant vector embeddings with Typesense lexical BM25 token matching, deployed inside a zero-egress HIPAA VPC.",
-      stack: ["Typesense", "Qdrant Vector DB", "LangChain Core", "FastAPI Edge", "React 19", "Tailwind CSS", "TypeScript"],
-      infrastructure: "Self-hosted dedicated inference pods with zero data retention and air-gapped clinical database isolation.",
+      stack: ["Python", "FastAPI", "RAG", "VectorDB", "LLM Fine-Tuning", "React", "TypeScript", "Tailwind CSS"],
     },
     whatChanged: {
       empiricalOutcome:
-        "Reduced diagnostic symptom correlation time from 25 minutes to sub-180 milliseconds with 99.4% verifiable rubric citation accuracy.",
-      businessImpact:
-        "Adopted by 3,400+ licensed clinical physicians across 12 countries. Accelerated patient intake turnaround by 4.8x with 68% first-session consultation resolution.",
+        "We engineered Hahnemann AI, an intelligent medical reasoning platform that combines deterministic reasoning with hybrid semantic and lexical retrieval. The system digitizes and indexes 450+ clinical repertories and materia medica written in 1800s, enabling physicians to retrieve relevant medical references, correlate symptoms, and access traceable rubric citations in milliseconds.\n\nThe platform reduces manual cross-referencing time from approximately 25 minutes to under 360 seconds per case, with a reported 99.4% citation accuracy.",
       metrics: [
-        { label: "Corpus Indexed", value: "450+ Texts", delta: "1.2M Rubrics", context: "curated medical treatises" },
-        { label: "Lookup Latency", value: "< 180ms", delta: "Instant Search", context: "hybrid vector + lexical" },
-        { label: "Active Physicians", value: "3,400+", delta: "12 Countries", context: "licensed clinical users" },
+        { label: "Pages of Medical Repertories", value: "1,00,000+", context: "Digitized and indexed clinical knowledge" },
+        { label: "Retrieval Latency", value: "<180ms", context: "Hybrid semantic and lexical search" },
+        { label: "Citation Accuracy", value: "99.4%", context: "Verifiable rubric citations" },
       ],
     },
     image: "/portfolio/previews/hahnnemen.svg",
     cardImage: "/portfolio/photos/external/clinical-ai.jpg",
     cardImagePosition: "85% 50%",
-    blueprint: {
-      topology: [
-        "Physician Workstation -> Zero-Latency React 19 Clinical Assistant",
-        "FastAPI Ingestion Node -> HIPAA PII / PHI Redaction Filter",
-        "Hybrid RAG Core -> Typesense (Lexical) + Qdrant (Semantic) Cross-Match",
-        "Deterministic Guardrail Evaluator -> Verifies Rubric Citations Against Canon",
-        "Edge Streaming Gateway -> Millisecond Symptom Mapping & Repertorization",
-      ],
-      benchmarks: [
-        { metric: "Search Latency", score: "172ms", note: "Across 1.2M medical rubric records" },
-        { metric: "Guardrail Precision", score: "99.4%", note: "Zero fabricated citations observed" },
-        { metric: "Cold Boot Time", score: "380ms", note: "Instant edge availability" },
-      ],
-      timeline: "7 Weeks (Ingestion, RAG Guardrailing & Clinical Beta)",
-      securityProfile: "HIPAA Compliant, BAA Verified, Zero Data Retention",
-    },
   },
-  draft({ id: "enspire-device-service-chatbot", index: "02 / SUPPORT AI", title: "Enspire Device Service Chatbot", client: "Enspire", discipline: "Autonomous AI & Agents", headline: "A service chatbot that helps device owners troubleshoot, book repairs and track requests.", image: "/portfolio/previews/hahnnemen.svg", cardImage: "/portfolio/photos/developer.jpg" }),
-  draft({ id: "wtmf-ai-emotional-wellness", index: "03 / WELLBEING", title: "WTMF.ai Emotional Wellness", client: "WTMF.ai", discipline: "Autonomous AI & Agents", headline: "A conversational wellbeing companion built around natural, thoughtful check-ins.", image: "/portfolio/previews/hahnnemen.svg", cardImage: "/portfolio/photos/mobile-banking.jpg" }),
-  draft({ id: "bimakart-insurance-quote-bot", index: "04 / QUOTE BOT", title: "Bimakart's Insurance Quote Bot", client: "Bimakart", discipline: "InsurTech & Cloud Platforms", headline: "A chatbot that collects customer details and returns insurance quotes in a single conversation.", image: "/portfolio/previews/bimakart.svg", cardImage: "/portfolio/photos/external/insurance-meeting.png" }),
-  draft({ id: "the-repertory", index: "05 / KNOWLEDGE", title: "The Repertory", client: "The Repertory", discipline: "Autonomous AI & Agents", headline: "A searchable reference platform that brings a large body of specialist knowledge into one place.", image: "/portfolio/previews/hahnnemen.svg", cardImage: "/portfolio/photos/medical-scan.jpg" }),
   {
-    id: "insurance-ocr",
-    index: "06 / DOCUMENT AI",
-    title: "Insurance OCR",
-    client: "Insurance OCR",
+    id: "enspire-device-service-chatbot",
+    index: "02 / SUPPORT AI",
+    title: "Enspire",
+    client: "Enspire",
     year: "2025",
-    discipline: "InsurTech & Cloud Platforms",
-    featured: true,
-    headline: "Sub-second multi-modal vision transformer detecting document forgery and identity tampering.",
+    category: "Conversational AI · WhatsApp Automation",
+    discipline: "Autonomous AI & Agents",
+    featured: false,
+    headline: "After-Sales Service, Reimagined Through WhatsApp.",
+    summary:
+      "A WhatsApp-powered customer service solution designed to simplify product identification, warranty management, installation scheduling, and customer engagement for Enspire's consumer electronics ecosystem.",
     brief: {
       problemStatement:
-        "Underwriting specialists were overwhelmed by manual KYC and fraud inspection for scanned Aadhaar, PAN cards, policy endorsements, and financial bank statements.",
-      legacyBottleneck:
-        "Manual inspection took up to 72 hours per case. Human teams failed to spot sophisticated visual clone-stamping, subtle font-weight alterations, and metadata wipe artifacts.",
-      missionScope:
-        "Engineer an edge-hosted deep learning computer vision pipeline that validates document authenticity, reads microscopic digital stamp signatures, and flags fraud in milliseconds.",
+        "Enspire needed a centralized customer engagement channel to simplify after-sales operations. Customers required a convenient way to identify registered products, access warranty information, schedule installations, and initiate warranty claims without lengthy manual support processes.",
     },
     technology: {
-      architecturePattern:
-        "Multi-stage neural vision transformer combining spatial frequency forensic analysis, character boundary regression, and vector-similarity fraud matching.",
-      stack: ["PyTorch", "Vision Transformer (ViT)", "TensorRT", "FastAPI", "Qdrant Vector DB", "Rust Forensics", "Docker"],
-      infrastructure: "Dedicated NVIDIA A10G Tensor Core GPU inference nodes with zero-egress data retention guarantees.",
+      stack: ["WhatsApp Business API", "IFTTT", "Node.js", "Barcode Recognition", "Google Sheets API", "Structured Data Retrieval"],
     },
     whatChanged: {
       empiricalOutcome:
-        "Turnaround time for document verification dropped from 72 hours to 420 milliseconds, with an independently verified 99.4% fraud detection rate.",
-      businessImpact:
-        "Eradicated over $2.8M in fraudulent claim and policy liabilities in the first 30 days of production. Reduced human underwriting workload by 91%.",
+        "We developed an intelligent WhatsApp chatbot that automated critical after-sales workflows, transforming customer support into a seamless, self-service experience.\n\nThe solution introduced automated barcode scanning for product identification, streamlined installation scheduling, instant warranty claim initiation, and extended warranty purchase workflows.",
       metrics: [
-        { label: "Fraud Detection", value: "99.4%", delta: "Verified Accuracy", context: "pixel-level tamper checks" },
-        { label: "Inference Latency", value: "420ms", delta: "Edge GPU", context: "from 72h manual review" },
-        { label: "False Positive Rate", value: "< 0.08%", delta: "Minimal Review", context: "across 250k submissions" },
+        { label: "Installation Scheduling", value: "<1 Min", context: "Automated barcode reading and product identification" },
+        { label: "Warranty Claim Initiation", value: "<90 Sec", context: "Streamlined, automated warranty claim workflow" },
+        { label: "Customer Accessibility", value: "24/7", context: "Always-on WhatsApp-based customer support" },
+      ],
+    },
+    image: "/portfolio/previews/hahnnemen.svg",
+    cardImage: "/portfolio/photos/developer.jpg",
+  },
+  {
+    id: "wtmf-ai-emotional-wellness",
+    index: "03 / WELLBEING",
+    title: "WTMF.ai",
+    client: "WTMF.ai",
+    year: "2025",
+    category: "AI · Mental Wellness · Multilingual Conversational AI",
+    discipline: "Autonomous AI & Agents",
+    featured: false,
+    headline: "Your AI Friend. Your Space. No Fear of Being Judged.",
+    summary:
+      "An AI-powered mental wellness companion offering 33+ unique AI personas, designed to create a safe, judgment-free space where people can express themselves, share their thoughts, and feel heard in their own language.",
+    brief: {
+      problemStatement:
+        "Talking about personal struggles, emotions, and everyday challenges isn't always easy. Fear of judgment, social stigma, and the lack of accessible emotional support often prevent people from expressing what they truly feel.\n\nThe challenge was to build an AI companion that goes beyond conventional chatbot interactions—one that offers diverse personalities, relatable conversations, and the freedom to express oneself without fear of judgment.",
+    },
+    technology: {
+      stack: ["LLMs", "Generative AI", "Persona-Based AI Architecture", "NLP", "Multilingual AI", "Voice AI", "Contextual Memory", "Python", "API Integrations"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We developed WTMF.ai, a personalized AI companion platform built around emotional expression and mental wellness.\n\nThe platform features 33+ distinct AI personas, each available in male and female variants, allowing users to connect with a personality that feels comfortable and relatable.\n\nWith support for 12+ languages, users can communicate naturally in the language they feel most comfortable with. The experience brings together personalized AI conversations and voice interactions, creating an accessible space to vent, reflect, share personal experiences, and navigate everyday emotional challenges.\n\nWTMF.ai transforms the traditional chatbot experience into a more personal, inclusive, and approachable AI friendship.",
+      metrics: [
+        { label: "AI Personas", value: "33+", context: "Distinct conversational personalities" },
+        { label: "Languages", value: "12+", context: "Multilingual interactions" },
+        { label: "Persona Variants", value: "2", context: "Male and female versions of each persona" },
+      ],
+    },
+    image: "/portfolio/previews/hahnnemen.svg",
+    cardImage: "/portfolio/photos/mobile-banking.jpg",
+  },
+  {
+    id: "bimakart-insurance-quote-bot",
+    index: "04 / QUOTE BOT",
+    title: "Bimakart Quotation Bot",
+    client: "Bimakart",
+    year: "2025",
+    category: "InsurTech · Intelligent Automation",
+    discipline: "InsurTech & Cloud Platforms",
+    featured: false,
+    headline: "From Hours to Minutes. Insurance Quotations at Scale.",
+    summary:
+      "An intelligent quotation automation solution designed to streamline insurance quotation generation across multiple insurer portals, reducing manual processing and accelerating customer response times.",
+    brief: {
+      problemStatement:
+        "Generating insurance quotations across multiple insurer portals involved repetitive data entry, manual navigation, and time-consuming retrieval processes. This resulted in longer customer wait times, operational bottlenecks, and missed opportunities for timely conversions.\n\nBimakart needed an automated solution to simplify multi-insurer quotation generation and help its sales team respond to customers faster.",
+    },
+    technology: {
+      stack: ["Python", "Browser Automation", "Web Scraping", "Workflow Automation", "Data Processing", "API Integration"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We engineered an automated quotation retrieval system that interacts with insurer portals, processes customer and vehicle information, and retrieves insurance quotations with minimal manual intervention.\n\nBy automating repetitive portal interactions and consolidating quotation workflows, the solution transformed the customer quotation journey.",
+      metrics: [
+        { label: "Quotation Turnaround", value: "8 hrs → 5 min", context: "Faster customer quotation delivery" },
+        { label: "Sales Conversion", value: "+27%", context: "Improvement in sales conversion rate" },
+        { label: "Target Insurers", value: "8+", context: "Expanded multi-insurer integration scope" },
+      ],
+    },
+    image: "/portfolio/previews/bimakart.svg",
+    cardImage: "/portfolio/photos/external/insurance-meeting.png",
+  },
+  {
+    id: "the-repertory",
+    index: "05 / KNOWLEDGE",
+    title: "The Repertory",
+    client: "The Repertory",
+    year: "2025",
+    category: "Healthcare Technology · AI & Knowledge Systems",
+    discipline: "Autonomous AI & Agents",
+    featured: false,
+    headline: "Centuries of Homeopathic Knowledge. One Intelligent Digital Experience.",
+    summary:
+      "A structured digital homeopathic repertory designed to transform traditional medical literature into an organized, searchable knowledge system, connecting symptoms, rubrics, remedies, and clinical references.",
+    brief: {
+      problemStatement:
+        "Traditional homeopathic repertories contain extensive medical knowledge distributed across books, editions, and fragmented digital resources. Finding relevant rubrics, understanding symptom hierarchies, and identifying associated remedies often requires extensive manual navigation.\n\nThe challenge was to transform this unstructured, historically documented knowledge into a consistent digital database while preserving the relationships and hierarchy essential to repertory-based research.",
+    },
+    technology: {
+      stack: ["Python", "MongoDB", "FastAPI", "React", "TypeScript", "NLP", "Semantic Search", "JSON Data Processing"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We approached the problem by developing a structured repertory data system that organizes medical knowledge into searchable chapters, rubrics, sub-rubrics, and remedy associations.\n\nThe solution focuses on digitizing repertory content, maintaining hierarchical relationships, standardizing remedy references, and enabling efficient retrieval through structured data and intelligent search capabilities.\n\nThe result is a foundation for a modern digital repertory experience, making extensive homeopathic literature more accessible, navigable, and integration-ready.",
+      metrics: [
+        { label: "Data points of Repertory Data", value: "1 Crore+", context: "Organized chapter and rubric hierarchy" },
+        { label: "Repertories Rubric–Remedy Mapping", value: "15+", context: "Structured symptom-to-remedy relationships" },
+        { label: "Digital Knowledge search latency", value: "<50 ms", context: "Accessible, query-ready medical references" },
+      ],
+    },
+    image: "/portfolio/previews/hahnnemen.svg",
+    cardImage: "/portfolio/photos/medical-scan.jpg",
+  },
+  {
+    id: "insurance-ocr",
+    index: "06 / DOCUMENT AI",
+    title: "Bimakart Fraud Detection",
+    client: "Bimakart",
+    year: "2026",
+    category: "InsurTech · AI · Document Forensics",
+    discipline: "InsurTech & Cloud Platforms",
+    featured: true,
+    headline: "Detect Fraud Before It Passes. Protect Every Policy.",
+    summary:
+      "An AI-powered PDF forensic detection system designed to identify manipulated insurance documents, prevent fraudulent submissions, and protect insurers from financial losses.",
+    brief: {
+      problemStatement:
+        "Manipulated insurance policy documents pose a significant financial and operational risk to insurers. Altered policy details, modified values, and sophisticated PDF manipulations can make fraudulent documents appear legitimate, potentially resulting in invalid claims, financial losses, and compromised insurance operations.\n\nBimakart needed an intelligent verification mechanism capable of identifying document tampering and flagging fraudulent submissions before they could pass through the verification process.",
+    },
+    technology: {
+      stack: ["Python", "PyMuPDF", "pikepdf", "OpenCV", "Pillow", "PDF Forensics", "Image Processing", "FastAPI"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We engineered an AI-powered PDF forensic detection module that examines insurance documents for signs of unauthorized modifications. Combining PDF metadata analysis, structural integrity checks, revision history inspection, and image-level forensic techniques, the system identifies suspicious alterations and flags potentially manipulated documents for verification. Integrated into the insurance workflow, the solution helped prevent more than 10,000 fraudulent documents from passing verification, protecting insurers from estimated financial exposure exceeding ₹70 lakh.",
+      metrics: [
+        { label: "Fraudulent Documents Prevented", value: "10,000+", context: "Suspicious documents stopped before passing verification" },
+        { label: "Financial Losses Avoided", value: "₹70,00,000+", context: "Estimated financial exposure prevented" },
+        { label: "Document Verification", value: "Automated", context: "AI-powered PDF forensic analysis" },
       ],
     },
     image: "/portfolio/previews/kaster.svg",
     cardImage: "/portfolio/photos/external/kaster-document-review.jpg",
     cardImagePosition: "45% 45%",
-    blueprint: {
-      topology: [
-        "Policy Submission Intake -> Secure In-Memory Document Ingestion",
-        "Spatial Frequency Analyzer -> Fourier Transform Pixel Grid Tamper Scan",
-        "Vision Transformer (ViT) -> Micro-Typography & Stamp Alignment Check",
-        "Qdrant Vector Engine -> Cross-Document Duplicate & Ghost Identity Lookup",
-        "FastAPI Output Gateway -> Instant Signed Cryptographic Risk Score",
-      ],
-      benchmarks: [
-        { metric: "Inference Speed", score: "420ms", note: "Full multi-page document pass" },
-        { metric: "Tamper Precision", score: "99.4%", note: "Validated on benchmark test suites" },
-        { metric: "False Positives", score: "0.076%", note: "Prevents friction for legit users" },
-      ],
-      timeline: "6 Weeks (Model Training, Tuning & Pod Rollout)",
-      securityProfile: "Zero-retention HIPAA & DPDP compliant encrypted memory buffers",
-    },
   },
   {
     id: "bimakart-connect",
     index: "07 / GATEWAY",
     title: "Bimakart Connect",
     client: "Bimakart",
-    year: "2024–2026",
+    year: "2026",
+    category: "InsurTech · Digital Insurance · Mobile Application",
     discipline: "InsurTech & Cloud Platforms",
     featured: true,
-    headline: "Unified multi-carrier rating broker querying 100+ insurers simultaneously under 2.4s.",
+    headline: "A Million Insurance Journeys. One Connected Platform.",
+    summary:
+      "A comprehensive digital insurance ecosystem available on Android and iOS, bringing policy management, claims, self-inspection, insurance purchases, and customer engagement together in one seamless experience.",
     brief: {
       problemStatement:
-        "India's insurance distribution channels were hamstrung by fragmented legacy carrier endpoints—antiquated SOAP/XML web services, custom REST gateways, and VPN-gated rating calculators. Broker inquiries routinely hung for upwards of 45 seconds.",
-      legacyBottleneck:
-        "During high-volume financial year-end renewals, carrier rate-limiting and timeouts triggered a 38% POSP quote abandonment rate, costing millions in unissued policies.",
-      missionScope:
-        "Architect a centralized, fault-tolerant rating broker gateway capable of fanning out requests to 100+ carriers in parallel, standardizing payloads into a unified schema, and issuing bindable quotes in sub-3 seconds.",
+        "Managing insurance policies, accessing coverage details, tracking claims, and navigating multiple insurance services can be fragmented and time-consuming. Bimakart envisioned a unified digital platform that could simplify the insurance journey for customers while providing the business with centralized operational control, scalable infrastructure, and seamless integration with its existing enterprise systems.",
     },
     technology: {
-      architecturePattern:
-        "Non-blocking asynchronous event mesh with zero-copy Rust serialization, distributed Redis tier-1 caching, and circuit-breaker fault isolation.",
-      stack: ["Rust Core Engine", "FastAPI (Python)", "Apache Kafka", "Redis Cluster", "AWS EKS", "gRPC Mesh", "Docker"],
-      infrastructure: "Multi-region AWS EKS with autoscaling worker pods and zero-latency VPC peering into insurer datacenters.",
+      stack: ["Flutter", "Node.js", "MongoDB", "Salesforce Integration", "OCR", "AI Integration", "REST APIs", "Firebase", "Cloud Infrastructure", "DLT Integration"],
     },
     whatChanged: {
       empiricalOutcome:
-        "End-to-end aggregate quote latency dropped from 45 seconds to a verified 2.4-second P95 SLA across 100+ simultaneous insurance carriers.",
-      businessImpact:
-        "Quote abandonment plummeted by 64%, driving a 3.1x surge in closed monthly policy premium volume with zero downtime across two consecutive peak annual renewal cycles.",
+        "We engineered Bimakart Connect as a cross-platform insurance ecosystem, serving 1,00,000+ users across Android and iOS. Powered by a Node.js backend and integrated with Salesforce, the platform connects customer-facing mobile experiences with enterprise data and operational workflows. Users can manage insurance policies, extract policy information through OCR, initiate and track claims, perform geotagged vehicle self-inspections, purchase insurance, and access AI-powered assistance. Supporting this ecosystem is an exhaustive administrative panel providing centralized control over users, policies, transactions, claims, operations, and business activities, enabling the organization to manage its growing digital insurance ecosystem efficiently.",
       metrics: [
-        { label: "Quote Latency", value: "< 2.4s", delta: "-94.6%", context: "from 45s legacy avg" },
-        { label: "Concurrent Carriers", value: "100+", delta: "Parallel Fan-Out", context: "unified JSON payload" },
-        { label: "Active POSP Network", value: "45,000+", delta: "Zero Downtime", context: "peak season load" },
+        { label: "Users", value: "1,00,000+", context: "Growing digital user base" },
+        { label: "Mobile Platforms", value: "Android · iOS", context: "Android and iOS" },
+        { label: "Operational Control", value: "360°", context: "Centralized admin panel and Salesforce-connected operations" },
       ],
     },
     image: "/portfolio/previews/bimakart.svg",
     cardImage: "/portfolio/photos/external/insurance-meeting.png",
-    blueprint: {
-      topology: [
-        "Broker Client -> Cloudflare Edge WAF & SSL Termination",
-        "FastAPI Gateway -> Asynchronous Rate Limiting & Auth Validator",
-        "Rust Serialization Engine -> Protocol Transformer (XML/SOAP <-> JSON)",
-        "gRPC Worker Mesh -> Parallel Carrier Fan-out (100+ Endpoints)",
-        "Redis Tier-1 Response Cache (TTL 180s) -> Kafka Telemetry Pipeline",
-      ],
-      benchmarks: [
-        { metric: "P50 Latency", score: "1.42s", note: "Across top 25 carriers" },
-        { metric: "P95 Latency", score: "2.38s", note: "Under 4,500 simultaneous inquiries" },
-        { metric: "Availability", score: "99.99%", note: "Verified 24/7 EKS cluster uptime" },
-      ],
-      timeline: "8 Weeks (Brief to Production Cutover)",
-      securityProfile: "IRDAI-compliant, SOC2 Type II, Mutual TLS with all carrier endpoints",
-    },
   },
-  draft({ id: "bimakart-product-suit", index: "08 / PRODUCT SUITE", title: "Bimakart Product Suit", client: "Bimakart", discipline: "InsurTech & Cloud Platforms", headline: "A connected set of insurance products for agents and customers, managed from one platform.", image: "/portfolio/previews/bimakart.svg", cardImage: "/portfolio/photos/external/underwriting-review.jpg" }),
-  draft({ id: "bimakart-flyer-ocr", index: "09 / DOCUMENT AI", title: "Bimakart Flyer OCR", client: "Bimakart", discipline: "InsurTech & Cloud Platforms", headline: "Reads insurance flyers and turns their details into structured, searchable product data.", image: "/portfolio/previews/kaster.svg", cardImage: "/portfolio/photos/external/kaster-document-review.jpg", cardImagePosition: "45% 45%" }),
-  draft({ id: "futureogy", index: "10 / PLATFORM", title: "Futureogy", client: "Futureogy", discipline: "Mobile & High-Concurrency", headline: "A digital platform designed for a growing user base across web and mobile.", image: "/portfolio/previews/urbanflow.svg", cardImage: "/portfolio/photos/analytics.jpg" }),
   {
-    id: "wealth-wisdom-goals-planner",
-    index: "11 / FINTECH",
-    title: "Wealth Wisdom Goals Planner",
-    client: "Wealth Wisdom",
-    year: "2024–2025",
-    discipline: "Fintech & WealthTech",
-    featured: true,
-    headline: "Institutional portfolio management terminal calculating 500,000 live assets at 120 FPS.",
+    id: "bimakart-product-suit",
+    index: "08 / PRODUCT SUITE",
+    title: "Bimakart Product Suite",
+    client: "Bimakart",
+    year: "2026",
+    category: "InsurTech · Enterprise SaaS · Insurance Distribution",
+    discipline: "InsurTech & Cloud Platforms",
+    featured: false,
+    headline: "From Insurance Product Creation to Policy Issuance. One Connected Platform.",
+    summary:
+      "A comprehensive insurance product creation and distribution platform enabling businesses to configure bundled insurance products, manage sales channels, empower POS agents, and control the complete journey from customer onboarding to payment, invoicing, and policy issuance.",
     brief: {
       problemStatement:
-        "Institutional asset advisors managing high-net-worth accounts relied on sluggish desktop tools and spreadsheet macros that froze during heavy market volatility and cross-asset rebalancing sessions.",
-      legacyBottleneck:
-        "Calculating real-time Value-at-Risk (VaR), portfolio stress tests, and tax-loss harvesting scenarios across multi-currency assets took 12+ minutes per client portfolio.",
-      missionScope:
-        "Build a Bloomberg-caliber, cloud-native web terminal executing complex Monte Carlo simulations directly in browser memory while streaming continuous live market feeds at native refresh rates.",
+        "Insurance businesses often rely on fragmented systems to manage product creation, distribution, agent operations, payment collection, and policy issuance. Bimakart needed a unified platform that could bring these operations together while maintaining strict administrative control, structured approval workflows, and visibility across multiple sales channels.",
     },
     technology: {
-      architecturePattern:
-        "WebAssembly (Wasm) quantitative mathematical core paired with custom WebGL canvas rendering shaders and bi-directional binary WebSockets streaming order-book depth.",
-      stack: ["Next.js App Router", "WebAssembly (Wasm)", "WebGL Canvas", "TypeScript", "TimescaleDB", "Redis Streams", "Tailwind CSS"],
-      infrastructure: "Edge compute distribution with geo-located WebSocket proxies maintaining persistent connection states.",
+      stack: ["React", "Node.js", "MongoDB", "REST APIs", "Payment Gateway Integration", "RBAC", "Cloud Infrastructure", "Email Integration", "WhatsApp integration", "Salesforce", "Python", "Grafana"],
     },
     whatChanged: {
       empiricalOutcome:
-        "Executed 100,000 Monte Carlo portfolio runs in under 320ms with silky smooth 120 FPS canvas charts, even during severe market sell-offs.",
-      businessImpact:
-        "Platform scaled to monitor over $1.4B+ in institutional AUM within 90 days of general launch, saving portfolio managers an estimated 3.8 hours per day in reporting workflows.",
+        "We engineered an end-to-end insurance product creation and selling ecosystem that connects product configuration, distribution, transactions, and policy management through a centralized platform. The system introduced maker-checker approval workflows for product governance, dedicated POS agent capabilities for insurance sales, integrated payment gateway processing, automated invoice generation, and policy issuance. With fully configurable role-based access control (RBAC), granular administrative permissions, and channel-level management, the platform gives administrators complete control over product availability, distribution, and operations. Detailed sales dashboards provide visibility into product performance, channel activity, agent contributions, and revenue.",
       metrics: [
-        { label: "AUM Monitored", value: "$1.4B+", delta: "+340% YoY", context: "institutional multi-asset" },
-        { label: "Monte Carlo Speed", value: "320ms", delta: "100k runs", context: "client-side Wasm core" },
-        { label: "Rendering Smoothness", value: "120 FPS", delta: "Sub-16ms", context: "WebGL canvas pipelines" },
+        { label: "Insurance Lifecycle", value: "End-to-End", context: "From product creation to policy issuance" },
+        { label: "Product Governance", value: "Maker-Checker", context: "Structured approval and administrative control" },
+        { label: "Sales Visibility", value: "360°", context: "Product, channel, agent and revenue analytics" },
+      ],
+    },
+    image: "/portfolio/previews/bimakart.svg",
+    cardImage: "/portfolio/photos/external/underwriting-review.jpg",
+  },
+  {
+    id: "bimakart-flyer-ocr",
+    index: "09 / DOCUMENT AI",
+    title: "Bimakart OCR AI Automation Suite",
+    client: "Bimakart",
+    year: "2026",
+    category: "Artificial Intelligence · OCR · Multimodal AI",
+    discipline: "InsurTech & Cloud Platforms",
+    featured: false,
+    headline: "From Documents to Intelligence. From Flyers to Content. In Seconds.",
+    summary:
+      "An AI-powered automation suite combining intelligent document extraction and multimodal content generation to accelerate insurance operations and eliminate repetitive manual processing.",
+    brief: {
+      problemStatement:
+        "Insurance operations involve processing large volumes of policy documents and customer information, while creating standardized product descriptions from promotional flyers requires additional manual effort. These processes were time-consuming, prone to human errors, and difficult to scale efficiently.\n\nBimakart needed an intelligent automation solution to accelerate document processing, improve extraction accuracy, and simplify insurance product content creation.",
+    },
+    technology: {
+      stack: ["Python", "FastAPI", "OCR", "Computer Vision", "Multimodal AI", "Large Language Models", "Prompt Engineering", "REST APIs"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We engineered an integrated AI automation suite combining OCR-powered document intelligence with multimodal generative AI. The policy processing engine extracts and structures information from insurance documents, reducing processing time per policy from 5 minutes to just 2 seconds while bringing the error rate down to just 5% of its previous level. Complementing this, the Flyer-to-Description engine interprets promotional flyers, identifies product information, and generates structured descriptions in the required format, reducing content generation time from 20 minutes to just 3 seconds. Together, both solutions transform document-heavy manual workflows into high-speed, intelligent automation pipelines.",
+      metrics: [
+        { label: "Policy Processing", value: "5 min → 2 sec", context: "Processing time per policy" },
+        { label: "Previous Error Rate", value: "95% Reduction", context: "Reduction in errors compared with the previous workflow" },
+        { label: "Description Generation", value: "20 min → 3 sec", context: "Flyer-to-description turnaround time" },
+      ],
+    },
+    image: "/portfolio/previews/kaster.svg",
+    cardImage: "/portfolio/photos/external/kaster-document-review.jpg",
+    cardImagePosition: "45% 45%",
+  },
+  {
+    id: "futureogy",
+    index: "10 / PLATFORM",
+    title: "Futureogy",
+    client: "Futureogy",
+    year: "2026",
+    category: "AstroTech · AI · Relationship Wellness · Live Consultations",
+    discipline: "Mobile & High-Concurrency",
+    featured: false,
+    headline: "More Than Astrology. An Entire Digital Universe of Personalized Guidance.",
+    summary:
+      "A next-generation AstroTech ecosystem combining AI-powered astrology, real expert consultations, relationship counselling, personalized spiritual services, and intelligent wellness experiences within one connected digital platform.",
+    brief: {
+      problemStatement:
+        "Traditional astrology, relationship counselling, and spiritual services are fragmented across different platforms. Users often need separate services to consult astrologers, explore compatibility, seek relationship guidance, access personalized remedies, and receive spiritual assistance.\n\nFutureogy envisioned a unified ecosystem that brings traditional astrological expertise, AI-driven personalization, and human-led wellness services together, making personalized guidance accessible through a seamless digital experience.",
+    },
+    technology: {
+      stack: ["Flutter", "NestJS", "TypeScript", "PostgreSQL", "Redis", "Socket.IO", "Next.js", "AWS ECS", "AWS CDK", "WebRTC", "Cashfree", "Razorpay"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We engineered Futureogy as a comprehensive digital ecosystem comprising dedicated User and Expert applications for Android and iOS, a web platform, an extensive administrative command center, and a scalable cloud backend. Users can discover and consult real astrologers through one-to-one in-app chat, voice calls, and live video consultations, powered by real-time communication and per-minute wallet-based billing. The platform combines AI-generated astrological predictions, automated horoscope and Love Report generation, numerology, matchmaking, and a dedicated Love Guru module connecting users with relationship counsellors. Going beyond conventional astrology experiences, Futureogy also brings personalized remedies, poojas, spells, and healing services into the same ecosystem through live expert interactions. The Expert application enables astrologers to manage availability, consultations, and earnings, while the extensive administrative infrastructure provides centralized control over users, experts, transactions, payouts, refunds, service catalogues, and operational workflows. With real-time consultation monitoring, abuse prevention across chat and calls, and comprehensive financial oversight, the platform is supported by an enterprise-grade backend comprising 38 modules, 470+ REST API endpoints, and production AWS infrastructure.",
+      metrics: [
+        { label: "API Endpoints", value: "470+", context: "Powering interconnected platform services" },
+        { label: "Admin Screens", value: "210+", context: "Comprehensive administrative and operational interfaces" },
+        { label: "Integrated Builds", value: "6", context: "Backend, Admin, User App, Expert App, Website and AWS Platform" },
+      ],
+    },
+    image: "/portfolio/previews/urbanflow.svg",
+    cardImage: "/portfolio/photos/analytics.jpg",
+  },
+  {
+    id: "wealth-wisdom-goals-planner",
+    index: "11 / FINTECH",
+    title: "Wealth Wisdom",
+    client: "Wealth Wisdom",
+    year: "2026",
+    category: "FinTech · Financial Planning · Intelligent Automation",
+    discipline: "Fintech & WealthTech",
+    featured: true,
+    headline: "Turning Financial Data into Financial Futures.",
+    summary:
+      "An intelligent financial planning and report generation platform that transforms complex client financial profiles into personalized financial roadmaps, enabling financial advisors to deliver planning at scale and drive informed investment decisions.",
+    brief: {
+      problemStatement:
+        "Traditional financial planning involves extensive data collection, financial calculations, personalized recommendations, and preparation of detailed client reports. Creating these reports manually is time-consuming and limits the ability of financial advisors to serve clients at scale.\n\nWealth Wisdom needed a scalable solution to automate personalized financial planning reports while maintaining detailed financial analysis, consistent presentation, and actionable investment recommendations.",
+    },
+    technology: {
+      stack: ["Python", "FastAPI", "Pydantic", "ReportLab", "PyPDF", "Matplotlib", "Pillow", "JSON-Driven Architecture", "PDF Automation"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We engineered a dynamic financial planning and report generation engine that transforms structured client data into comprehensive, personalized financial reports. The platform automates financial calculations, goal-based planning, retirement projections, insurance analysis, education planning, and investment recommendations. Using a JSON-driven architecture, it dynamically generates professionally designed PDF reports with personalized sections, financial charts, tables, and visual roadmaps. By converting a manually intensive reporting process into an automated financial planning ecosystem, the platform has enabled the generation of over 1,00,000 reports, supported more than ₹14 crore in investments, and facilitated financial planning exceeding ₹213 crore.",
+      metrics: [
+        { label: "Reports Generated", value: "1,00,000+", context: "Personalized financial reports delivered" },
+        { label: "Investments Made", value: "₹14 Cr+", context: "Investments facilitated through generated reports" },
+        { label: "Financial Planning", value: "₹213 Cr+", context: "Total value of financial planning enabled" },
       ],
     },
     image: "/portfolio/previews/wealth-wisdom.svg",
     cardImage: "/portfolio/photos/external/wealth-advisory.jpg",
-    blueprint: {
-      topology: [
-        "Trading Desk -> Next.js Edge UI with WebGL Shader Render Canvas",
-        "Binary WebSocket Multiplexer -> Real-Time Quote & Order Ingestion",
-        "Wasm Math Sandbox -> Real-time Covariance Matrix & Monte Carlo VaR",
-        "TimescaleDB Cluster -> High-Frequency Historical Tick Aggregations",
-        "Headless Chromium Renderer -> Automated Instant Client PDF Tearsheets",
-      ],
-      benchmarks: [
-        { metric: "Canvas Frame Rate", score: "120 FPS", note: "Tested under 500k active points" },
-        { metric: "Calculation Speed", score: "320ms", note: "100,000 path simulation runs" },
-        { metric: "WebSocket Latency", score: "18ms", note: "Edge-to-client streaming delta" },
-      ],
-      timeline: "11 Weeks (Brief to Institutional Rollout)",
-      securityProfile: "FINRA & SEBI compliant audit logs, Hardware Security Token 2FA",
-    },
   },
-  draft({ id: "bimakart-centre", index: "12 / OPERATIONS", title: "Bimakart Centre", client: "Bimakart", discipline: "InsurTech & Cloud Platforms", headline: "A central workspace where the Bimakart team manages policies, partners and day-to-day operations.", image: "/portfolio/previews/bimakart.svg", cardImage: "/portfolio/photos/team.jpg" }),
+  {
+    id: "bimakart-centre",
+    index: "12 / OPERATIONS",
+    title: "Bimakart Center",
+    client: "Bimakart",
+    year: "2026",
+    category: "InsurTech · Enterprise SaaS · Business Operations",
+    discipline: "InsurTech & Cloud Platforms",
+    featured: false,
+    headline: "Empowering 8,000+ Agents Through One Connected Business Platform.",
+    summary:
+      "A comprehensive digital business and operations platform built to empower insurance POS agents, streamline business workflows, and manage a large-scale distribution ecosystem through centralized administration.",
+    brief: {
+      problemStatement:
+        "Managing a growing network of insurance POS agents requires more than basic business management tools. Organizations need centralized operational control, granular access permissions, streamlined workflows, and visibility across business activities.\n\nBimakart needed a scalable platform capable of supporting thousands of agents while accommodating diverse operational requirements, multiple business modules, and complex organizational hierarchies.",
+    },
+    technology: {
+      stack: ["Laravel", "PHP", "MySQL", "Flutter", "REST APIs", "Hierarchical RBAC", "Cloud Infrastructure"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We engineered Bimakart Center as a centralized, multi-module business management ecosystem supporting 8,000+ insurance agents and 52+ functional modules. The platform incorporates a hierarchical Role-Based Access Control (RBAC) architecture with 15+ role levels, enabling granular permissions and structured access across organizational hierarchies. Its modular architecture brings diverse business and operational workflows into one connected platform, while centralized administration provides greater control over users, permissions, and business activities. The result is a scalable digital infrastructure designed to manage a growing insurance distribution network with operational consistency and governance.",
+      metrics: [
+        { label: "Active Agents", value: "8,000+", context: "Large-scale insurance distribution network" },
+        { label: "Functional Modules", value: "52+", context: "Unified business and operational capabilities" },
+        { label: "RBAC Role Levels", value: "15+", context: "Hierarchical access control and permissions" },
+      ],
+    },
+    image: "/portfolio/previews/bimakart.svg",
+    cardImage: "/portfolio/photos/team.jpg",
+  },
 ];
-

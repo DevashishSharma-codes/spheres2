@@ -9,6 +9,7 @@ import { Bot, Landmark, ShieldCheck, Smartphone, type LucideIcon } from "lucide-
 import { FolderTabCard } from "@/components/ui/FolderTabCard";
 import { LaptopFrame } from "@/components/ui/LaptopFrame";
 import { PillLink } from "@/components/ui/PillLink";
+import { TechPill } from "@/components/portfolio/TechPill";
 import { DuskBackdrop } from "@/components/services/ServiceModels";
 import {
   DISCIPLINE_TABS,
@@ -96,24 +97,25 @@ function CaseStudyCard({ project }: { project: DetailedCaseStudy }) {
 
         {/* Details in ruled rows */}
         <div className="flex min-w-0 flex-col justify-center">
-          <p className="text-sm text-white/60">{project.client} · {project.year}</p>
+          <p className="text-sm text-white/60">{project.category} · {project.year}</p>
           <h3 className="mt-3 text-3xl font-light leading-[1.1] tracking-[-0.04em] sm:text-[40px]">{project.title}</h3>
-          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/70">{project.headline}</p>
+          <p className="mt-3 max-w-xl text-[17px] leading-snug text-white/90">{project.headline}</p>
+          <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-white/65">{project.summary}</p>
 
           <dl className="mt-6 border-t border-white/15 text-sm">
             <div className="grid gap-1 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
               <dt className="text-white/50">The brief</dt>
-              <dd className="line-clamp-3 leading-relaxed text-white/85">{project.brief.problemStatement}</dd>
+              <dd className="whitespace-pre-line leading-relaxed text-white/85">{project.brief.problemStatement}</dd>
             </div>
             <div className="grid gap-1 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
               <dt className="text-white/50">What changed</dt>
-              <dd className="line-clamp-3 leading-relaxed text-white/85">{project.whatChanged.empiricalOutcome}</dd>
+              <dd className="whitespace-pre-line leading-relaxed text-white/85">{project.whatChanged.empiricalOutcome}</dd>
             </div>
             <div className="grid gap-2 border-b border-white/10 py-3.5 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
               <dt className="text-white/50">Technology</dt>
               <dd className="flex flex-wrap gap-1.5">
                 {project.technology.stack.map((tech) => (
-                  <span key={tech} className="rounded-full border border-white/15 bg-white/[.06] px-2.5 py-0.5 text-xs text-white/80">{tech}</span>
+                  <TechPill key={tech} name={tech} />
                 ))}
               </dd>
             </div>

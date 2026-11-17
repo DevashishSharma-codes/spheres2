@@ -1,16 +1,20 @@
-import type { Metadata } from "next";
-import { NOT_INDEXED } from "@/lib/seo";
+import { FounderNote } from "@/components/insights/FounderNote";
+import { pageMetadata } from "@/lib/seo";
 
-// Placeholder until the page is designed, so it's kept out of search results for now.
-export const metadata: Metadata = {
-  title: "Founder's Note",
-  robots: NOT_INDEXED,
-};
+const DEK =
+  "Every meaningful journey begins with a belief. Mine was that technology should not just solve today’s problems, but create possibilities for tomorrow.";
+
+export const metadata = pageMetadata({
+  title: "A Note from the Founder",
+  description: DEK,
+  path: "/insights/founders-note",
+  type: "article",
+});
 
 export default function FoundersNotePage() {
   return (
-    <div className="flex min-h-[60svh] items-center justify-center px-6 pt-20">
-      <h1 className="text-center text-4xl font-light tracking-[-0.03em] text-[#19191C]">Founder&rsquo;s Note</h1>
+    <div className="bg-white pb-16">
+      <FounderNote dek={DEK} />
     </div>
   );
 }
