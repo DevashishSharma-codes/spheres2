@@ -66,6 +66,8 @@ function splitLetters(path: string) {
       d: l.d,
       cx: (l.x0 + l.x1) / 2 - TITLE.left,
       cy: (l.y0 + l.y1) / 2,
+      // The small raised ™ ends well above the letters' baseline; it is set in black, not purple.
+      trademark: l.y1 < TITLE.top + NAME_HEIGHT / 2,
       // Big enough to uncover the whole letter from its centre, with room for it to lift on hover.
       radius: Math.hypot(l.x1 - l.x0, l.y1 - l.y0) / 2 + LIFT + 20,
     }));
@@ -140,7 +142,7 @@ function Letter({ letter, pointer, progress }: { letter: (typeof LETTERS)[number
       <g clipPath={`url(#${clipId})`}>
         <motion.g style={{ y: lift }}>
           <g transform={`translate(${-TITLE.left} 0)`}>
-            <path d={letter.d} fill={PURPLE} />
+            <path d={letter.d} fill={letter.trademark ? "#19191C" : PURPLE} />
             <path d={letter.d} fill="url(#footer-wordmark-sheen)" />
           </g>
         </motion.g>

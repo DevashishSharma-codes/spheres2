@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { motion, useMotionTemplate, useMotionValueEvent, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import { AnimatePresence, motion, useMotionTemplate, useMotionValueEvent, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,7 +42,7 @@ const CARD_ICONS: Record<string, AboutCardItem["icon"]> = {
 const BASE_CARDS: AboutCardItem[] = ABOUT_CARDS.map((card) => ({ ...card, icon: CARD_ICONS[card.id] ?? Briefcase }));
 
 const ARROW_CLASS =
-  "absolute max-sm:hidden top-[calc(50%-12px)] z-30 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-[#19191C] to-[#573EBF] text-white shadow-[0_8px_20px_-8px_rgba(43,39,53,0.6)] transition-[filter] duration-200 hover:brightness-125";
+  "absolute max-sm:hidden top-[calc(50%-12px)] z-30 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-purple-200/60 bg-white/95 text-[#160429] shadow-[0_4px_16px_rgba(74,18,120,0.18)] backdrop-blur-md transition-colors duration-200 hover:bg-white";
 
 // The carousel position is a plain counter with no start or end. Cards are drawn around wherever
 // the track is on screen, so there is always a card to show, however fast it's clicked.
@@ -86,6 +86,12 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
 
   const activeBaseIndex = ((currentIndex % baseCount) + baseCount) % baseCount;
 
+  /* A click on any card opens its details and brings that card to the centre behind them. */
+  const onCardClick = (index: number, card: AboutCardItem) => {
+    if (currentIndex !== index) setCurrentIndex(index);
+    openCard(card);
+  };
+
   // Next smoothly advances by 1 card in continuous motion
   const handleNext = useCallback(() => {
     setCurrentIndex((prev) => prev + 1);
@@ -119,6 +125,23 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
 
   const isDismissingRef = useRef(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  // The popup's scrolling text area: the wheel scrolls it first, and only closes the popup at its end.
+  const panelScrollRef = useRef<HTMLDivElement>(null);
+  // The paragraph area of the detail. On desktop its type is sized to fill the space it has, so
+  // cards with shorter and longer text look equally full.
+  const paragraphRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const area = paragraphRef.current;
+    if (!area || !selectedCard) return;
+    area.style.fontSize = "";
+    area.style.lineHeight = "";
+    if (!window.matchMedia("(min-width: 640px)").matches) return;
+    for (let size = 19; size >= 14; size -= 0.5) {
+      area.style.fontSize = `${size}px`;
+      area.style.lineHeight = size >= 17 ? "1.55" : "1.65";
+      if (area.scrollHeight <= area.clientHeight) break;
+    }
+  }, [selectedCard]);
 
   // Smoothly close the modal and scroll down (or up) cleanly via requestAnimationFrame
   const smoothDismissAndScroll = useCallback((isDown: boolean) => {
@@ -182,9 +205,16 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
     };
 
     const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) > 5) {
-        smoothDismissAndScroll(e.deltaY > 0);
+      if (Math.abs(e.deltaY) <= 5) return;
+      // Over the popup's text, scroll the text while there's more to read in that direction.
+      const area = panelScrollRef.current;
+      if (area && area.contains(e.target as Node)) {
+        const canScroll = e.deltaY > 0
+          ? area.scrollTop + area.clientHeight < area.scrollHeight - 1
+          : area.scrollTop > 0;
+        if (canScroll) return;
       }
+      smoothDismissAndScroll(e.deltaY > 0);
     };
 
     const handleTouchStart = (e: TouchEvent) => {
@@ -244,6 +274,28 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
         id="about"
         className="relative z-10 flex w-full scroll-mt-14 flex-col justify-center overflow-hidden py-8 md:min-h-[calc(100vh-64px)] sm:scroll-mt-16 lg:py-10"
       >
+        {/* The misty mountain photo behind the section, softened top and bottom, with a faint grid */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+          <Image
+            src="/minimalist-misty-mountain-panorama.png"
+            alt=""
+            fill
+            sizes="100vw"
+            className="scale-[1.02] object-cover object-center opacity-95"
+          />
+          <div
+            className="absolute inset-0 opacity-15"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, rgba(42,42,46,.10) 1px, transparent 1px), linear-gradient(to bottom, rgba(42,42,46,.10) 1px, transparent 1px)",
+              backgroundSize: "64px 64px",
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/45 via-white/15 to-white/55" />
+          <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/70 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white/70 to-transparent" />
+        </div>
+
         {/* Link targets for each card, so /#card-id lands on this section */}
         {BASE_CARDS.map((card) => (
           <span key={card.id} id={card.id} aria-hidden="true" className="absolute left-0 top-0 scroll-mt-14 sm:scroll-mt-16" />
@@ -262,13 +314,13 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                 {ABOUT_INTRO.tagline}
               </p>
             </div>
-            {/* Centred against the heading. The first paragraph leads; the other two sit side by side beneath it. On phones the
+            {/* Centred against the heading. The first paragraph leads; the other two follow beneath it in the same single column. On phones the
                 last one waits behind "Read more", so the cards still show without much scrolling. */}
             <div className="lg:col-span-7">
               <p className="text-[15.5px] font-light leading-[1.5] tracking-[-0.01em] text-[#2A2A2E] sm:text-[17px] lg:text-[18px]">
                 {lead}
               </p>
-              <div className="mt-3 grid gap-2.5 text-[13px] font-light leading-relaxed text-[#6E6D78] sm:grid-cols-2 sm:gap-8 sm:text-[13.5px]">
+              <div className="mt-3 grid max-w-[640px] gap-2.5 text-[13px] font-light leading-relaxed text-[#6E6D78] sm:text-[13.5px]">
                 <p>{second}</p>
                 <p className={introOpen ? "" : "hidden sm:block"}>{third}</p>
               </div>
@@ -340,12 +392,10 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
                         active={isActive}
                         title={card.title}
                         summary={card.summary}
+                        pill={card.pill}
                         icon={card.icon}
                         image={card.image}
-                        onClick={() => {
-                          if (isActive) openCard(card);
-                          else setCurrentIndex(index);
-                        }}
+                        onClick={() => onCardClick(index, card)}
                       />
                     </div>
                   );
@@ -378,73 +428,92 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
               * Full viewport backdrop blur & dimming (lighthouse effect)
               * Never clipped by parent section overflow or scroll offset
             ========================================================= */}
-        {mounted && selectedCard && createPortal(
-          <div 
+        {mounted && createPortal(
+          <AnimatePresence>
+          {selectedCard && (
+          <motion.div
+            key="about-popup"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-[9999] bg-black/65 backdrop-blur-md flex items-end justify-center p-0 sm:items-center sm:p-6 overflow-hidden cursor-pointer"
             onClick={closeCard}
-            onWheel={(e) => {
-              if (Math.abs(e.deltaY) > 5) {
-                smoothDismissAndScroll(e.deltaY > 0);
-              }
-            }}
             role="dialog"
             aria-modal="true"
           >
-            <div 
+            {/* One fixed portrait size for every card. The photo runs full width at its own shape, so it
+                fits exactly. Below it, the paragraph's type is sized to fill its space, so every card looks
+                equally full, and the points close the sheet at the same place. */}
+            <motion.div
               ref={panelRef}
-              className="relative flex max-h-[90svh] w-full max-w-[860px] cursor-auto flex-col overflow-hidden rounded-t-[26px] border border-black/5 bg-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.55)] sm:my-auto sm:max-h-[calc(100svh-3rem)] sm:rounded-[30px] md:flex-row"
+              initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -28, scale: 0.97 }}
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+              className="relative flex max-h-[90svh] w-full cursor-auto flex-col overflow-hidden rounded-t-[28px] border border-black/5 bg-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.55)] sm:my-auto sm:h-[min(760px,calc(100svh-3rem))] sm:max-h-none sm:w-[460px] sm:rounded-[28px]"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Top Right Close (Cross) Button */}
               <button
                 type="button"
                 onClick={closeCard}
-                className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-gray-500 hover:text-gray-900 shadow-[0_2px_8px_rgba(0,0,0,0.12)] border border-gray-200/80 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-md"
+                className="absolute right-3.5 top-3.5 z-30 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-black/5 bg-white/90 text-gray-600 shadow-[0_2px_8px_rgba(0,0,0,0.15)] backdrop-blur-md transition-transform duration-200 hover:scale-105 hover:text-gray-900 active:scale-95"
                 aria-label="Close dialog"
               >
-                <X className="w-5 h-5" />
+                <X className="h-5 w-5" />
               </button>
 
-              {/* Left 48%: Full Photo */}
-              <div className="relative h-[190px] w-full shrink-0 overflow-hidden bg-slate-100 sm:h-auto sm:min-h-[340px] md:min-h-[460px] md:w-[48%]">
-                <Image
-                  src={selectedCard.image}
-                  alt={selectedCard.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 430px"
-                  className="object-cover object-center"
-                  priority
-                />
+              {/* The photo at its own shape, full width, with the icon badge on its lower edge */}
+              <div className="relative z-10 w-full shrink-0">
+                <div className="relative w-full overflow-hidden bg-slate-100" style={{ aspectRatio: selectedCard.imageAspect }}>
+                  <Image
+                    src={selectedCard.image}
+                    alt={selectedCard.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 460px"
+                    className="object-cover object-center"
+                    priority
+                  />
+                </div>
+                <span className="absolute bottom-0 left-7 flex h-12 w-12 translate-y-1/2 items-center justify-center rounded-full border border-purple-100/90 bg-white text-[#5B3299] shadow-[0_4px_14px_rgba(40,25,80,0.16)]">
+                  <selectedCard.icon className="h-6 w-6" />
+                </span>
               </div>
 
-              {/* Right 52%: Content section */}
-              <div className="flex min-h-0 w-full flex-col justify-between overflow-y-auto overscroll-contain bg-white p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-left sm:p-8 md:w-[52%] md:p-9">
-                <div>
-                  {/* Top Row: Circular Icon Badge */}
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 rounded-full border border-purple-200/80 bg-purple-50/50 flex items-center justify-center text-[#7057D9] shadow-xs">
-                      <selectedCard.icon className="w-6 h-6" />
-                    </div>
-                  </div>
+              <div ref={panelScrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-9 sm:overflow-hidden sm:px-7 sm:pb-6">
+                <p className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7057D9]">{selectedCard.pill}</p>
+                <h3 className="mt-1.5 shrink-0 text-[26px] font-light leading-tight tracking-[-0.035em] text-[#111114] sm:text-[28px]">{selectedCard.title}</h3>
+                {selectedCard.headline && (
+                  <p className="mt-1.5 shrink-0 text-[15px] leading-snug text-[#2A2A2E]">{selectedCard.headline}</p>
+                )}
 
-                  {/* Title */}
-                  <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7057D9]">{selectedCard.pill}</p>
-                  <h3 className="text-2xl sm:text-[28px] font-light text-[#111114] tracking-[-0.035em] leading-tight mb-4 pr-8">
-                    {selectedCard.title}
-                  </h3>
-                  {selectedCard.headline && (
-                    <p className="-mt-1 mb-4 text-[15px] font-normal leading-snug text-[#2A2A2E]">{selectedCard.headline}</p>
-                  )}
-
-                  {/* Narrative paragraphs */}
-                  <div className="space-y-3.5 text-gray-600 text-[14px] sm:text-sm font-light leading-relaxed">
-                    {selectedCard.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-                  </div>
+                {/* Sized to fill the space between the title and the points (desktop) */}
+                <div ref={paragraphRef} className="mt-3 space-y-[0.6em] text-[14.5px] font-light leading-[1.65] text-[#4A4458] sm:flex sm:min-h-0 sm:flex-1 sm:flex-col sm:justify-center sm:overflow-hidden">
+                  {selectedCard.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                 </div>
 
+                {selectedCard.highlights && selectedCard.highlights.length > 0 && (
+                  <div className="mt-4 shrink-0 border-t border-[#ECEAF2] pt-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8A8A93]">In focus</p>
+                    {/* Always one line: the pills' size follows the panel's width (cqi), so all four fit on any screen */}
+                    <ul className="@container mt-2.5 flex flex-nowrap gap-1.5">
+                      {selectedCard.highlights.map((item) => (
+                        <li
+                          key={item}
+                          className="shrink-0 whitespace-nowrap rounded-full border border-[#E5E2F0] bg-[#F6F5FA] px-[0.85em] py-[0.55em] leading-none text-[#2B1F48]"
+                          style={{ fontSize: "clamp(9px, calc(3.05cqi - 0.6px), 12.5px)" }}
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-            </div>
-          </div>,
+            </motion.div>
+          </motion.div>
+          )}
+          </AnimatePresence>,
           document.body
         )}
 

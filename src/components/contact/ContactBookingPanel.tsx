@@ -45,7 +45,7 @@ export default function ContactBookingPanel() {
           <p className="mb-5 max-w-xl text-xs leading-relaxed text-white/65 sm:text-sm">Meet with our lead software architects and map out your next move.</p>
 
           <div className="mb-2 flex flex-wrap items-baseline gap-x-1 text-[10px] font-light text-white/85 sm:text-xs">
-            <span>21Spheres ignited</span>
+            <span>21 Spheres ignited</span>
             <AnimatePresence mode="wait" initial={false}>
               <motion.strong key={milestone.startups} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.2 }} className="text-xs font-semibold text-white sm:text-sm">{milestone.startups}</motion.strong>
             </AnimatePresence>
@@ -58,7 +58,7 @@ export default function ContactBookingPanel() {
             <motion.div className="h-full rounded-full bg-gradient-to-r from-[#d8f28c] via-[#74c0fc] to-[#ff922b]" animate={{ width: `${stepPercent}%` }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} />
             {milestones.map(({ year }, index) => <button key={year} type="button" onClick={() => { setAutoPlaying(false); setStepIndex(index); }} aria-label={`Show ${year}`} className="absolute z-10 -ml-1 h-2 w-2 cursor-pointer rounded-full bg-white/90 transition-transform hover:scale-150" style={{ left: `${(index / (milestones.length - 1)) * 100}%` }} />)}
             <motion.div className="absolute z-20 -ml-3 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-black/20 bg-white outline outline-2 outline-white/15 sm:-ml-3.5 sm:h-7 sm:w-7" animate={{ left: `${stepPercent}%`, rotate: stepIndex * 180 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
-              <Image src="/logo-square.png" alt="21Spheres" fill sizes="28px" className="object-contain p-1" />
+              <Image src="/logo-square.png" alt="21 Spheres" fill sizes="28px" className="object-contain p-1" />
             </motion.div>
           </div>
           <div className="flex justify-between text-[10px] tabular-nums text-white/45">
@@ -71,7 +71,7 @@ export default function ContactBookingPanel() {
       <div className="@container">
         <iframe
           src={calendarUrl}
-          title="Book an appointment with 21Spheres on Google Calendar"
+          title="Book an appointment with 21 Spheres on Google Calendar"
           className="block h-[1340px] w-full border-0 bg-white @min-[605px]:h-[1000px]"
           allow="fullscreen"
         />

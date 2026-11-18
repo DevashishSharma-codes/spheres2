@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { MARK_DOTS, MARK_SIZE } from "@/components/layout/logoShapes";
 
 interface AboutCardProps {
@@ -9,6 +9,8 @@ interface AboutCardProps {
   icon: React.ComponentType<{ className?: string }>;
   /** The card in the centre of the carousel. */
   active?: boolean;
+  /** The short label in the card's bottom strip, e.g. "Our Approach". */
+  pill?: string;
   onClick: () => void;
 }
 
@@ -33,7 +35,7 @@ const GRAIN =
  * "dusk": the light violet alone (from the Industries tabs, lightened towards the logo's violet).
  * "glass": the frosted purple glass above. Switch STYLE to compare them.
  */
-const STYLE: "industry" | "blend" | "dusk" | "glass" = "industry";
+const STYLE: "classic" | "industry" | "blend" | "dusk" | "glass" = "classic";
 
 /*
  * "industry": the Industries panels' look, retuned for a white page. Same angle and violet family,
@@ -68,7 +70,66 @@ const RIM: React.CSSProperties = {
  * a title with room for two lines, a two-line summary, and a footer with "Read more" and the arrow.
  * The full text lives in the detail view that opens from the card.
  */
-export function AboutCard({ title, summary, image, icon: Icon, active = false, onClick }: AboutCardProps) {
+/**
+ * "classic": the original white card that sat over the misty mountain background. The photo fills
+ * the top half, a white icon badge sits on the seam, then the title and summary on white, and a
+ * soft pill strip along the bottom with the card's label and a dark arrow.
+ */
+function ClassicCard({ title, summary, image, icon: Icon, active = false, pill, onClick }: AboutCardProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`${title}: ${active ? "read more" : "show this card"}`}
+      className={`group relative flex h-[360px] w-full cursor-pointer select-none flex-col overflow-hidden rounded-[26px] border bg-white text-left transition-[box-shadow,opacity] duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7057D9] motion-reduce:transition-none sm:h-[372px] ${
+        active
+          ? "border-purple-200/70 shadow-[0_20px_50px_-12px_rgba(40,20,80,0.18),0_6px_20px_rgba(0,0,0,0.06)]"
+          : "border-purple-100/70 opacity-85 shadow-[0_12px_32px_-8px_rgba(40,20,80,0.12)] hover:opacity-100"
+      }`}
+    >
+      {/* Photo */}
+      <span className="relative block h-[54%] w-full shrink-0 overflow-hidden bg-slate-100">
+        <Image
+          src={image}
+          alt=""
+          fill
+          sizes="(max-width: 640px) 280px, 320px"
+          className="object-cover object-center transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+        />
+      </span>
+
+      {/* The icon badge on the seam between photo and words */}
+      <span
+        aria-hidden="true"
+        className="relative z-20 -mt-5 ml-5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-purple-100/90 bg-white shadow-[0_4px_14px_rgba(40,25,80,0.16)] transition-transform duration-300 group-hover:scale-110 motion-reduce:transition-none"
+      >
+        <Icon className="h-5 w-5 text-[#5B3299]" />
+      </span>
+
+      {/* Words, on white */}
+      <span className="relative z-10 flex min-h-0 flex-1 flex-col bg-white px-5 pb-4 pt-1.5">
+        <span className="line-clamp-2 text-[19px] font-light leading-[1.2] tracking-[-0.035em] text-[#180E2E] sm:text-[20px]">{title}</span>
+        <span className="mt-1.5 line-clamp-2 text-[12px] font-light leading-relaxed tracking-[-0.01em] text-[#554D69]">{summary}</span>
+
+        {/* The pill strip */}
+        <span className="mt-auto flex w-full items-center justify-between rounded-full border border-[#E5E2F0] bg-[#F6F5FA] px-3.5 py-1.5 transition-colors duration-300 group-hover:border-purple-200 group-hover:bg-purple-50/80">
+          <span className="pl-1 text-[11.5px] tracking-[-0.02em] text-[#2B1F48]">{pill ?? "Read more"}</span>
+          <span aria-hidden="true" className="flex h-7 w-7 items-center justify-center rounded-full bg-[#180E2E] text-white transition-colors group-hover:bg-[#341F5E]">
+            <ArrowRight className="h-3.5 w-3.5" />
+          </span>
+        </span>
+      </span>
+    </button>
+  );
+}
+
+export function AboutCard(props: AboutCardProps) {
+  if (STYLE === "classic") return <ClassicCard {...props} />;
+  return <TintedCard {...props} />;
+}
+
+/** The tinted styles: "industry", "blend", "dusk" and "glass". */
+function TintedCard({ title, summary, image, icon: Icon, active = false, onClick }: AboutCardProps) {
   return (
     <button
       type="button"

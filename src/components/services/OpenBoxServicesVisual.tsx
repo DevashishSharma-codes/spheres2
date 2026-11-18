@@ -426,7 +426,7 @@ export function OpenBoxServicesVisual({
         {/* LAYER 1 (z-10): Box Base */}
         <Image
           src="/assets/services/box-clean.png"
-          alt="21Spheres Production Box"
+          alt="21 Spheres Production Box"
           fill
           priority
           className="object-contain object-bottom drop-shadow-[0_24px_45px_rgba(0,0,0,0.40)] z-10 pointer-events-none"
@@ -547,7 +547,7 @@ export function OpenBoxServicesVisual({
         <div className="absolute bottom-0 inset-x-0 h-[50.53%] z-[30] pointer-events-none overflow-hidden flex items-end justify-center">
           <Image
             src="/assets/services/box-front-clean.png"
-            alt="21Spheres Box Front Lip"
+            alt="21 Spheres Box Front Lip"
             width={1024}
             height={332}
             priority

@@ -94,7 +94,7 @@ export const SERVICE_CATEGORIES: CatalogCategory[] = [
 export const SERVICES_FAQ = [
   {
     q: "How long does a typical project take?",
-    a: "Most projects take between 3 and 14 weeks from brief to launch, depending on scope. We agree a timeline with you once discovery is complete.",
+    a: "Most projects take between 8 and 20 weeks from brief to launch, depending on scope. We agree on a timeline with you during the discovery and requirement analysis phase.",
   },
   {
     q: "Who owns the code?",

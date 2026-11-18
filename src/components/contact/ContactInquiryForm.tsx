@@ -65,7 +65,7 @@ export default function ContactInquiryForm() {
         <div className="space-y-3 pt-1 text-[13px] leading-5 text-[#515157] sm:text-sm">
           <label className="flex cursor-pointer items-start gap-2.5">
             <input className="mt-1 h-4 w-4 shrink-0 accent-[#7057D9]" type="checkbox" name="communicationsOptIn" />
-            <span>I would like to receive 21Spheres updates, useful resources, and occasional product insights by email.</span>
+            <span>I would like to receive 21 Spheres updates, useful resources, and occasional product insights by email.</span>
           </label>
           <p>By submitting this form, you agree to our <span className="font-semibold text-[#34343a]">Privacy Policy</span>.</p>
           <p>Your information will only be used to respond to your inquiry.</p>

@@ -91,7 +91,7 @@ export function PortfolioLandingSection() {
 
         {/* =========================================================
             2. TCS-STYLE BORDERLESS EDITORIAL 3-COLUMN SHOWCASE
-            - Inspired directly by 21Spheres production products & metadata
+            - Inspired directly by 21 Spheres production products & metadata
             - Exactly 3 items side-by-side
             - Concise, impactful text with generous breathing room
             - Crisp subtle rounded corners (rounded-[10px])

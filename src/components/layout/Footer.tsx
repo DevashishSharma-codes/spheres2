@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { COMPANY_SOCIALS } from "@/content/company";
 import { BackToTopButton, FooterCone } from "./FooterCone";
 import { FooterWordmark } from "./FooterWordmark";
-import { FooterClosingSlot } from "./FooterClosingLine";
+import { FooterAfterConeSlot, FooterClosingSlot } from "./FooterClosingLine";
 import { FooterThemeSync } from "./FooterThemeSync";
 import { SOCIAL_ICON_PATHS } from "./socialIconPaths";
 import { SITE_URL } from "@/lib/seo";
@@ -52,7 +52,14 @@ const SOCIALS = ([
   { label: "Facebook", href: COMPANY_SOCIALS.facebook, icon: "facebook", fill: "#1877F2" },
 ] as const).map((social) => ({ ...social, ariaLabel: `21 Spheres on ${social.label}` }));
 
-const ADDRESS = "PC-81, Vardhman Nagar South, Madhapar Bhuj, Gujarat 370020";
+const ADDRESSES = [
+  { label: "Office", value: "Ahmedabad, Gujarat" },
+  { label: "Registered office (R.O.)", value: "171 & 172, Shivam, Main Bazzar,\nNear Suparshav Jain Derasar, Bhuj-Nakhatrana Road,\nNakhatrana, Kutch, Gujarat - 370615" },
+] as const;
+/** Trademark application number, shown under the copyright line. */
+const TM_APPLICATION_NUMBER = "7352610";
+/** Shown with the addresses. */
+const GST_NUMBER = "24FIFPB9060K1Z6";
 const EMAIL = "info@21spheres.com";
 const PHONE = {
   label: "+91 97247 80021",
@@ -138,12 +145,14 @@ export function Footer() {
         {/* A page's closing line (see FooterClosingLine) appears here, right above the thread */}
         <FooterClosingSlot />
         <FooterCone />
+        {/* A page's follow-on content (see FooterAfterCone) appears here, right after "Start a project" */}
+        <FooterAfterConeSlot />
       </div>
 
       <Container wide>
         {/* Contact details on the left, the site's pages on the right */}
         <div className="grid gap-6 border-t border-[#E7E5EB] py-5 sm:gap-8 sm:py-6 lg:grid-cols-12 lg:gap-8">
-          <address className="grid divide-y divide-[#E7E5EB] border-y border-[#E7E5EB] text-[15px] font-medium tracking-[-0.01em] not-italic text-[#19191C] sm:gap-y-3 sm:divide-y-0 sm:border-0 sm:text-[17px] lg:col-span-4 lg:self-start [&>div]:py-2.5 sm:[&>div]:py-0">
+          <address className="grid divide-y divide-[#E7E5EB] border-y border-[#E7E5EB] text-[13px] leading-snug not-italic text-[#2A2A2E] sm:gap-y-3 sm:divide-y-0 sm:border-0 sm:text-sm lg:col-span-4 lg:self-start [&>div]:py-2.5 sm:[&>div]:py-0">
             <div>
               <div className={contactLabelClass}>
                 <span className="flex items-center gap-1.5">
@@ -181,7 +190,15 @@ export function Footer() {
                 <MapPin aria-hidden="true" className={contactIconClass} />
                 Address
               </p>
-              <p className="mt-1 max-w-[340px]">{ADDRESS}</p>
+              <dl className="mt-1.5 grid gap-2">
+                {ADDRESSES.map((address) => (
+                  <div key={address.label}>
+                    <dt className="text-[12px] text-[#2A2A2E]/55">{address.label}</dt>
+                    <dd className="max-w-[340px] whitespace-pre-line">{address.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-2 text-[12px] text-[#2A2A2E]/55">GSTIN: {GST_NUMBER}</p>
             </div>
           </address>
 
@@ -215,7 +232,10 @@ export function Footer() {
           <FooterWordmark className="w-full max-w-[520px]" />
           <div className="flex shrink-0 items-center justify-between gap-4 text-xs text-[#2A2A2E]/60 sm:flex-col sm:items-end">
             <BackToTopButton />
-            <p>© 2026 21Spheres Studio. All rights reserved.</p>
+            <div className="sm:text-right">
+              <p>© 2026–2027 21 Spheres. All rights reserved.</p>
+              <p className="mt-1">TM Application No. {TM_APPLICATION_NUMBER}</p>
+            </div>
           </div>
         </div>
       </Container>

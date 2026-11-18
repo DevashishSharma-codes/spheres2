@@ -3,11 +3,11 @@ import { TestimonialItem } from "@/types";
 export const TESTIMONIALS_CONTENT = {
   eyebrow: "07 // TESTIMONIALS & SLAS",
   title: "Verified reviews from founders and engineering leaders.",
-  lead: "Real performance feedback from teams whose core production systems were architected and shipped by 21Spheres.",
+  lead: "Real performance feedback from teams whose core production systems were architected and shipped by 21 Spheres.",
   items: [
     {
       id: "test-01",
-      quote: "21Spheres engineered our multi-carrier insurance distribution gateway in 4 weeks. We went from processing 20 quotes a minute to 4,500 simultaneous inquiries across 100+ carriers with zero downtime. They operate as true software architects.",
+      quote: "21 Spheres engineered our multi-carrier insurance distribution gateway in 4 weeks. We went from processing 20 quotes a minute to 4,500 simultaneous inquiries across 100+ carriers with zero downtime. They operate as true software architects.",
       author: "Kashiv Patel",
       role: "VP of Engineering",
       company: "Bimakart Technologies",
@@ -23,7 +23,7 @@ export const TESTIMONIALS_CONTENT = {
     },
     {
       id: "test-03",
-      quote: "Their neural vision system eradicated 99.4% of fraudulent policy submissions within our first month. 21Spheres didn't just write code; they stress-tested our threat vectors and hardened our entire edge routing layer.",
+      quote: "Their neural vision system eradicated 99.4% of fraudulent policy submissions within our first month. 21 Spheres didn't just write code; they stress-tested our threat vectors and hardened our entire edge routing layer.",
       author: "Elena Rostova",
       role: "Chief Technology Officer",
       company: "Kaster Underwriting Lab",

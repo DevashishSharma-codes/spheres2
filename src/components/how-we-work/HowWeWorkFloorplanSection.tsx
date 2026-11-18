@@ -782,8 +782,9 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
       ))}
       <div className="relative mx-auto flex w-full max-w-[1600px] flex-col px-5 py-10 lg:min-h-[calc(100svh-5.5rem)] sm:px-8 sm:py-10 lg:px-12 lg:pb-8 lg:pt-12">
         {/* ------------------------------- header (top) ------------------------------- */}
-        {/* Heading and tagline on the left, centred against the lead paragraph on the right */}
-        <header className="mb-6 flex shrink-0 flex-col gap-3 sm:mb-8 sm:gap-4 lg:mb-6 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
+        {/* Heading and tagline on the left, the lead paragraph on the right. Both start with a purple
+            line, and the two purple lines sit level with each other. */}
+        <header className="mb-6 flex shrink-0 flex-col gap-3 sm:mb-8 sm:gap-4 lg:mb-6 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
           <div className="shrink-0">
             <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-[#C8B4FF]">
               Our process
@@ -793,9 +794,14 @@ export function HowWeWorkFloorplanSection({ embedded = false }: HowWeWorkFloorpl
             </h2>
             <p className="mt-2.5 text-sm font-light text-white/70 sm:text-[15px]">{HOW_WE_WORK_INTRO.tagline}</p>
           </div>
-          <p className="max-w-[500px] text-[13px] font-light leading-relaxed text-white/60 sm:text-sm">
-            {HOW_WE_WORK_INTRO.lead}
-          </p>
+          <div className="max-w-[540px]">
+            <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-[#C8B4FF]">
+              {HOW_WE_WORK_INTRO.leadEyebrow}
+            </p>
+            <p className="text-[13px] font-light leading-relaxed text-white/60 sm:text-sm">
+              {HOW_WE_WORK_INTRO.lead}
+            </p>
+          </div>
         </header>
 
         {/* ------------------------------ desktop track (fills the rest) ------------------------------ */}

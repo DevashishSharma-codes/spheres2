@@ -34,3 +34,17 @@ export function FooterClosingLine({ children, lead }: { children: React.ReactNod
     slot
   );
 }
+
+const AFTER_SLOT_ID = "footer-after-cone";
+
+/** Where a page's follow-on content lands: just after the footer's "Start a project" button. */
+export function FooterAfterConeSlot() {
+  return <div id={AFTER_SLOT_ID} />;
+}
+
+/** Puts its children right after the footer's "Start a project" button (e.g. related services). */
+export function FooterAfterCone({ children }: { children: React.ReactNode }) {
+  const slot = useSyncExternalStore(subscribe, () => document.getElementById(AFTER_SLOT_ID), () => null);
+  if (!slot) return null;
+  return createPortal(children, slot);
+}

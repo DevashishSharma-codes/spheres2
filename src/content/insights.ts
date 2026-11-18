@@ -1,21 +1,33 @@
 import { InsightItem } from "@/types";
+import { FOUNDER_ESSAYS } from "@/content/founderNoteEssays";
+
+/**
+ * The insights are the sections of the Founder's Note (see founderNoteEssays.ts). Their title,
+ * summary line and read time come from the note itself; what's here is only how each one is filed.
+ */
+const FILING: Record<string, Omit<InsightItem, "id" | "slug" | "title" | "excerpt" | "readTime">> = {
+  "beyond-artificial-intelligence": { date: "NOV 2026", category: "AI STRATEGY", image: "/about/corp-automation.jpg", assetType: "Perspectives", industry: "Technology", topic: "AI and automation" },
+  "innovation-is-not-about-following-technology-it-is-about-questioning-it": { date: "NOV 2026", category: "INNOVATION", image: "/about/corp-integration.jpg", assetType: "Perspectives", industry: "Technology", topic: "Digital engineering" },
+  "engineering-reliable-ai-systems": { date: "NOV 2026", category: "AI ENGINEERING", image: "/portfolio/photos/developer.jpg", assetType: "Blogs", industry: "Technology", topic: "AI and automation" },
+  "the-evolution-of-large-language-models": { date: "OCT 2026", category: "LANGUAGE MODELS", image: "/about/corp-swarms.jpg", assetType: "Research", industry: "Technology", topic: "AI and automation" },
+  "rag-architecture-explained": { date: "OCT 2026", category: "AI ARCHITECTURE", image: "/portfolio/photos/analytics.jpg", assetType: "Blogs", industry: "Financial services", topic: "Data and analytics" },
+  "computer-vision-in-the-real-world": { date: "OCT 2026", category: "COMPUTER VISION", image: "/about/corp-performance.jpg", assetType: "Research", industry: "Healthcare", topic: "AI and automation" },
+  "the-rise-of-edge-ai": { date: "SEP 2026", category: "EDGE AI", image: "/about/corp-security.jpg", assetType: "Perspectives", industry: "Technology", topic: "Cloud and infrastructure" },
+  "the-economics-of-ai-adoption": { date: "SEP 2026", category: "AI ADOPTION", image: "/portfolio/photos/team.jpg", assetType: "Perspectives", industry: "Retail", topic: "AI and automation" },
+};
+
+const FALLBACK_FILING = FILING["beyond-artificial-intelligence"];
 
 export const INSIGHTS_CONTENT = {
   eyebrow: "INSIGHTS & PERSPECTIVES",
   title: "Ideas and perspectives for building what comes next.",
   lead: "Practical perspectives on AI, product strategy, and engineering.",
-  items: [
-    { id: "i-01", slug: "zero-hallucination-multi-agent-graphs", title: "Building AI systems people can trust", date: "NOV 2026", readTime: "8 MIN READ", category: "AI ARCHITECTURE", excerpt: "A practical guide to clear model roles, validated handoffs, and human oversight in production AI workflows.", image: "/about/corp-automation.jpg", assetType: "Blogs", industry: "Technology", topic: "AI and automation", summary: "Trust in AI is designed, not assumed. This guide shows how giving every model a clear role, validating each handoff, and keeping people in control of high-stakes decisions turns a promising prototype into a production workflow teams can rely on.", takeaways: ["Give each model one clearly defined role", "Validate outputs at every handoff", "Keep people in charge of high-stakes decisions"] },
-    { id: "i-02", slug: "architecting-multi-carrier-gateways", title: "Connecting complex systems without slowing down", date: "OCT 2026", readTime: "7 MIN READ", category: "ENGINEERING", excerpt: "How stable integration contracts and thoughtful failure handling make partner ecosystems more dependable.", image: "/portfolio/photos/team.jpg", assetType: "Perspectives", industry: "Financial services", topic: "Digital engineering", summary: "Partner ecosystems only feel fast when their connections are dependable. Learn how stable integration contracts and thoughtful failure handling keep services moving, even when a dependency misbehaves." },
-    { id: "i-03", slug: "120-fps-react-19-financial-dashboards", title: "Keeping data rich experiences responsive", date: "OCT 2026", readTime: "6 MIN READ", category: "PRODUCT EXPERIENCE", excerpt: "Design and engineering techniques for smooth interfaces backed by large, fast moving datasets.", image: "/about/corp-integration.jpg", assetType: "Blogs", industry: "Financial services", topic: "Digital engineering" },
-    { id: "i-04", slug: "human-centered-enterprise-ai", title: "Making enterprise AI useful to the people who use it", date: "SEP 2026", readTime: "5 MIN READ", category: "AI & PRODUCT", excerpt: "Start with everyday decisions and shape AI assistance around real workflows, clear context, and user trust.", image: "/about/corp-swarms.jpg", assetType: "Perspectives", industry: "Healthcare", topic: "AI and automation" },
-    { id: "i-05", slug: "modernizing-digital-banking", title: "Modernizing banking experiences one journey at a time", date: "SEP 2026", readTime: "9 MIN READ", category: "DIGITAL TRANSFORMATION", excerpt: "A phased approach to improving customer journeys while preserving the reliability of core services.", image: "/about/corp-performance.jpg", assetType: "Blogs", industry: "Financial services", topic: "Customer experience", summary: "Banking transformation does not need a risky all-at-once replacement. A phased approach improves one customer journey at a time while protecting the reliability of the core services customers depend on." },
-    { id: "i-06", slug: "secure-by-design-product-teams", title: "Building security into product decisions", date: "AUG 2026", readTime: "6 MIN READ", category: "CYBERSECURITY", excerpt: "Small, repeatable security practices help product teams protect customer data from the start.", image: "/about/corp-security.jpg", assetType: "Research", industry: "Technology", topic: "Cybersecurity" },
-    { id: "i-07", slug: "data-platforms-for-better-decisions", title: "A practical foundation for better data decisions", date: "AUG 2026", readTime: "7 MIN READ", category: "DATA & ANALYTICS", excerpt: "Build shared, well governed data foundations that help teams move from reporting to action.", image: "/portfolio/photos/analytics.jpg", assetType: "Blogs", industry: "Retail", topic: "Data and analytics" },
-    { id: "i-08", slug: "designing-resilient-cloud-services", title: "Designing cloud services that recover gracefully", date: "JUL 2026", readTime: "8 MIN READ", category: "CLOUD", excerpt: "Resilience comes from clear service boundaries, measured recovery goals, and regular failure practice.", image: "/portfolio/photos/developer.jpg", assetType: "Perspectives", industry: "Technology", topic: "Cloud and infrastructure" },
-    { id: "i-09", slug: "responsible-ai-governance", title: "Responsible AI governance that supports innovation", date: "JUL 2026", readTime: "5 MIN READ", category: "AI GOVERNANCE", excerpt: "A straightforward operating model can give teams the clarity to experiment while managing risk.", image: "/about/corp-automation.jpg", assetType: "Research", industry: "Healthcare", topic: "AI and automation" },
-    { id: "i-10", slug: "omnichannel-retail-experiences", title: "Bringing digital and physical retail together", date: "JUN 2026", readTime: "6 MIN READ", category: "CUSTOMER EXPERIENCE", excerpt: "Connected customer journeys depend on consistent service, useful data, and thoughtful moments of support.", image: "/portfolio/photos/delivery-app.jpg", assetType: "Blogs", industry: "Retail", topic: "Customer experience" },
-    { id: "i-11", slug: "product-teams-and-platform-thinking", title: "Why product teams benefit from platform thinking", date: "JUN 2026", readTime: "7 MIN READ", category: "PRODUCT STRATEGY", excerpt: "Reusable capabilities help product teams spend more time solving customer problems and less time rebuilding foundations.", image: "/about/corp-integration.jpg", assetType: "Perspectives", industry: "Technology", topic: "Digital engineering" },
-    { id: "i-12", slug: "measuring-digital-product-performance", title: "Measure the outcomes that matter in digital products", date: "MAY 2026", readTime: "5 MIN READ", category: "PRODUCT STRATEGY", excerpt: "Connect product signals to customer and business outcomes to guide better prioritization.", image: "/portfolio/photos/wealth-wisdom-application.png", assetType: "Research", industry: "Financial services", topic: "Data and analytics" },
-  ] as InsightItem[],
+  items: FOUNDER_ESSAYS.map((essay, index) => ({
+    id: `i-${String(index + 1).padStart(2, "0")}`,
+    slug: essay.slug,
+    title: essay.title,
+    excerpt: essay.dek,
+    readTime: `${essay.readMinutes} MIN READ`,
+    ...(FILING[essay.slug] ?? FALLBACK_FILING),
+  })) as InsightItem[],
 };

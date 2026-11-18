@@ -3,6 +3,8 @@ import { WorkStepItem } from "@/types";
 // The How We Work section on the home page, and its menu in the navbar, both read from here.
 export const HOW_WE_WORK_INTRO = {
   tagline: "From business challenges to technology that delivers.",
+  /** The purple line above the lead paragraph, level with "Our process" on the left. */
+  leadEyebrow: "A disciplined process. Deliberate execution. Measurable outcomes.",
   lead: "Every successful solution starts with the right questions. We care to understand your business, establish the right technical direction and manage the journey from the first discussion through development, deployment and beyond.",
 };
 
@@ -95,42 +97,42 @@ export const HOW_WE_WORK_CONTENT = {
     {
       step: "01",
       name: "Discovery & SRS Design",
-      duration: "Week 1",
+      duration: "Step 1",
       summary: "Deep-dive workshops to uncover core business goals, map user journeys, and establish exhaustive Software Requirements Specifications (SRS).",
       deliverables: ["Software Requirements Spec (SRS)", "User Journey Mapping", "Feature Prioritization Matrix", "Project Roadmap & Milestones"],
     },
     {
       step: "02",
       name: "Architecture & Tech Stack Selection",
-      duration: "Week 1 – Week 2",
+      duration: "Step 2",
       summary: "Architecting resilient system topology, data schemas, API contracts, and selecting high-performance modern tech stacks tailored for scalability.",
       deliverables: ["Systems Topology Blueprint", "Tech Stack Architecture RFC", "Database Schema & Indexing", "API Contract Specifications"],
     },
     {
       step: "03",
       name: "UI/UX Design & Prototyping",
-      duration: "Week 2 – Week 3",
+      duration: "Step 3",
       summary: "Crafting intuitive user experiences, design systems, and interactive clickable prototypes with meticulous attention to aesthetics and flow.",
       deliverables: ["Design System & Tokens", "Figma Interactive Prototypes", "Micro-Interactions & Motion", "Accessibility & UX Review"],
     },
     {
       step: "04",
       name: "Agile Development & Integration",
-      duration: "Week 3 – Week 5",
+      duration: "Step 4",
       summary: "Iterative two-week sprints building modular frontends, robust backend microservices, third-party integrations, and continuous milestone reviews.",
       deliverables: ["Clean Modular Codebase", "Frontend & Backend Sprints", "Third-Party API Integrations", "Weekly Demo Environments"],
     },
     {
       step: "05",
       name: "QA, Security & Testing",
-      duration: "Week 5 – Week 6",
+      duration: "Step 5",
       summary: "Rigorous automated integration tests, cross-device QA, edge-case validation, and comprehensive security vulnerability audits.",
       deliverables: ["Automated E2E Test Suite", "Security & Vulnerability Audit", "Performance & Load Testing", "Cross-Browser & Device QA"],
     },
     {
       step: "06",
       name: "Deployment, Launch & Support",
-      duration: "Week 6 Onward",
+      duration: "Step 6",
       summary: "Zero-downtime production rollout, CDN edge routing, telemetry setup, smooth go-live orchestration, and dedicated ongoing maintenance.",
       deliverables: ["Zero-Downtime Deployment", "CI/CD & Edge Routing", "Real-Time Telemetry & APM", "Post-Launch 24/7 Support & SLA"],
     },

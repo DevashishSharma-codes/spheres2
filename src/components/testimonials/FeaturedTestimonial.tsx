@@ -67,7 +67,7 @@ export function FeaturedTestimonial() {
 
             {/* High-Impact Featured Quote */}
             <h3 className="font-light text-xl sm:text-3xl md:text-4xl lg:text-[2.75rem] text-white leading-[1.18] tracking-tight drop-shadow-sm max-w-4xl">
-              There has been a lot of talk surrounding what works in digital products now. The answer is 21Spheres. Full Stop. 21Spheres is the next generation of product engineering.
+              There has been a lot of talk surrounding what works in digital products now. The answer is 21 Spheres. Full Stop. 21 Spheres is the next generation of product engineering.
             </h3>
 
             {/* Character Face & Author Info */}

@@ -225,6 +225,12 @@ export function PortfolioCaseStudiesSection() {
         const label = DISCIPLINE_TABS.find((t) => t.id === tab)?.label;
         return tab === "all" || label === project.discipline ? tab : "all";
       });
+    } else if (DISCIPLINE_TABS.some((tab) => `#${tab.id}` === hash)) {
+      // A link to a category (from the navbar's Case Studies menu) opens that filter.
+      const tab = DISCIPLINE_TABS.find((t) => `#${t.id}` === hash)!;
+      setActiveTab(tab.id);
+      const first = tab.id === "all" ? PORTFOLIO_CASE_STUDIES[0] : PORTFOLIO_CASE_STUDIES.find((p) => p.discipline === tab.label);
+      if (first) setFeaturedId(first.id);
     } else if (!hash) {
       setFeaturedId(PORTFOLIO_CASE_STUDIES[0]?.id ?? "");
     }
@@ -262,7 +268,12 @@ export function PortfolioCaseStudiesSection() {
           A portfolio of digital products and technology solutions, thoughtfully designed, engineered and delivered. Explore by discipline or contact us to discuss our confidential projects.
         </p>
 
-        {/* Filter */}
+        {/* Filter. Each category has a link target here, so /case-studies#ai-agents lands on the filter. */}
+        <div className="relative">
+          {DISCIPLINE_TABS.map((tab) => (
+            <span key={tab.id} id={tab.id} aria-hidden="true" className="absolute left-0 top-0 scroll-mt-24" />
+          ))}
+        </div>
         {/* Phones: one dropdown, so nothing is hidden off-screen */}
         <label className="mb-2 mt-6 flex items-center gap-3 sm:hidden">
           <span className="shrink-0 text-[12px] text-white/55">Show</span>

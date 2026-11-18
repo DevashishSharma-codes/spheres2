@@ -143,13 +143,29 @@ function IndustryWords({ industry, compact = false }: { industry: IndustryItem; 
           Read more
         </button>
       )}
-      <ul aria-label="What we build" className="mt-3 flex flex-wrap gap-1.5">
-        {industry.capabilities.map((capability) => (
-          <li key={capability} className="rounded-full border border-white/15 bg-white/[.08] px-2.5 py-1 text-[11px] leading-none text-white/90">
-            {capability}
-          </li>
-        ))}
-      </ul>
+      {compact ? (
+        <ul aria-label="What we build" className="mt-3 flex flex-wrap gap-1.5">
+          {industry.capabilities.map((capability) => (
+            <li key={capability} className="rounded-full border border-white/15 bg-white/[.08] px-2.5 py-1 text-[11px] leading-none text-white/90">
+              {capability}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        /* Desktop: every industry's pills on one line. Their text scales with the panel's width (cqi),
+           so the longest set still fits; a little extra height keeps them from feeling cramped. */
+        <ul aria-label="What we build" className="@container mt-3 flex flex-nowrap gap-1.5">
+          {industry.capabilities.map((capability) => (
+            <li
+              key={capability}
+              className="shrink-0 whitespace-nowrap rounded-full border border-white/15 bg-white/[.08] px-2 py-1.5 leading-none text-white/90"
+              style={{ fontSize: "clamp(9.5px, calc(2.45cqi - 2px), 11.5px)" }}
+            >
+              {capability}
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 }
@@ -223,8 +239,10 @@ function DesktopPanels({ industries, activeIdx, setActiveIdx }: { industries: In
                   <div className="mt-1.5 shrink-0 pb-5">
                     <IndustryWords industry={industry} />
                   </div>
-                  {/* Rises from the bottom edge; on short screens its lower part simply sits out of view */}
-                  <IndustryModel industry={industry} className="mx-auto mt-auto h-[190px] max-w-[360px] shrink-0 xl:h-[210px] [@media(min-height:860px)]:h-[240px]" />
+                  {/* Always 20px under the words (the padding above) and always down to the bottom edge, so the
+                      gap never changes. Same width for every industry; it simply shows more of the window when
+                      the words are shorter. Its minimum keeps it from being squeezed on short laptop screens. */}
+                  <IndustryModel industry={industry} className="mx-auto min-h-[150px] w-full max-w-[400px] flex-1 basis-0" />
                 </motion.div>
               ) : (
                 <PanelShapes />
@@ -364,7 +382,7 @@ export function IndustriesLandingSection() {
     <section
       id="industries"
       onKeyDown={handleKeyDown}
-      className="relative z-10 flex w-full scroll-mt-14 flex-col border-y border-white/10 text-white sm:scroll-mt-16 lg:h-[calc(100svh-4rem)] lg:min-h-[660px] lg:overflow-hidden"
+      className="relative z-10 flex w-full scroll-mt-14 flex-col border-y border-white/10 text-white sm:scroll-mt-16 lg:h-[clamp(680px,calc(100svh-4rem),800px)] lg:overflow-hidden"
       style={{
         background: `
           radial-gradient(ellipse 90% 95% at 80% 8%, rgba(112, 72, 194, 0.3) 0%, rgba(72, 43, 123, 0.18) 42%, transparent 78%),

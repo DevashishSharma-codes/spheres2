@@ -5,103 +5,97 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Globe as GlobeIcon, Heart } from "lucide-react";
 import { StaticTestimonialCard, TestimonialCardData } from "./StaticTestimonialCard";
 
+// The real testimonials. No photos, so each card shows the person's initials.
 const CARDS: TestimonialCardData[] = [
-  // Column 1 Top (99wp) - Purple
   {
     id: 1,
-    company: "99wp",
-    subhead: "I found myself looking at some of the messages that it's created and thinking like, wow, where did it find this? This went really deep to find information that you could never do in just a cursory search.",
-    name: "Tim O Niel",
-    role: "CRO • VP Sales & BizDev",
-    avatar: "/testimonials/avatars/avatar-01.jpg",
+    company: "WTMF.ai",
+    subhead: "21 Spheres brings the rare ability to turn ambitious ideas into practical technology solutions, combining technical depth with a clear understanding of business.",
+    name: "Shreyak Singh",
+    role: "Co-Founder, WTMF.ai | Knockverse Private Limited",
+    avatar: "",
     bgImage: "/card-bgs/user-bg-pink-purple.png",
     themeVariant: "purple",
   },
-  // Column 1 Bottom (gocanvas) - Noir
   {
     id: 2,
-    company: "gocanvas",
-    subhead: "A prospect replied: 'I was never considering anything until you reached out with a message that literally spoke to me.' The secret sauce in 21Spheres is the messaging itself.",
-    name: "Conrad de Claro",
-    role: "Director of Growth Marketing @GoCanvas",
-    avatar: "/testimonials/avatars/avatar-02.jpg",
+    company: "Enspire Devices",
+    subhead: "What stands out about 21 Spheres is their thoughtful approach to product development and their ability to translate complex requirements into working solutions.",
+    name: "Hitesh Patel",
+    role: "Founder & CEO, Enspire Devices Private Limited",
+    avatar: "",
     bgImage: "/card-bgs/user-bg-yellow-peach.jpg",
     themeVariant: "noir",
   },
-  // Column 2 Top (GROWTH PROTOCOL) - Slate
   {
     id: 3,
-    company: "GROWTH PROTOCOL",
-    subhead: "I'm able to come into those pipeline review meetings and show what I booked through 21Spheres. When other channels slow down, 21Spheres is always there.",
-    name: "Angelene Perez-Vento",
-    role: "AE @Growth Protocol",
-    avatar: "/testimonials/avatars/avatar-03.jpg",
+    company: "",
+    subhead: "Technology can make a real difference when designed around people. The team at 21 Spheres understands this and focuses on practical, accessible solutions.",
+    name: "Dr. Manthan Hirani",
+    role: "Homeopathic Practitioner",
+    avatar: "",
     bgImage: "/card-bgs/user-bg-green-gradient.png",
     themeVariant: "slate",
   },
-  // Column 2 Bottom (Kaster) - Purple
   {
     id: 4,
-    company: "Kaster",
-    subhead: "If you have a clearly defined ICP and persona, you need to add 21Spheres to your tech stack immediately to supplement your sales pipeline.",
-    name: "Elena R.",
-    role: "CTO @ Kaster",
-    avatar: "/testimonials/avatars/avatar-04.jpg",
+    company: "Bimakart.in",
+    subhead: "From evolving requirements to complex product features, 21 Spheres has shown strong ownership, adaptability, and the ability to keep execution on track.",
+    name: "Vinayak Parashar",
+    role: "Senior Project Manager, Bimakart.in | Incio Fintech Private Limited",
+    avatar: "",
     bgImage: "/card-bgs/user-bg-pink-purple.png",
     themeVariant: "purple",
   },
-  // Column 3 Top (Brex) - Noir
   {
     id: 5,
-    company: "Brex",
-    subhead: "Email and LinkedIn work, but the bar for personalization has gotten higher. The new standard is being set by 21Spheres. Go see it for yourself.",
-    name: "Garrett Marker",
-    role: "CRO @ Brex",
-    avatar: "/testimonials/avatars/avatar-05.jpg",
+    company: "Wealth Wisdom",
+    subhead: "I appreciate their curiosity and willingness to explore unconventional approaches. 21 Spheres brings fresh thinking to technology challenges and business opportunities.",
+    name: "Keshav Malpani",
+    role: "Wealth Wisdom",
+    avatar: "",
     bgImage: "/card-bgs/user-bg-yellow-peach.jpg",
     themeVariant: "noir",
   },
-  // Column 3 Bottom (Gallea Ai) - Frost
   {
     id: 6,
-    company: "Gallea Ai",
-    subhead: "Booking 14 meetings with qualified prospects used to take three months. 21Spheres shrank that timeline from 90 days down to 20, which is wild.",
-    name: "Maya T.",
-    role: "Chief Architect @ Gallea Ai",
-    avatar: "/testimonials/avatars/avatar-01.jpg",
+    company: "Futureogy",
+    subhead: "Turning a product vision into reality requires more than code. 21 Spheres brings the technical ownership and adaptability needed to build ambitious products.",
+    name: "Bijal Kothari",
+    role: "Founder, Futureogy | Neffertum Labs Private Limited",
+    avatar: "",
     bgImage: "/card-bgs/user-bg-green-gradient.png",
     themeVariant: "slate",
   },
-  // Column 4 Top (10X Management) - Purple
   {
     id: 7,
-    company: "10X Management",
-    subhead: "21Spheres gave us complete control of outreach. Most importantly, it was a third of the cost of the agency we were previously using.",
-    name: "Sam Z",
-    role: "Sales Lead @ 10X Management",
-    avatar: "/testimonials/avatars/avatar-06.jpg",
+    company: "PIERC, Parul University",
+    subhead: "21 Spheres exemplifies entrepreneurial innovation, bringing research-driven thinking and emerging technologies closer to practical applications with real-world potential.",
+    name: "Jay Sudani",
+    role: "CEO, PIERC | Parul University",
+    avatar: "",
     bgImage: "/card-bgs/user-bg-pink-purple.png",
     themeVariant: "purple",
   },
-  // Column 4 Bottom (Superposition) - Slate
   {
     id: 8,
-    company: "Superposition",
-    subhead: "The messages it writes are actually really high-taste. I was genuinely surprised by the personalization — it's that good.",
-    name: "Edmund Cuthbert",
-    role: "Founder at Superposition",
-    avatar: "/testimonials/avatars/avatar-02.jpg",
+    company: "MK Consulting",
+    subhead: "Om has extended his exceptional ability in technology, specifically in Artificial Intelligence. Through 21 Spheres, he is translating innovation into customised AI-driven business tools.",
+    name: "Martin Kennedy",
+    role: "Founder, MK Consulting | Seychelles",
+    avatar: "",
     bgImage: "/card-bgs/user-bg-yellow-peach.jpg",
     themeVariant: "slate",
   },
 ];
 
+// The lines that change, one after another, in the testimonials header. Always on one line.
 const PHRASES = [
-  "120+ Enterprise builds shipped across 14 countries",
-  "Over 50+ global clients trust 21Spheres",
-  "Sub-50ms SLA identity OCR processing worldwide",
-  "High-frequency digital architecture by 21Spheres",
+  "Engineering intelligence into the next generation of business",
+  "From experimental research to real-world AI applications",
+  "Building intelligent systems that solve real business challenges",
 ];
+const PHRASE_MS = 2600;
 
 const GLOBE_MARKERS = [
   { name: "Robert M.", city: "SF, USA", lat: 37.77, lon: -122.41, img: "/testimonials/avatars/avatar-01.jpg" },
@@ -262,12 +256,13 @@ export function TestimonialsWall() {
   }, []);
 
   // 3. Cycling Global Network Phrases
+  // One timer per line shown, restarted after every change, so it never stalls or skips a beat.
   useEffect(() => {
-    const phraseTimer = setInterval(() => {
+    const phraseTimer = setTimeout(() => {
       setActivePhraseIndex((prev) => (prev + 1) % PHRASES.length);
-    }, 3600);
-    return () => clearInterval(phraseTimer);
-  }, []);
+    }, PHRASE_MS);
+    return () => clearTimeout(phraseTimer);
+  }, [activePhraseIndex]);
 
   return (
     <section
@@ -287,7 +282,7 @@ export function TestimonialsWall() {
             <span>VE</span>
           </h2>
           <p className="text-xs sm:text-[13px] text-[#2A2A2E]/70 font-light mt-1.5 max-w-md mx-auto">
-            A few words from the teams building what’s next with 21Spheres.
+            A few words from the teams building what’s next with 21 Spheres.
           </p>
         </div>
 
@@ -371,25 +366,29 @@ export function TestimonialsWall() {
           </div>
 
           {/* Cycling Phrases & Network Badge */}
-          <div className="relative z-20 w-full text-center pt-1 px-2 max-w-md">
+          <div className="relative z-20 w-full text-center pt-1 px-2 max-w-2xl">
             <div className="flex items-center justify-center gap-1 mb-0.5 text-[#7057D9]">
               <GlobeIcon className="w-3 h-3" />
               <span className="font-mono text-[8px] uppercase tracking-widest font-semibold text-[#2A2A2E]/70">
                 21SPHERES GLOBAL NETWORK
               </span>
             </div>
-            <AnimatePresence mode="wait">
-              <motion.h3
-                key={activePhraseIndex}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.35 }}
-                className="text-xs sm:text-sm font-light text-[#18181B] leading-tight tracking-tight uppercase"
-              >
-                {PHRASES[activePhraseIndex]}
-              </motion.h3>
-            </AnimatePresence>
+            {/* Always one line, in a box of fixed height, so nothing around it moves. The size eases down
+                on narrow phones so the longest line still fits. */}
+            <div className="relative h-[1.5em] text-[clamp(8.5px,2.4vw,14px)]">
+              <AnimatePresence initial={false}>
+                <motion.h3
+                  key={activePhraseIndex}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.28, ease: "easeOut" }}
+                  className="absolute inset-0 flex items-center justify-center whitespace-nowrap font-light leading-none tracking-tight text-[#18181B] uppercase"
+                >
+                  {PHRASES[activePhraseIndex]}
+                </motion.h3>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 

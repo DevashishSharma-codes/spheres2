@@ -3,7 +3,7 @@ import { PortfolioItem } from "@/types";
 export const PORTFOLIO_CONTENT = {
   eyebrow: "04 // PORTFOLIO & WORK",
   title: "Production systems delivered for high-conviction ventures.",
-  lead: "A curated selection of platforms engineered by 21Spheres, operating at scale with verified performance benchmarks.",
+  lead: "A curated selection of platforms engineered by 21 Spheres, operating at scale with verified performance benchmarks.",
   items: [
     {
       id: "bimakart-connect",

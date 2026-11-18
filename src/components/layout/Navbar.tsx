@@ -12,6 +12,7 @@ import { INDUSTRIES_CONTENT } from "@/content/industries";
 import { SERVICES_CONTENT } from "@/content/services";
 import { PORTFOLIO_CASE_STUDIES } from "@/content/portfolioCaseStudies";
 import { Logo } from "@/components/ui/Logo";
+import { CaseStudiesMenu } from "./CaseStudiesMenu";
 import { Menu, X, ChevronDown, ChevronRight, ArrowRight } from "lucide-react";
 
 interface DropdownLinkItem {
@@ -55,7 +56,7 @@ const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
   },
   "case-studies": {
     headline: "High-Conviction Systems",
-    narrative: "A curated selection of mission-critical platforms engineered by 21Spheres, operating in production at scale with verified performance benchmarks and zero downtime.",
+    narrative: "A curated selection of mission-critical platforms engineered by 21 Spheres, operating in production at scale with verified performance benchmarks and zero downtime.",
     ctaText: "View full production case studies",
     ctaHref: "/case-studies",
     links: [
@@ -75,10 +76,10 @@ const NAVBAR_DROPDOWNS: Record<string, DropdownSectionData> = {
     ctaText: "Browse all architecture RFCs",
     ctaHref: "/insights",
     links: [
-      { title: "Connecting complex systems", tag: "Oct 2026 • Engineering", href: "/insights/architecting-multi-carrier-gateways" },
-      { title: "Building AI systems people can trust", tag: "Nov 2026 • AI Architecture", href: "/insights/zero-hallucination-multi-agent-graphs" },
-      { title: "Keeping data rich experiences responsive", tag: "Oct 2026 • Product Experience", href: "/insights/120-fps-react-19-financial-dashboards" },
-      { title: "Designing cloud services that recover", tag: "Jul 2026 • Cloud", href: "/insights/designing-resilient-cloud-services" },
+      { title: "Beyond artificial intelligence", tag: "Nov 2026 • AI Strategy", href: "/insights/beyond-artificial-intelligence" },
+      { title: "Innovation is about questioning technology", tag: "Nov 2026 • Innovation", href: "/insights/innovation-is-not-about-following-technology-it-is-about-questioning-it" },
+      { title: "Engineering reliable AI systems", tag: "Nov 2026 • AI Engineering", href: "/insights/engineering-reliable-ai-systems" },
+      { title: "The evolution of large language models", tag: "Oct 2026 • Language Models", href: "/insights/the-evolution-of-large-language-models" },
     ],
   },
 };
@@ -340,7 +341,16 @@ export function Navbar() {
                 {/* Left Side: Information & Headline */}
                 <div className="col-span-5 flex flex-col justify-between pr-4 lg:pr-6">
                   <div>
-                    <h3 className="text-xl sm:text-[22px] lg:text-[24px] font-normal tracking-[-0.03em] leading-[1.2] mb-2 bg-gradient-to-r from-white via-[#EDE4FF] to-[#A78BFA] bg-clip-text text-transparent">
+                    {/* The gradient spans the headline itself (w-fit), so every headline, long or short,
+                        fades from white to the same subtle lavender at its end */}
+                    {/* Services: white until the "nd" of "Around", then the same subtle fade to lavender */}
+                    <h3
+                      className={`w-fit text-xl sm:text-[22px] lg:text-[24px] font-normal tracking-[-0.03em] leading-[1.2] mb-2 bg-clip-text text-transparent ${
+                        hoveredKey === "services"
+                          ? "bg-[linear-gradient(to_right,#FFFFFF_0%,#FFFFFF_55%,#EDE4FF_68%,#D0BFFD_100%)]"
+                          : "bg-gradient-to-r from-white via-[#EDE4FF] to-[#D0BFFD]"
+                      }`}
+                    >
                       {NAVBAR_DROPDOWNS[hoveredKey].headline}
                     </h3>
                     <p className="whitespace-pre-line text-xs sm:text-[13px] font-light text-white/70 leading-relaxed max-w-[380px] mb-4">
@@ -361,7 +371,12 @@ export function Navbar() {
                 </div>
 
                 {/* Right Side: Links with dividing lines & chevrons */}
-                {/* Longer lists run in two columns, so the menu stays about as tall as its description */}
+                {/* Case Studies is a two-step menu: a category, then its projects */}
+                {hoveredKey === "case-studies" ? (
+                  <div className="col-span-7">
+                    <CaseStudiesMenu onNavigate={() => setHoveredKey(null)} />
+                  </div>
+                ) : (
                 <div
                   className={`col-span-7 ${NAVBAR_DROPDOWNS[hoveredKey].links.length > 6 ? "grid grid-flow-col grid-cols-2 gap-x-5" : "flex flex-col"}`}
                   style={NAVBAR_DROPDOWNS[hoveredKey].links.length > 6 ? { gridTemplateRows: `repeat(${Math.ceil(NAVBAR_DROPDOWNS[hoveredKey].links.length / 2)}, auto)` } : undefined}
@@ -382,6 +397,7 @@ export function Navbar() {
                     </Link>
                   ))}
                 </div>
+                )}
 
               </div>
             </div>

@@ -9,6 +9,7 @@ export interface TestimonialCardData {
   subhead: string;
   name: string;
   role: string;
+  /** A real photo of the person; leave empty to show their initials. */
   avatar: string;
   bgImage: string;
   themeVariant: "purple" | "slate" | "noir" | "frost";
@@ -95,7 +96,7 @@ export function StaticTestimonialCard({ card, bricks, size = "full" }: StaticTes
       style={{ backgroundColor: theme.frameBg, "--brick-near": theme.brickNear, "--brick-far": theme.brickFar } as React.CSSProperties}
     >
       {/* Inner Card Body with Color-Graded Watercolor Background */}
-      <div className={`relative flex h-full w-full flex-col justify-between overflow-hidden rounded-none ${small ? "p-3.5" : "min-h-[340px] p-6 sm:min-h-[370px] sm:p-7 lg:min-h-[390px]"}`}>
+      <div className={`relative flex h-full w-full flex-col overflow-hidden rounded-none ${small ? "justify-between p-3.5" : "justify-center min-h-[320px] p-6 sm:min-h-[340px] sm:p-7 lg:min-h-[350px]"}`}>
         
         {/* Soft Background Watercolor Image with Purple / Grayish / White / Black Grading */}
         <img
@@ -120,23 +121,35 @@ export function StaticTestimonialCard({ card, bricks, size = "full" }: StaticTes
         {/* TOP BLOCK: Company Logo + Quote Text right at top */}
         <div className={`relative z-10 flex flex-col items-start ${small ? "gap-2" : "gap-4"}`}>
           {/* Company Logo / Name */}
-          <span className={`font-bold tracking-tight ${small ? "text-[14px] leading-tight" : "text-lg sm:text-xl"} ${theme.titleColor}`}>
-            {card.company}
-          </span>
+          {card.company && (
+            <span className={`font-bold tracking-tight ${small ? "text-[14px] leading-tight" : "text-lg sm:text-xl"} ${theme.titleColor}`}>
+              {card.company}
+            </span>
+          )}
 
           {/* Quote Text immediately at top under logo */}
-          <p className={`font-normal leading-snug tracking-tight text-left ${small ? (size === "wide" ? "line-clamp-4 text-[13.5px]" : "line-clamp-5 text-[12px]") : "text-sm sm:text-base"} ${theme.quoteColor}`}>
+          <p className={`font-normal leading-snug tracking-tight text-left ${small ? (size === "wide" ? "line-clamp-4 text-[13.5px]" : "line-clamp-5 text-[12px]") : "text-sm leading-relaxed sm:text-base sm:leading-relaxed"} [text-wrap:pretty] ${theme.quoteColor}`}>
             {card.subhead}
           </p>
         </div>
 
         {/* BOTTOM BLOCK: Author Avatar + Name & Role */}
-        <div className={`relative z-10 flex items-center ${small ? "gap-2 pt-3" : "gap-3 pt-6"}`}>
-          <img
-            src={card.avatar}
-            alt={card.name}
-            className={`rounded-full object-cover shrink-0 border ${theme.avatarBorder} shadow-xs ${small ? "h-7 w-7" : "w-10 h-10 sm:w-11 sm:h-11"}`}
-          />
+        <div className={`relative z-10 flex items-center ${small ? "gap-2 pt-3" : "mt-6 gap-3 border-t border-black/[.06] pt-5"}`}>
+          {/* The person's photo when we have one; otherwise their initials */}
+          {card.avatar ? (
+            <img
+              src={card.avatar}
+              alt={card.name}
+              className={`rounded-full bg-white object-cover shrink-0 border ${theme.avatarBorder} shadow-xs ${small ? "h-7 w-7" : "w-10 h-10 sm:w-11 sm:h-11"}`}
+            />
+          ) : (
+            <span
+              aria-hidden="true"
+              className={`flex shrink-0 items-center justify-center rounded-full border bg-white/70 font-semibold text-[#5A43C0] shadow-xs ${theme.avatarBorder} ${small ? "h-7 w-7 text-[10px]" : "h-10 w-10 text-[13px] sm:h-11 sm:w-11"}`}
+            >
+              {card.name.replace(/^Dr\.\s*/, "").split(" ").map((part) => part[0]).slice(0, 2).join("")}
+            </span>
+          )}
           <div className="flex min-w-0 flex-col leading-tight">
             <span className={`font-semibold ${small ? "truncate text-[11.5px]" : "text-xs sm:text-sm"} ${theme.nameColor}`}>
               {card.name}

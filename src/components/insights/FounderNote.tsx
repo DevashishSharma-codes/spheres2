@@ -124,8 +124,8 @@ export function FounderNote({ dek }: { dek: string }) {
 
           <a href="#note" className={`${navItem(active === -1)} mt-8`}>{marker(active === -1)}Founder&rsquo;s Note</a>
 
-          <p className={`mt-6 text-[11px] uppercase tracking-[0.12em] ${MUTED}`}>Essays</p>
-          <ol className="mt-2 space-y-1">
+          {/* The sections sit under the note, as parts of it */}
+          <ol className="ml-1 mt-2 space-y-1 border-l border-[#E7E5EB] pl-4">
             {FOUNDER_ESSAYS.map((e, i) => (
               <li key={e.slug}>
                 <a href={`#${e.slug}`} aria-current={active === i ? "true" : undefined} className={navItem(active === i)}>
@@ -160,7 +160,7 @@ export function FounderNote({ dek }: { dek: string }) {
                 <p className="text-[14px] text-[#2A2A2E] sm:text-[15px]">Founder &amp; CEO, 21 Spheres</p>
               </div>
             </div>
-            <p className={`mt-3 text-[12px] ${MUTED}`}>A World Within &middot; {FOUNDER_ESSAYS.length} essays &middot; {TOTAL_MIN} min read</p>
+            <p className={`mt-3 text-[12px] ${MUTED}`}>A World Within &middot; {FOUNDER_ESSAYS.length} sections &middot; {TOTAL_MIN} min read</p>
 
             <h1 className="mt-6 text-[22px] font-normal leading-[1.3] tracking-[-0.02em] text-[#171717] sm:mt-8 sm:text-[28px]">
               Building beyond what exists. Creating what comes next.
@@ -168,14 +168,6 @@ export function FounderNote({ dek }: { dek: string }) {
             <p className={`mt-3 text-[15px] leading-[1.7] ${MUTED}`}>{dek}</p>
           </header>
 
-          {/* Tabs: stay pinned under the site header on phones, so either part is one tap away */}
-          <div className={`sticky top-14 z-10 -mx-4 flex items-center justify-between border-b ${HAIR} bg-white/95 px-4 py-3 text-[14px] backdrop-blur sm:-mx-6 sm:px-6 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:pb-3 lg:pt-0 lg:backdrop-blur-none`}>
-            <div className="flex gap-5">
-              <a href="#note" className={active === -1 ? "text-[#171717]" : `${MUTED} hover:text-[#171717]`}>Note</a>
-              <a href="#essays" className={active >= 0 ? "text-[#171717]" : `${MUTED} hover:text-[#171717]`}>Essays</a>
-            </div>
-            <span className={`text-[12px] ${MUTED}`}>{active >= 0 ? `${num(active)} / ${num(FOUNDER_ESSAYS.length - 1)}` : "Note"}</span>
-          </div>
 
           {/* The note */}
           <section aria-label="A note from the founder" className={`${ROW} border-b ${HAIR} !py-8 sm:!py-10`}>
@@ -224,8 +216,8 @@ export function FounderNote({ dek }: { dek: string }) {
 
           {/* Phones: a short heading, since the essays start closed */}
           <div id="essays" className="scroll-mt-28 pb-1 pt-8 lg:hidden">
-            <p className="text-[15px] font-medium text-[#171717]">Essays</p>
-            <p className={`mt-0.5 text-[13px] ${MUTED}`}>Tap an essay to read it.</p>
+            <p className="text-[15px] font-medium text-[#171717]">Sections</p>
+            <p className={`mt-0.5 text-[13px] ${MUTED}`}>Tap a section to read it.</p>
           </div>
 
           {/* The essays: one after another on desktop, opened one at a time on phones */}
@@ -279,7 +271,7 @@ export function FounderNote({ dek }: { dek: string }) {
                           className={`!mt-8 flex w-full items-center justify-between gap-3 rounded-xl border ${HAIR} px-4 py-3 text-left lg:hidden`}
                         >
                           <span className="min-w-0">
-                            <span className={`block text-[12px] ${MUTED}`}>Next essay</span>
+                            <span className={`block text-[12px] ${MUTED}`}>Next section</span>
                             <span className="mt-0.5 block truncate text-[14px] text-[#171717]">{FOUNDER_ESSAYS[i + 1].title}</span>
                           </span>
                           <ArrowRight aria-hidden="true" className="h-4 w-4 shrink-0 text-[#171717]" />
@@ -308,11 +300,11 @@ export function FounderNote({ dek }: { dek: string }) {
           <div className={`mt-3 h-px w-full ${HAIR} border-t`}>
             <div className="-mt-px h-px bg-[#171717] transition-[width] duration-500" style={{ width: `${((active + 2) / (FOUNDER_ESSAYS.length + 1)) * 100}%` }} />
           </div>
-          <p className={`mt-2 text-[12px] ${MUTED}`}>{essay ? `Essay ${num(active)} of ${FOUNDER_ESSAYS.length}` : `${FOUNDER_ESSAYS.length} essays follow`}</p>
+          <p className={`mt-2 text-[12px] ${MUTED}`}>{essay ? `Section ${num(active)} of ${FOUNDER_ESSAYS.length}` : `${FOUNDER_ESSAYS.length} sections follow`}</p>
 
           {outline.length > 0 && (
             <>
-              <p className={`mt-10 text-[11px] uppercase tracking-[0.12em] ${MUTED}`}>In this essay</p>
+              <p className={`mt-10 text-[11px] uppercase tracking-[0.12em] ${MUTED}`}>TL;DR</p>
               <ol className="mt-2 space-y-1">
                 {outline.map((h, k) => (
                   <li key={k}>

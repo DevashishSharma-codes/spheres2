@@ -26,8 +26,8 @@ export const INDUSTRIES_CONTENT: { eyebrow: string; title: string; lead: string;
       shortName: "Fintech & Insurance",
       subhead: "Making financial operations faster, more connected, and more accountable.",
       paragraphs: [
-        "Financial institutions manage complex transactions, customer interactions, regulatory requirements, and data-intensive operations. They need reliable digital systems that simplify processes, strengthen operational efficiency, and deliver seamless customer experiences.",
-        "We build intelligent financial applications, customer-facing digital platforms, automated document verification systems, policy management solutions, payment integrations, and connected data systems that improve accuracy, streamline operations, and make financial services more accessible and efficient.",
+        "Financial institutions manage complex transactions, customer interactions, and data-intensive operations. They need reliable digital systems that simplify processes, strengthen operational efficiency, and deliver seamless customer experiences.",
+        "We build intelligent financial applications, customer-facing digital platforms, automated document verification systems, payment integrations, and connected data systems that improve accuracy, streamline operations, and make financial services more accessible and efficient.",
       ],
       capabilities: ["Financial Applications", "Document Verification", "Payment Systems", "Policy Workflows"],
       prompt: "Verify claim documents and route each policy to the right reviewer.",
@@ -39,8 +39,8 @@ export const INDUSTRIES_CONTENT: { eyebrow: string; title: string; lead: string;
       shortName: "Forex & Trading",
       subhead: "When markets move in milliseconds, the infrastructure matters.",
       paragraphs: [
-        "Trading environments depend on continuous market data, accurate calculations, responsive interfaces, and dependable execution systems. Delays, inconsistent feeds, and poor visibility can affect critical trading operations.",
-        "We engineer market-data pipelines, trading dashboards, analytical models, automated monitoring, and software integrations designed around the demands of financial trading environments.",
+        "Trading environments depend on continuous market data, accurate calculations, responsive interfaces, and dependable execution systems. Every price tick matters when positions move in seconds. Delays, inconsistent feeds, and poor visibility can affect critical trading operations.",
+        "We engineer market-data pipelines, trading dashboards, analytical models, risk and exposure alerts, automated monitoring and reconciliation, and software integrations designed around the demands of financial trading environments.",
       ],
       capabilities: ["Market Data Engineering", "Trading Analytics", "Monitoring Systems", "Predictive Modelling"],
       prompt: "Stream live market data into a dashboard with alerts on unusual moves.",
@@ -52,8 +52,8 @@ export const INDUSTRIES_CONTENT: { eyebrow: string; title: string; lead: string;
       shortName: "Emotional Wellbeing",
       subhead: "Digital experiences built around people, not just screens.",
       paragraphs: [
-        "Wellbeing platforms require a different approach to technology. Conversations must feel natural, interactions must be thoughtful, and personalization must respect the individual using the platform.",
-        "We create conversational applications, personalized engagement experiences, digital wellbeing platforms, and context-aware interfaces that make technology more accessible and human-centred.",
+        "Wellbeing platforms require a different approach to technology. People often arrive at sensitive moments, so every detail has to build comfort and trust. Conversations must feel natural, interactions must be thoughtful, and personalization must respect the individual using the platform.",
+        "We create conversational applications, personalized engagement experiences, digital wellbeing platforms, mood and habit tracking tools, and context-aware interfaces that make technology more accessible and human-centred.",
       ],
       capabilities: ["Conversational Experiences", "NLP", "Personalization", "Mobile Platforms"],
       prompt: "Create a gentle daily check-in that adapts to how each person feels.",
@@ -78,8 +78,8 @@ export const INDUSTRIES_CONTENT: { eyebrow: string; title: string; lead: string;
       shortName: "Customer Support",
       subhead: "Every customer interaction should move the conversation forward.",
       paragraphs: [
-        "Support teams spend considerable time answering repeated questions, following up on enquiries, qualifying leads, and managing requests across multiple channels. Scaling this operation should not mean compromising response quality.",
-        "We build conversational chatbots, WhatsApp workflows, voice calling agents, and CRM-connected support systems that handle routine interactions while allowing complex requests to reach the right people.",
+        "Support teams spend considerable time answering repeated questions, following up on enquiries, qualifying leads, and managing requests across multiple channels. Customers expect fast, accurate answers at any hour. Scaling this operation should not mean compromising response quality.",
+        "We build conversational chatbots, WhatsApp workflows, voice calling agents, lead qualification flows, and CRM-connected support systems that handle routine interactions while allowing complex requests to reach the right people.",
       ],
       capabilities: ["Voice Agents", "WhatsApp Workflows", "Conversational Systems", "CRM Integration"],
       prompt: "Answer routine WhatsApp questions and hand complex ones to the team.",
@@ -91,7 +91,7 @@ export const INDUSTRIES_CONTENT: { eyebrow: string; title: string; lead: string;
       shortName: "Business Operations",
       subhead: "Fewer disconnected processes. Better control over the way work gets done.",
       paragraphs: [
-        "Behind every growing business are approvals, reports, invoices, employee workflows, and information moving between different systems. When these processes rely heavily on manual coordination, productivity becomes difficult to sustain.",
+        "Behind every growing business are approvals, reports, invoices, employee workflows, and information moving between different systems. Each handoff that depends on email or spreadsheets adds delay and room for error. When these processes rely heavily on manual coordination, productivity becomes difficult to sustain.",
         "We connect business applications, automate multi-step processes, develop internal platforms, and build reporting systems that give teams a more consistent way to manage day-to-day operations.",
       ],
       capabilities: ["Enterprise Integrations", "Process Automation", "Internal Platforms", "Business Intelligence"],

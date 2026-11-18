@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { INSIGHTS_CONTENT } from "@/content/insights";
+import { FOUNDER_ESSAYS, type EssayBlock } from "@/content/founderNoteEssays";
 import { PageBackButton } from "@/components/ui/PageBackButton";
 import { NOT_INDEXED, pageMetadata } from "@/lib/seo";
 
@@ -27,6 +28,42 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   });
 }
 
+/** One block of an insight's writing (the insights are the Founder's Note sections). */
+function EssayBlockView({ block, id }: { block: EssayBlock; id?: string }) {
+  switch (block.type) {
+    case "h2":
+      return <h2 id={id} className="mb-4 mt-12 scroll-mt-24 text-2xl font-medium tracking-tight first:mt-0 sm:text-3xl">{block.text}</h2>;
+    case "h3":
+      return <h3 className="mb-3 mt-8 text-lg font-medium tracking-tight">{block.text}</h3>;
+    case "p":
+      return <p className="mb-5 text-base leading-8 text-black/70">{block.text}</p>;
+    case "list":
+      return (
+        <ul className="mb-6 space-y-2">
+          {block.items.map((item, i) => (
+            <li key={i} className="relative pl-5 text-base leading-8 text-black/70">
+              <span aria-hidden="true" className="absolute left-0 text-[#7057D9]">&ndash;</span>
+              {typeof item === "string" ? item : <><span className="font-medium text-[#171717]">{item.term}</span> &mdash; {item.text}</>}
+            </li>
+          ))}
+        </ul>
+      );
+    case "terms":
+      return (
+        <dl className="mb-6 divide-y divide-black/10 border-y border-black/10">
+          {block.items.map((item) => (
+            <div key={item.term} className="grid gap-1 py-4 sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-6">
+              <dt className="font-medium text-[#171717]">{item.term}</dt>
+              <dd className="leading-7 text-black/70">{item.text}</dd>
+            </div>
+          ))}
+        </dl>
+      );
+    case "closing":
+      return <p className="mt-10 border-l-2 border-[#7057D9] pl-5 text-lg font-medium leading-8 text-[#171717]">{block.text}</p>;
+  }
+}
+
 async function InsightArticleContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const matchedArticle = INSIGHTS_CONTENT.items.find((item) => item.slug === slug);
@@ -48,7 +85,13 @@ async function InsightArticleContent({ params }: { params: Promise<{ slug: strin
   const articleTopic = article.topic ?? "Digital engineering";
   const articleImage = article.image || "/about/corp-performance.jpg";
 
-  const related = INSIGHTS_CONTENT.items.filter((item) => item.slug !== article.slug && (item.topic === article.topic || item.industry === article.industry)).slice(0, 3);
+  const essay = FOUNDER_ESSAYS.find((entry) => entry.slug === article.slug);
+  const headingIds = (essay?.blocks ?? []).map((block, i) => (block.type === "h2" ? `${article.slug}-h${i}` : undefined));
+  const outline = (essay?.blocks ?? []).flatMap((block, i) => (block.type === "h2" ? [{ id: headingIds[i]!, text: block.text }] : []));
+
+  const relatedByTopic = INSIGHTS_CONTENT.items.filter((item) => item.slug !== article.slug && (item.topic === article.topic || item.industry === article.industry)).slice(0, 3);
+  // Always three related insights, topped up from the rest when the topic match runs short.
+  const related = [...relatedByTopic, ...INSIGHTS_CONTENT.items.filter((item) => item.slug !== article.slug && !relatedByTopic.includes(item))].slice(0, 3);
   const sections = [
     { heading: "Start with the real need", body: `The most useful work starts by understanding the people and decisions behind ${article.title.toLowerCase()}. Teams can then focus on the moments that create friction, establish what success looks like, and make practical choices around the customer and business outcome.` },
     { heading: "Build a foundation that can evolve", body: `${article.excerpt} A clear foundation keeps the experience understandable as requirements grow. Define ownership, make important assumptions visible, and create a small set of reusable patterns that teams can improve over time.` },
@@ -64,21 +107,39 @@ async function InsightArticleContent({ params }: { params: Promise<{ slug: strin
       <div className="relative mx-auto w-full max-w-[1380px] px-6 pb-14 pt-28 sm:px-10 sm:pb-20 lg:px-16">
         <p className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white/80">Insights <span className="px-2">/</span> {article.category}</p>
         <h1 className="max-w-5xl text-4xl font-light leading-[1.08] tracking-[-0.045em] sm:text-6xl lg:text-[72px]">{article.title}</h1>
-        <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/35 pt-5 text-sm text-white/75"><span>{article.date}</span><span>{article.readTime}</span><span>21Spheres Insights</span></div>
+        <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/35 pt-5 text-sm text-white/75"><span>{article.date}</span><span>{article.readTime}</span><span>21 Spheres Insights</span></div>
       </div>
     </section>
     <div className="mx-auto grid max-w-[1180px] gap-14 px-6 py-14 sm:px-10 sm:py-20 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-24 lg:px-12">
       <article>
         <p className="mb-10 text-xl font-light leading-relaxed text-black/70 sm:text-2xl">{article.excerpt}</p>
-        {sections.map((section) => <section key={section.heading} className="mb-10">
-          <h2 className="mb-4 text-2xl font-medium tracking-tight sm:text-3xl">{section.heading}</h2>
-          <p className="text-base leading-8 text-black/70">{section.body}</p>
-        </section>)}
+        {essay
+          ? essay.blocks.map((block, i) => <EssayBlockView key={i} block={block} id={headingIds[i]} />)
+          : sections.map((section) => <section key={section.heading} className="mb-10">
+            <h2 className="mb-4 text-2xl font-medium tracking-tight sm:text-3xl">{section.heading}</h2>
+            <p className="text-base leading-8 text-black/70">{section.body}</p>
+          </section>)}
         <div className="mt-12 border-t border-black/10 pt-6 text-sm text-black/50">Filed under {articleTopic} · {articleIndustry}</div>
       </article>
       <aside className="h-fit border-t border-black/15 pt-5 lg:sticky lg:top-8">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-black/50">At a glance</p>
-        <p className="mt-4 text-sm leading-relaxed text-black/65">A {articleReadTime.toLowerCase()} perspective for teams working across {articleIndustry.toLowerCase()} and {articleTopic.toLowerCase()}.</p>
+        {outline.length > 0 ? (
+          <>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-black/50">TL;DR</p>
+            <ol className="mt-4 space-y-2">
+              {outline.map((heading) => (
+                <li key={heading.id}>
+                  <a href={`#${heading.id}`} className="text-sm leading-snug text-black/65 transition-colors hover:text-black">{heading.text}</a>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-5 text-xs text-black/45">{articleReadTime.toLowerCase()}</p>
+          </>
+        ) : (
+          <>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-black/50">At a glance</p>
+            <p className="mt-4 text-sm leading-relaxed text-black/65">A {articleReadTime.toLowerCase()} perspective for teams working across {articleIndustry.toLowerCase()} and {articleTopic.toLowerCase()}.</p>
+          </>
+        )}
         <Link href="/insights" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold">Browse all insights <span aria-hidden="true">↗</span></Link>
       </aside>
     </div>

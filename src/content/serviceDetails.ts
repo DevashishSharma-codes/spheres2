@@ -41,6 +41,8 @@ export type ServiceStatGraphic =
   | { kind: "line" | "network" | "frames" | "pulse" | "library" };
 
 export interface ServiceProofStat {
+  /** The result's name, e.g. "Cost reduction", shown above the number. */
+  title?: string;
   value: string;
   label: string;
   detail: string;
@@ -96,11 +98,11 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "mobile",
     proof: {
       layout: "stepped",
-      source: "UrbanFlow Logistics project",
+      source: "",
       stats: [
-        { value: "450k+", label: "Monthly bookings", detail: "Handled through the mobile platform.", graphic: { kind: "line" } },
-        { value: "< 48ms", label: "Dispatch routing", detail: "Time to match a booking to a driver.", graphic: { kind: "network" } },
-        { value: "120 FPS", label: "Native rendering", detail: "Smooth on both iOS and Android.", graphic: { kind: "frames" } },
+        { title: "Cross-platform development", value: "iOS + Android", label: "Unified development", detail: "Seamless application experiences engineered for both major mobile platforms.", graphic: { kind: "line" } },
+        { title: "Real-time performance", value: "< 48ms", label: "Dispatch routing", detail: "Time taken to match a booking with the right driver through intelligent allocation.", graphic: { kind: "network" } },
+        { title: "Native performance", value: "120 FPS", label: "Smooth rendering", detail: "Responsive, high-performance user experiences across iOS and Android devices.", graphic: { kind: "frames" } },
       ],
     },
     offerings: [
@@ -125,11 +127,11 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "webPortal",
     proof: {
       layout: "stepped",
-      source: "Wealth Wisdom Global project",
+      source: "",
       stats: [
-        { value: "120 FPS", label: "Canvas frame rate", detail: "Tested under 500k active points.", graphic: { kind: "frames" } },
-        { value: "320ms", label: "Calculation speed", detail: "For 100,000 simulation runs.", graphic: { kind: "line" } },
-        { value: "18ms", label: "Live data latency", detail: "From edge to client.", graphic: { kind: "pulse" } },
+        { title: "User experience", value: "1,000+", label: "User journeys optimised", detail: "Seamless navigation and intuitive interactions across application workflows.", graphic: { kind: "line" } },
+        { title: "Platform integration", value: "120+", label: "Systems connected", detail: "Third-party APIs, payment gateways, and business tools unified into one ecosystem.", graphic: { kind: "network" } },
+        { title: "API response latency", value: "38ms", label: "Response time", detail: "Low-latency communication between application services and backend infrastructure.", graphic: { kind: "pulse" } },
       ],
     },
     offerings: [
@@ -153,11 +155,11 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "aiConnect",
     proof: {
       layout: "grid",
-      source: "Kaster Underwriting project",
+      source: "",
       stats: [
-        { value: "99.4%", label: "Fraud detection", detail: "Pixel-level tamper checks.", percent: 99.4, legend: ["Detected", "Missed"] },
-        { value: "< 0.08%", label: "False positive rate", detail: "Across 250k submissions.", percent: 0.08, invert: true, legend: ["Cleared correctly", "Flagged in error"] },
-        { value: "420ms", label: "Per document", detail: "A full multi-page pass, down from 72 hours of manual review.", graphic: { kind: "compare", beforeLabel: "Manual review", before: "72 hours", afterLabel: "Automated", after: "420ms" } },
+        { title: "Cost reduction", value: "60%", label: "Operational savings", detail: "Reduced overhead through intelligent automation and optimised business processes.", percent: 60, legend: ["Saved", "Remaining cost"] },
+        { title: "Productivity gains", value: "78%", label: "Workforce efficiency", detail: "More tasks completed with fewer manual interventions and repetitive workflows.", graphic: { kind: "line" } },
+        { title: "Processing time", value: "12 minutes", label: "Per workflow", detail: "Accelerated business operations, from manual processing to intelligent automation.", graphic: { kind: "compare", beforeLabel: "Traditional", before: "24 hours", afterLabel: "AI-powered", after: "12 minutes" } },
       ],
     },
     offerings: [
@@ -181,11 +183,11 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "answers",
     proof: {
       layout: "grid",
-      source: "Clinical Therapeutics Group project",
+      source: "",
       stats: [
-        { value: "99.4%", label: "Guardrail precision", detail: "No fabricated citations observed.", percent: 99.4, legend: ["Precise", "Not precise"] },
-        { value: "450+", label: "Texts indexed", detail: "1.2M records from curated treatises.", graphic: { kind: "library" } },
-        { value: "< 180ms", label: "Lookup latency", detail: "Hybrid vector and keyword search.", graphic: { kind: "pulse" } },
+        { title: "Response accuracy", value: "99.4%", label: "Reliable outputs", detail: "Context-aware responses with reduced hallucinations and grounded AI-generated answers.", percent: 99.4, legend: ["Accurate", "Inaccurate"] },
+        { title: "Knowledge processing", value: "450,000+", label: "Documents indexed", detail: "Structured knowledge made searchable through intelligent retrieval and semantic understanding.", graphic: { kind: "library" } },
+        { title: "Response latency", value: "< 180ms", label: "Lookup latency", detail: "Faster information retrieval through hybrid vector and keyword search.", graphic: { kind: "pulse" } },
       ],
     },
     offerings: [
@@ -209,12 +211,12 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "chat",
     proof: {
       layout: "globe",
-      source: "Clinical Therapeutics Group project and our chatbot service benchmark",
+      source: "",
       stats: [
-        { value: "3,400+", label: "Active physicians", detail: "Licensed clinical users." },
-        { value: "12", label: "Countries", detail: "Where the agent is in use." },
-        { value: "< 180ms", label: "Lookup latency", detail: "Finding the right source.", graphic: { kind: "pulse" } },
-        { value: "< 280ms", label: "Voice turnaround", detail: "Our voice assistant benchmark." },
+        { title: "Conversations handled", value: "3,400+", label: "Active conversations", detail: "Customer interactions handled through intelligent AI-powered chatbots." },
+        { title: "Global reach", value: "12", label: "Countries served", detail: "AI chatbot solutions deployed across international markets." },
+        { title: "Response latency", value: "< 180ms", label: "Response time", detail: "Near-instant information retrieval and context-aware responses.", graphic: { kind: "pulse" } },
+        { title: "Voice processing", value: "< 280ms", label: "Voice turnaround", detail: "Responsive voice interactions powered by conversational AI." },
       ],
     },
     offerings: [
@@ -239,11 +241,11 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "workflow",
     proof: {
       layout: "grid",
-      source: "Kaster Underwriting project and our automation service benchmark",
+      source: "",
       stats: [
-        { value: "94%", label: "Manual effort reduced", detail: "Our automation benchmark.", percent: 94, legend: ["Automated", "Still manual"] },
-        { value: "< 0.08%", label: "False positive rate", detail: "Very few cases sent back for review.", percent: 0.08, invert: true, legend: ["Cleared correctly", "Flagged in error"] },
-        { value: "420ms", label: "Verification time", detail: "Down from 72 hours.", graphic: { kind: "compare", beforeLabel: "Manual process", before: "72 hours", afterLabel: "Automated", after: "420ms" } },
+        { title: "Manual effort reduced", value: "94%", label: "Process automation", detail: "Reduced manual workload through intelligent workflows and automated task execution.", percent: 94, legend: ["Automated", "Still manual"] },
+        { title: "Process accuracy", value: "< 0.08%", label: "Error rate", detail: "Fewer processing errors through automated validation and rule-based execution.", percent: 0.08, invert: true, legend: ["Processed correctly", "Errors"] },
+        { title: "Processing time", value: "420ms", label: "Execution time", detail: "Automated workflows replacing manual processes that previously took up to 72 hours.", graphic: { kind: "compare", beforeLabel: "Manual process", before: "72 hours", afterLabel: "Automated", after: "420ms" } },
       ],
     },
     offerings: [
@@ -267,11 +269,11 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "website",
     proof: {
       layout: "stepped",
-      source: "21Spheres website service standards",
+      source: "",
       stats: [
-        { value: "100/100", label: "Lighthouse score", detail: "The target we build towards.", graphic: { kind: "gauge" } },
-        { value: "3–14", label: "Weeks to launch", detail: "From brief to going live.", graphic: { kind: "weeks" } },
-        { value: "100%", label: "Handed over", detail: "With all code and documentation.", graphic: { kind: "ring" } },
+        { title: "Website performance", value: "95+", label: "Performance score", detail: "Optimised loading, accessibility, and user experience across modern browsers and devices.", graphic: { kind: "line" } },
+        { title: "Conversion optimisation", value: "62%", label: "Engagement improvement", detail: "Intuitive navigation and strategically designed user journeys that turn visitors into customers.", graphic: { kind: "line" } },
+        { title: "Delivery & ownership", value: "100%", label: "Complete handover", detail: "Production-ready website with source code, documentation, SEO foundations, and full client ownership.", graphic: { kind: "ring" } },
       ],
     },
     offerings: [
@@ -296,12 +298,12 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "saas",
     proof: {
       layout: "globe",
-      source: "Bimakart Technologies project",
+      source: "",
       stats: [
-        { value: "45,000+", label: "Active network", detail: "Partners on the platform." },
-        { value: "99.99%", label: "Availability", detail: "Verified around the clock." },
-        { value: "100+", label: "Carriers connected", detail: "Through one unified platform.", graphic: { kind: "network" } },
-        { value: "8", label: "Weeks to production", detail: "From brief to cutover." },
+        { title: "Multi-tenancy", value: "100%", label: "Tenant isolation", detail: "Independent workspaces, data management, and access controls within a unified platform." },
+        { title: "Active users", value: "1M+", label: "User adoption", detail: "SaaS platforms designed to support growing user bases and continuous engagement." },
+        { title: "Concurrent users", value: "500+", label: "Simultaneous access", detail: "Engineered to handle multiple users accessing and interacting with the platform simultaneously.", graphic: { kind: "network" } },
+        { title: "Development transparency", value: "100%", label: "Complete visibility", detail: "Structured milestones, documented architecture, and transparent progress throughout the development lifecycle." },
       ],
     },
     offerings: [
@@ -326,11 +328,11 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "globe",
     proof: {
       layout: "grid",
-      source: "Bimakart Technologies project",
+      source: "",
       stats: [
-        { value: "99.99%", label: "Availability", detail: "Verified around the clock.", percent: 99.99, legend: ["Available", "Downtime"] },
-        { value: "100+", label: "Carriers connected", detail: "Queried in parallel.", graphic: { kind: "network" } },
-        { value: "< 2.4s", label: "Quote latency", detail: "Down from a 45-second average.", graphic: { kind: "compare", beforeLabel: "Previous average", before: "45s", afterLabel: "With the gateway", after: "2.4s" } },
+        { title: "Transaction throughput", value: "10K+", label: "Transactions processed", detail: "High-volume business transactions handled through purpose-built enterprise systems.", graphic: { kind: "line" } },
+        { title: "System interoperability", value: "100+", label: "Enterprise endpoints", detail: "Connected services, internal systems, and external platforms communicating through unified integrations.", graphic: { kind: "network" } },
+        { title: "Data processing latency", value: "< 250ms", label: "Query response", detail: "Optimised database operations and backend processing for real-time enterprise workflows.", graphic: { kind: "pulse" } },
       ],
     },
     offerings: [
@@ -355,11 +357,11 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     model: "board",
     proof: {
       layout: "stepped",
-      source: "21Spheres delivery standards",
+      source: "",
       stats: [
-        { value: "100%", label: "IP ownership", detail: "The code and rights are yours.", graphic: { kind: "ring" } },
-        { value: "15+", label: "Products shipped", detail: "For enterprises and ventures.", graphic: { kind: "count", count: 15 } },
-        { value: "3–14", label: "Weeks to launch", detail: "From brief to going live.", graphic: { kind: "weeks" } },
+        { title: "Intellectual property", value: "100%", label: "IP ownership", detail: "Complete ownership of source code, software assets, and intellectual property transferred to the client.", graphic: { kind: "ring" } },
+        { title: "Custom modules", value: "2,000+", label: "Business modules developed", detail: "Purpose-built functionalities engineered around unique business requirements and operational workflows.", graphic: { kind: "line" } },
+        { title: "Industry coverage", value: "10+", label: "Industries served", detail: "Custom software engineered for diverse business domains, operational models, and industry-specific requirements.", graphic: { kind: "count", count: 10 } },
       ],
     },
     offerings: [

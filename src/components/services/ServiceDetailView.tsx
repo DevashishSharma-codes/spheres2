@@ -1,8 +1,9 @@
+import { RelatedServicesCarousel } from "./RelatedServicesCarousel";
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { ServiceHeroIntro } from "./ServiceHeroIntro";
-import { FooterClosingLine } from "@/components/layout/FooterClosingLine";
+import { FooterAfterCone, FooterClosingLine } from "@/components/layout/FooterClosingLine";
 import { PageBackButton } from "@/components/ui/PageBackButton";
 import { PillLink } from "@/components/ui/PillLink";
 import { CursorDotField } from "@/components/ui/CursorDotField";
@@ -75,7 +76,9 @@ function SteppedProof({ proof }: { proof: ServiceProof }) {
     <dl className="grid items-start gap-4 sm:grid-cols-3">
       {proof.stats.map((stat, index) => (
         <div key={stat.label} className="flex flex-col-reverse">
-          <dt className="mt-3 text-sm leading-relaxed text-white/70"><span className="font-medium text-white">{stat.label}.</span> {stat.detail}</dt>
+          <dt className="mt-1.5 text-sm leading-relaxed text-white/70"><span className="font-medium text-white">{stat.label}.</span> {stat.detail}</dt>
+          {/* As on every results layout: the design, then the name in purple, then the points */}
+          {stat.title && <p className="mt-4 text-[12px] font-medium uppercase tracking-[0.12em] text-[#C9BBFF]">{stat.title}</p>}
           <dd className={`flex h-[210px] flex-col rounded-[18px] p-4 ${heights[index % 3]}`} style={HATCH}>
             <div className="min-h-0 flex-1">{stat.graphic && <StatGraphic graphic={stat.graphic} />}</div>
             <p className="mt-3 text-[40px] font-light leading-none tracking-[-0.04em] sm:text-[46px]">{stat.value}</p>
@@ -91,6 +94,7 @@ function GridStat({ stat }: { stat: ServiceProofStat }) {
     <div className="flex flex-col-reverse">
       <dt className="mt-1.5 text-sm leading-relaxed text-white/70"><span className="font-medium text-white">{stat.label}.</span> {stat.detail}</dt>
       <dd className="text-[44px] font-light leading-none tracking-[-0.04em]">{stat.value}</dd>
+      {stat.title && <p className="mb-1.5 text-[12px] font-medium uppercase tracking-[0.12em] text-[#C9BBFF]">{stat.title}</p>}
       <div className="mb-4">
         {stat.percent !== undefined ? (
           <Waffle stat={stat} />
@@ -120,6 +124,7 @@ function GlobeProof({ proof }: { proof: ServiceProof }) {
             <div key={stat.label} className="flex flex-col-reverse">
               <dt className="mt-1.5 text-sm leading-snug text-white/65"><span className="block font-medium text-white">{stat.label}</span>{stat.detail}</dt>
               <dd className="text-[40px] font-light leading-none tracking-[-0.04em] sm:text-[48px]">{stat.value}</dd>
+              {stat.title && <p className="mb-1.5 text-[12px] font-medium uppercase tracking-[0.12em] text-[#C9BBFF]">{stat.title}</p>}
             </div>
           ))}
         </dl>
@@ -138,7 +143,10 @@ function CompactProof({ proof }: { proof: ServiceProof }) {
       {proof.stats.map((stat) => (
         <div key={stat.label} className="grid grid-cols-[minmax(96px,auto)_minmax(0,1fr)] items-baseline gap-x-4 py-3.5">
           <dd className="text-[28px] font-light leading-none tracking-[-0.04em]">{stat.value}</dd>
-          <dt className="text-[13px] leading-snug text-white/65"><span className="block font-medium text-white">{stat.label}</span>{stat.detail}</dt>
+          <dt className="text-[13px] leading-snug text-white/65">
+            {stat.title && <span className="mb-0.5 block text-[11px] font-medium uppercase tracking-[0.12em] text-[#C9BBFF]">{stat.title}</span>}
+            <span className="block font-medium text-white">{stat.label}</span>{stat.detail}
+          </dt>
         </div>
       ))}
     </dl>
@@ -273,7 +281,7 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
         <section aria-labelledby="service-results" className={detail.closingTitle ? "pb-8 pt-10 sm:pb-10 sm:pt-20" : "py-10 sm:py-20"}>
           <div className="mb-5 flex flex-col justify-between gap-2 sm:mb-10 sm:flex-row sm:items-baseline sm:gap-6">
             <ResultsTitle />
-            <SourceNote>{detail.proof.source}</SourceNote>
+            {detail.proof.source && <SourceNote>{detail.proof.source}</SourceNote>}
           </div>
           <div className="sm:hidden"><CompactProof proof={detail.proof} /></div>
           <div className="hidden sm:block"><Proof proof={detail.proof} /></div>
@@ -281,6 +289,11 @@ export function ServiceDetailView({ service, detail }: { service: ServiceItem; d
 
         {/* Next step. A closing line goes into the footer, right above its thread and
             "Start a project" button; without one, the page keeps its own button row. */}
+        {/* Similar services, right after the footer's "Start a project" */}
+        <FooterAfterCone>
+          <RelatedServicesCarousel currentId={service.id} />
+        </FooterAfterCone>
+
         {detail.closingTitle ? (
           <FooterClosingLine lead={detail.closingLead}>{detail.closingTitle}</FooterClosingLine>
         ) : (

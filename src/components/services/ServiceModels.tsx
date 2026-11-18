@@ -120,7 +120,7 @@ function AppScreen({ ready = true, introDelay }: { ready?: boolean; introDelay?:
 
 const INTRO_FADE_AT = 3;
 
-/** The app screen, opened by a one-time 21Spheres logo intro. It then stays on the app. */
+/** The app screen, opened by a one-time 21 Spheres logo intro. It then stays on the app. */
 function PhoneIntroScreen() {
   const sentinelRef = useRef<HTMLSpanElement>(null);
   const started = useInView(sentinelRef, { once: true, amount: 0.3 });
@@ -170,7 +170,7 @@ function PhoneIntroScreen() {
               animate={started ? { rotate: 0 } : undefined}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Image src="/logo-square.png" alt="21Spheres" fill sizes="80px" className="object-contain" />
+              <Image src="/logo-square.png" alt="21 Spheres" fill sizes="80px" className="object-contain" />
             </motion.span>
             <motion.span
               className="mt-3 text-center"
@@ -178,7 +178,7 @@ function PhoneIntroScreen() {
               animate={started ? { opacity: 1, y: 0 } : undefined}
               transition={{ delay: 0.75, duration: 0.5 }}
             >
-              <span className="block text-[17px] font-medium tracking-[-0.02em]">21Spheres</span>
+              <span className="block text-[17px] font-medium tracking-[-0.02em]">21 Spheres</span>
               <span className="mt-0.5 block text-[10px] text-white/60">Engineering what&rsquo;s next.</span>
             </motion.span>
           </motion.div>
@@ -490,7 +490,7 @@ const SAAS_STATS = ["Monthly revenue", "Active accounts", "Churn", "Trial to pai
 const SAAS_PLANS = [["Starter", "#d9ccff"], ["Growth", "#a78bfa"], ["Scale", "#5a43c0"]];
 const PIXELS = (color: string) => `repeating-linear-gradient(to top, ${color} 0 5px, transparent 5px 7px)`;
 
-/** `studio` is the portfolio version: 21Spheres labels, our published figures, and numbers placed clear of the devices in front. */
+/** `studio` is the portfolio version: 21 Spheres labels, our published figures, and numbers placed clear of the devices in front. */
 function SaasInsightsPanel({ studio = false }: { studio?: boolean }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const moment = SAAS_MOMENTS[useLoopStep(rootRef, SAAS_MOMENTS.length, 3600)];
@@ -500,7 +500,7 @@ function SaasInsightsPanel({ studio = false }: { studio?: boolean }) {
   return (
           <div ref={rootRef} data-model-main className="flex min-w-0 flex-1 flex-col bg-white p-3 text-[#1b1a21]">
             <div className="flex shrink-0 items-center justify-between">
-              <p className="text-[13px] font-medium">{studio ? "21Spheres" : "Insights"}</p>
+              <p className="text-[13px] font-medium">{studio ? "21 Spheres" : "Insights"}</p>
               <span className="rounded-md border border-black/10 px-2 py-0.5 text-[9px] text-black/60">Last 12 months</span>
             </div>
 
@@ -742,12 +742,12 @@ const LLM_SCRIPT: ChatScript = {
 };
 
 const STUDIO_SCRIPT: ChatScript = {
-  question: "What can 21Spheres build for us?",
+  question: "What can 21 Spheres build for us?",
   answer: "Websites, web and mobile apps, custom AI and enterprise software. One team designs and builds it, then hands over the full code and documentation.".split(" "),
   sources: ["Services", "Case studies"],
   listLabel: "Explore",
   list: ["Our services", "Case studies", "Industries", "Start a project"],
-  chip: "21Spheres",
+  chip: "21 Spheres",
   account: "Our team",
   suggestions: [],
 };
@@ -850,7 +850,7 @@ function LlmChat({ script, inLaptop = false }: { script: ChatScript; inLaptop?: 
       <div className={sizes.sidebar}>
         <p className={`flex items-center gap-1.5 font-medium text-white ${sizes.brand}`}>
           <span className="relative h-5 w-5 shrink-0 rounded-md bg-white"><Image src="/logo-square.png" alt="" fill sizes="20px" className="object-contain p-0.5" /></span>
-          21Spheres
+          21 Spheres
         </p>
         <span className={`mt-3 rounded-lg bg-white py-1.5 text-center text-black ${sizes.button}`}>+ New chat</span>
         <span className={`mt-1.5 flex items-center gap-1 rounded-lg border border-white/15 bg-white/10 px-2 py-1 text-white/60 ${sizes.list}`}><Search className="h-2.5 w-2.5" /> Search</span>
@@ -870,7 +870,7 @@ function LlmChat({ script, inLaptop = false }: { script: ChatScript; inLaptop?: 
         style={inLaptop ? { background: "radial-gradient(90% 60% at 50% 30%, #f1ecff 0%, #ffffff 75%)" } : undefined}
       >
         <div className={`flex shrink-0 items-center justify-between ${sizes.bar}`}>
-          <span className="flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-2 py-1"><LlmOrb small /> 21Spheres AI</span>
+          <span className="flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-2 py-1"><LlmOrb small /> 21 Spheres AI</span>
           <span className="rounded-lg bg-[#171717] px-2.5 py-1 text-white">Share</span>
         </div>
 
@@ -919,7 +919,7 @@ function LlmChat({ script, inLaptop = false }: { script: ChatScript; inLaptop?: 
             {shownPhase === "idle" && typed > 0 ? (
               <>{script.question.slice(0, typed)}<motion.span className="ml-px inline-block h-3 w-px translate-y-0.5 bg-[#7057D9]" animate={{ opacity: [1, 0] }} transition={{ duration: 0.6, repeat: Infinity }} /></>
             ) : (
-              <span className="text-black/45">Ask 21Spheres anything</span>
+              <span className="text-black/45">Ask 21 Spheres anything</span>
             )}
           </p>
           <div className="mt-1 flex items-center justify-between">
@@ -1037,7 +1037,7 @@ export function PortfolioDevices() {
         <motion.div className="absolute left-0 top-[262px] w-[360px]" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.12 }}>
           <div className="origin-top-left" style={{ width: 600, transform: "scale(0.6)" }}>
             <LaptopFrame>
-              <LaptopTitleBar title="21Spheres AI" />
+              <LaptopTitleBar title="21 Spheres AI" />
               <div className="relative flex min-h-0 flex-1">
                 <DuskBackdrop />
                 <LlmChat script={STUDIO_SCRIPT} inLaptop />

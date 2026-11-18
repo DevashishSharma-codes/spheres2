@@ -350,7 +350,7 @@ export function ConicalHeroSection() {
           </div>
         </div>
 
-        {/* Center 21Spheres Floating Spherical Logo */}
+        {/* Center 21 Spheres Floating Spherical Logo */}
         <div className="absolute left-1/2 top-[80px] sm:top-[95px] lg:top-[105px] xl:top-[115px] -translate-x-1/2 z-20 w-[165px] sm:w-[190px] lg:w-[210px] xl:w-[235px] pointer-events-none select-none">
           <motion.div
             initial={{ opacity: 1, scale: 1, y: 0 }}
@@ -376,7 +376,7 @@ export function ConicalHeroSection() {
             >
               <Image
                 src="/assets/how-we-work/spheres-logo-clean.png"
-                alt="21Spheres Logo"
+                alt="21 Spheres Logo"
                 width={760}
                 height={760}
                 priority

@@ -18,7 +18,7 @@ const ARCS: Arc[] = CITIES.map((to) => ({ from: HOME, to }));
 const ROTATION_PER_FRAME = 0.0022;
 
 /** Rotates only while on screen, and holds still for people who prefer reduced motion. */
-export function InsightsGlobe({ className = "" }: { className?: string }) {
+export function InsightsGlobe({ className = "", dark = false }: { className?: string; dark?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -50,15 +50,16 @@ export function InsightsGlobe({ className = "" }: { className?: string }) {
           height: size * devicePixelRatio,
           phi,
           theta: 0.28,
-          dark: 0,
-          diffuse: 1.1,
+          // Dark: a graphite globe with silver land and soft lavender arcs, for graphite panels.
+          dark: dark ? 1 : 0,
+          diffuse: dark ? 1.2 : 1.1,
           mapSamples: 20000,
-          mapBrightness: 1.6,
-          mapBaseBrightness: 0.04,
-          baseColor: [0.98, 0.98, 0.99],
-          markerColor: [0.427, 0.329, 0.945],
-          glowColor: [1, 1, 1],
-          arcColor: [0.427, 0.329, 0.945],
+          mapBrightness: dark ? 4 : 1.6,
+          mapBaseBrightness: dark ? 0 : 0.04,
+          baseColor: dark ? [0.52, 0.52, 0.56] : [0.86, 0.86, 0.9],
+          markerColor: dark ? [0.77, 0.72, 1] : [0.427, 0.329, 0.945],
+          glowColor: dark ? [0.3, 0.3, 0.34] : [0.97, 0.97, 1],
+          arcColor: dark ? [0.77, 0.72, 1] : [0.427, 0.329, 0.945],
           arcWidth: 0.4,
           arcHeight: 0.28,
           markers: MARKERS,
@@ -85,7 +86,7 @@ export function InsightsGlobe({ className = "" }: { className?: string }) {
       visibility.disconnect();
       destroyGlobe?.();
     };
-  }, []);
+  }, [dark]);
 
   return (
     // cobe wraps the canvas in its own element, so the canvas needs a parent of ours that React manages.

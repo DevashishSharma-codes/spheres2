@@ -5,8 +5,6 @@ import Link from "next/link";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { ServicesIntro } from "@/components/services/ServicesIntro";
-import { FooterClosingLine } from "@/components/layout/FooterClosingLine";
-import { SERVICES_CONTENT } from "@/content/services";
 import {
   SERVICE_CATEGORIES,
   SERVICES_FAQ,
@@ -302,8 +300,6 @@ export function ServicesCatalogPage() {
         </div>
       </Container>
 
-      {/* Closing line, shown in the footer right above its thread and "Start a project" button */}
-      <FooterClosingLine>{SERVICES_CONTENT.closing.title}</FooterClosingLine>
     </div>
   );
 }

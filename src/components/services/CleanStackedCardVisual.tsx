@@ -95,7 +95,7 @@ export function CleanStackedCardVisual({ serviceId, pills = [] }: CleanStackedCa
       {/* ========================================================
           2. BOTTOM BASE:
           - If Mobile: Phone top half with Dynamic Island
-          - Otherwise: Clean minimalist console base with 21Spheres emblem
+          - Otherwise: Clean minimalist console base with 21 Spheres emblem
           ======================================================== */}
       <div className="relative z-10 w-full flex justify-center items-end mt-auto pt-2">
         {isMobile ? (
@@ -126,7 +126,7 @@ export function CleanStackedCardVisual({ serviceId, pills = [] }: CleanStackedCa
             </div>
           </div>
         ) : (
-          /* Clean Minimalist Console Base with 21Spheres App Emblem */
+          /* Clean Minimalist Console Base with 21 Spheres App Emblem */
           <div className="relative w-full max-w-[260px] h-11 bg-white/80 backdrop-blur-md rounded-t-2xl border-t border-x border-black/[0.08] shadow-[0_-4px_16px_rgba(0,0,0,0.03)] flex items-center justify-center">
             {/* Ambient box wings */}
             <div className="absolute -left-3 top-2 w-4 h-6 bg-black/[0.04] -rotate-12 rounded-sm pointer-events-none" />

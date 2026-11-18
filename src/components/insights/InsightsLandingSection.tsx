@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { SlidersHorizontal, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { INSIGHTS_CONTENT } from "@/content/insights";
 import { InsightsBentoSection } from "@/components/insights/InsightsBentoSection";
 import { PageBackButton } from "@/components/ui/PageBackButton";
@@ -35,140 +35,30 @@ function HeroBackdrop() {
   );
 }
 
-function InsightFilterDropdown({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (value: string) => void }) {
-  const [open, setOpen] = useState(false);
-  return <div className="relative min-w-0">
-    <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="flex w-full items-center justify-between gap-3 border-b border-black/15 py-2 text-left text-sm text-[#555] transition hover:border-black/50 hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-purple/50">
-      <span>{value === "All types" || value === "All industries" || value === "All topics" ? label : value}</span>
-      <span aria-hidden="true" className={`text-lg leading-none transition-transform ${open ? "rotate-180" : ""}`}>⌄</span>
-    </button>
-    {open && <div className="absolute left-0 top-full z-30 mt-2 max-h-64 w-full min-w-52 overflow-y-auto border border-black/10 bg-white py-1 shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
-      {options.map((option) => <button key={option} type="button" onClick={() => { onChange(option); setOpen(false); }} className={`block w-full px-4 py-2.5 text-left text-sm transition hover:bg-[#f2f0f8] ${value === option ? "font-medium text-[#7057D9]" : "text-[#444]"}`}>{option}</button>)}
-    </div>}
-  </div>;
-}
-
-type InsightItemType = (typeof INSIGHTS_CONTENT.items)[number];
-interface Filters { assetType: string; industry: string; topic: string }
-const ALL: Filters = { assetType: "All types", industry: "All industries", topic: "All topics" };
-const FILTER_GROUPS: { key: keyof Filters; label: string }[] = [
-  { key: "assetType", label: "Asset type" },
-  { key: "industry", label: "Industry" },
-  { key: "topic", label: "Topic" },
-];
-const matches = (item: InsightItemType, f: Filters) =>
-  (f.assetType === ALL.assetType || item.assetType === f.assetType) &&
-  (f.industry === ALL.industry || item.industry === f.industry) &&
-  (f.topic === ALL.topic || item.topic === f.topic);
-
-/**
- * Phones: filters in a bottom sheet, the way shops do it. Choices are made in the sheet and only
- * applied with "Show results", which says how many insights the choice will show.
- */
-function FilterSheet({ items, applied, onApply, onClose }: { items: InsightItemType[]; applied: Filters; onApply: (filters: Filters) => void; onClose: () => void }) {
-  const [draft, setDraft] = useState(applied);
-  const resultCount = items.filter((item) => matches(item, draft)).length;
-
-  // Esc closes, and the page behind stays still while the sheet is open.
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
-    const root = document.documentElement;
-    const previous = root.style.overflow;
-    root.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
-    return () => {
-      root.style.overflow = previous;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [onClose]);
-
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-end bg-black/50 sm:hidden" onClick={onClose}>
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Filter insights"
-        onClick={(event) => event.stopPropagation()}
-        className="flex max-h-[85svh] w-full flex-col rounded-t-[22px] bg-white text-[#171717] shadow-[0_-12px_40px_rgba(0,0,0,0.2)]"
-      >
-        <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
-          <p className="text-[16px] font-medium">Filters</p>
-          <button type="button" onClick={onClose} aria-label="Close filters" className="flex h-11 w-11 items-center justify-center rounded-full text-black/60 hover:bg-black/5">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-2">
-          {FILTER_GROUPS.map(({ key, label }) => {
-            const options = [ALL[key], ...new Set(items.map((item) => item[key] as string))];
-            return (
-              <fieldset key={key} role="radiogroup" className="border-b border-black/10 py-4 last:border-b-0">
-                <legend className="mb-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-black/55">{label}</legend>
-                <div className="flex flex-wrap gap-2">
-                  {options.map((option) => {
-                    const on = draft[key] === option;
-                    const count = option === ALL[key] ? items.length : items.filter((item) => item[key] === option).length;
-                    return (
-                      <button
-                        key={option}
-                        type="button"
-                        role="radio"
-                        aria-checked={on}
-                        onClick={() => setDraft({ ...draft, [key]: option })}
-                        className={`inline-flex min-h-[40px] items-center gap-1.5 rounded-full border px-3.5 text-[13px] transition-colors ${
-                          on ? "border-[#171717] bg-[#171717] text-white" : "border-black/15 text-[#333] hover:border-black/40"
-                        }`}
-                      >
-                        {option}
-                        <span className={on ? "text-white/60" : "text-black/35"}>{count}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
-            );
-          })}
-        </div>
-
-        <div className="flex items-center gap-3 border-t border-black/10 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
-          <button type="button" onClick={() => setDraft(ALL)} className="h-12 px-2 text-[14px] font-medium text-black/60 underline underline-offset-4">
-            Clear all
-          </button>
-          <button
-            type="button"
-            onClick={() => onApply(draft)}
-            disabled={resultCount === 0}
-            className="h-12 flex-1 rounded-full bg-[#171717] text-[14px] font-medium text-white disabled:opacity-40"
-          >
-            {resultCount === 0 ? "No results" : `Show ${resultCount} ${resultCount === 1 ? "insight" : "insights"}`}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+/** "AI STRATEGY" → "AI Strategy": the categories read as names in the filter. */
+const categoryLabel = (category: string) =>
+  category
+    .split(" ")
+    .map((word) => (["AI", "RAG", "LLM"].includes(word) ? word : word.charAt(0) + word.slice(1).toLowerCase()))
+    .join(" ");
 
 export function InsightsLandingSection({ archive = false }: { archive?: boolean }) {
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [assetType, setAssetType] = useState("All types");
-  const [industry, setIndustry] = useState("All industries");
-  const [topic, setTopic] = useState("All topics");
+  const [category, setCategory] = useState("all");
   const [page, setPage] = useState(1);
   const items = INSIGHTS_CONTENT.items;
+  // All first, then each category in the order the insights first use it.
+  const categories = useMemo(() => [...new Set(items.map((item) => item.category))], [items]);
   const visibleItems = useMemo(() => {
-    const filtered = items.filter((item) =>
-      (assetType === "All types" || item.assetType === assetType) &&
-      (industry === "All industries" || item.industry === industry) &&
-      (topic === "All topics" || item.topic === topic)
-    );
+    const filtered = category === "all" ? items : items.filter((item) => item.category === category);
     return archive ? filtered : filtered.slice(0, 3);
-  }, [archive, assetType, industry, topic, items]);
+  }, [archive, category, items]);
   const pageCount = Math.max(1, Math.ceil(visibleItems.length / PAGE_SIZE));
   const pageItems = archive ? visibleItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE) : visibleItems;
-  function updateFilter(setter: (value: string) => void, value: string) {
-    setter(value);
+  function choose(next: string) {
+    setCategory(next);
     setPage(1);
   }
+  const tabs = [{ id: "all", label: "All" }, ...categories.map((id) => ({ id, label: categoryLabel(id) }))];
 
   if (!archive) {
     return (
@@ -203,79 +93,54 @@ export function InsightsLandingSection({ archive = false }: { archive?: boolean 
         <div className="mb-5 flex flex-col justify-between gap-4 border-b border-black/15 pb-5 sm:mb-8 sm:flex-row sm:items-end sm:pb-6">
           <div id="all-insights">
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-black/55">{archive ? "Ideas and perspectives" : "From our team"}</p>
-            <h2 className="text-[28px] font-light tracking-[-0.04em] sm:text-5xl">21Spheres Insights</h2>
+            <h2 className="text-[28px] font-light tracking-[-0.04em] sm:text-5xl">21 Spheres Insights</h2>
           </div>
           {!archive && <p className="max-w-md text-sm leading-relaxed text-black/55">Fresh perspectives on the ideas and technology shaping what comes next.</p>}
         </div>
-        {archive && (() => {
-          const applied: Filters = { assetType, industry, topic };
-          const active = FILTER_GROUPS.filter(({ key }) => applied[key] !== ALL[key]);
-          const set = (filters: Filters) => {
-            setAssetType(filters.assetType);
-            setIndustry(filters.industry);
-            setTopic(filters.topic);
-            setPage(1);
-          };
-          return (
-            <>
-              {/* Phones: a pinned filter bar, with the active filters as removable chips */}
-              <div className="sticky top-14 z-20 -mx-4 mb-4 border-b border-black/10 bg-[#efefed]/95 px-4 py-2.5 backdrop-blur sm:hidden">
-                <div className="flex items-center justify-between gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setSheetOpen(true)}
-                    aria-haspopup="dialog"
-                    className="inline-flex h-11 items-center gap-2 rounded-full border border-black/20 bg-white px-4 text-[14px] font-medium"
-                  >
-                    <SlidersHorizontal aria-hidden="true" className="h-4 w-4" />
-                    Filters
-                    {active.length > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#171717] px-1.5 text-[11px] text-white">{active.length}</span>}
-                  </button>
-                  <p className="text-[13px] text-black/55">{visibleItems.length} {visibleItems.length === 1 ? "insight" : "insights"}</p>
-                </div>
-                {active.length > 0 && (
-                  <ul aria-label="Active filters" className="mt-2.5 flex flex-wrap items-center gap-2">
-                    {active.map(({ key }) => (
-                      <li key={key}>
-                        <button
-                          type="button"
-                          onClick={() => set({ ...applied, [key]: ALL[key] })}
-                          aria-label={`Remove filter ${applied[key]}`}
-                          className="inline-flex h-8 items-center gap-1.5 rounded-full bg-white pl-3 pr-2 text-[12.5px] text-[#333] ring-1 ring-black/10"
-                        >
-                          {applied[key]} <X aria-hidden="true" className="h-3.5 w-3.5 text-black/45" />
-                        </button>
-                      </li>
-                    ))}
-                    <li>
-                      <button type="button" onClick={() => set(ALL)} className="h-8 px-1 text-[12.5px] text-black/55 underline underline-offset-4">Clear all</button>
-                    </li>
-                  </ul>
-                )}
-              </div>
-              {sheetOpen && (
-                <FilterSheet
-                  items={items}
-                  applied={applied}
-                  onApply={(filters) => {
-                    set(filters);
-                    setSheetOpen(false);
-                  }}
-                  onClose={() => setSheetOpen(false)}
-                />
-              )}
-            </>
-          );
-        })()}
-        {archive && <div className="mb-9 hidden flex-col gap-4 border-b border-black/20 pb-5 sm:flex lg:flex-row lg:items-center lg:gap-0">
-          <span className="shrink-0 border-r-2 border-black/15 pr-6 text-xs font-bold tracking-[0.16em] text-black">FILTERS</span>
-          <div className="grid flex-1 gap-3 sm:grid-cols-3 lg:ml-7 lg:grid-cols-4">
-            <InsightFilterDropdown label="Asset type" value={assetType} options={["All types", ...new Set(items.map((item) => item.assetType))]} onChange={(value) => updateFilter(setAssetType, value)} />
-            <InsightFilterDropdown label="Industry" value={industry} options={["All industries", ...new Set(items.map((item) => item.industry))]} onChange={(value) => updateFilter(setIndustry, value)} />
-            <InsightFilterDropdown label="Topic" value={topic} options={["All topics", ...new Set(items.map((item) => item.topic))]} onChange={(value) => updateFilter(setTopic, value)} />
-            <button type="button" onClick={() => { setAssetType("All types"); setIndustry("All industries"); setTopic("All topics"); setPage(1); }} className="justify-self-start py-2 text-xs font-semibold uppercase tracking-wider text-black/55 underline underline-offset-4 hover:text-black">Clear filters</button>
-          </div>
-        </div>}
+        {archive && (
+          <>
+            {/* Filter, as on Case Studies: phones get one dropdown, so nothing is hidden off-screen */}
+            <label className="mb-4 flex items-center gap-3 sm:hidden">
+              <span className="shrink-0 text-[12px] text-black/55">Show</span>
+              <span className="relative flex-1">
+                <select
+                  value={category}
+                  onChange={(event) => choose(event.target.value)}
+                  className="h-11 w-full appearance-none rounded-xl border border-black/15 bg-white pl-3 pr-9 text-[14px] text-[#171717] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#7057D9]"
+                >
+                  {tabs.map((tab, index) => <option key={tab.id} value={tab.id}>{index > 0 ? `${String(index).padStart(2, "0")}  ${tab.label}` : tab.label}</option>)}
+                </select>
+                <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/55" />
+              </span>
+              <span className="shrink-0 text-[12px] tabular-nums text-black/55">{visibleItems.length}</span>
+            </label>
+
+            {/* Larger screens: All first, then every category, numbered */}
+            <div className="mb-9 hidden items-end justify-between gap-6 border-b border-black/15 sm:flex">
+              <nav aria-label="Filter insights" className="flex flex-wrap gap-x-8">
+                {tabs.map((tab, index) => {
+                  const on = category === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => choose(tab.id)}
+                      aria-pressed={on}
+                      className={`relative shrink-0 py-2.5 text-[13px] font-medium transition-colors ${on ? "text-[#6049C9]" : "text-black/55 hover:text-black"}`}
+                    >
+                      {index > 0 && <span className="mr-1.5 tabular-nums text-black/35">{String(index).padStart(2, "0")}</span>}
+                      {tab.label}
+                      {on && <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[2px] bg-[#7057D9]" />}
+                    </button>
+                  );
+                })}
+              </nav>
+              <p className="shrink-0 pb-2.5 text-sm text-black/55">
+                {visibleItems.length} {visibleItems.length === 1 ? "insight" : "insights"}
+              </p>
+            </div>
+          </>
+        )}
         {/* Phones: compact rows, thumbnail beside the words */}
         {pageItems.length > 0 && (
           <ul aria-label="Insights" className="divide-y divide-black/10 border-y border-black/10 sm:hidden">
@@ -305,7 +170,7 @@ export function InsightsLandingSection({ archive = false }: { archive?: boolean 
               <div className="mt-auto flex items-center justify-between pt-5 text-xs text-black/50"><span>{article.date}</span><span className="inline-flex items-center gap-2 font-semibold text-black">Read insight <span aria-hidden="true">↗</span></span></div>
             </Link>
           </article>)}
-        </div> : <p className="py-16 text-center text-black/55">No insights match those filters. Try clearing your selection.</p>}
+        </div> : <p className="py-16 text-center text-black/55">No insights in this category yet.</p>}
         {archive && pageCount > 1 && <nav aria-label="Insight pages" className="mt-8 flex sm:mt-14 items-center justify-center gap-2">
           <button type="button" disabled={page === 1} onClick={() => setPage(page - 1)} className="rounded-full border border-black/20 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-35">Previous</button>
           {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => <button key={pageNumber} type="button" aria-current={page === pageNumber ? "page" : undefined} onClick={() => setPage(pageNumber)} className={`h-10 w-10 rounded-full text-sm ${page === pageNumber ? "bg-black text-white" : "border border-black/20 hover:bg-black/5"}`}>{pageNumber}</button>)}

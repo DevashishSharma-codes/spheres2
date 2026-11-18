@@ -4,7 +4,7 @@ interface BoxyQuoteMarkProps {
   className?: string;
 }
 
-// Sharp Boxy Double Quote Mark Icon matching 21Spheres DNA
+// Sharp Boxy Double Quote Mark Icon matching 21 Spheres DNA
 export function BoxyQuoteMark({ 
   className = "w-10 h-10 sm:w-14 sm:h-14 text-white mb-4 sm:mb-6 drop-shadow-sm" 
 }: BoxyQuoteMarkProps) {

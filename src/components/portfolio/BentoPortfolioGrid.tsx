@@ -120,7 +120,7 @@ export function PortfolioHero() {
   }, []);
 
   return (
-    <section className="sph-root" aria-label="21Spheres selected work">
+    <section className="sph-root" aria-label="21 Spheres selected work">
       <div className="sph-aurora" aria-hidden />
       <div className="sph-gridlines" aria-hidden />
       <div className="sph-grain" aria-hidden />
@@ -234,7 +234,7 @@ export function PortfolioHero() {
             <div className="sph-mon-body">
               <div className="sph-mon-screen">
                 <div className="sph-topbar">
-                  <div className="sph-crumb"><b>21Spheres</b><span>/</span>Engineering</div>
+                  <div className="sph-crumb"><b>21 Spheres</b><span>/</span>Engineering</div>
                   <div className="sph-tabs mono"><span>Week</span><span>Month</span><span className="on">Year</span></div>
                   <span className="sph-live mono"><i /> Live</span>
                 </div>
@@ -361,7 +361,7 @@ export function PortfolioHero() {
               </svg>
               <div className="sph-phone-brand-lockup">
                 <Image src="/logo-square.png" alt="" width={88} height={88} className="sph-phone-screen-logo" />
-                <span className="sph-phone-wordmark">21Spheres</span>
+                <span className="sph-phone-wordmark">21 Spheres</span>
                 <span className="sph-phone-tagline">Engineering what&rsquo;s next.</span>
               </div>
             </div>
