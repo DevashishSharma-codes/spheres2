@@ -3,8 +3,8 @@
 export const ABOUT_INTRO = {
   tagline: "Intelligence. Engineering. Execution.",
   paragraphs: [
-    "We are an AI-first technology company working at the intersection of artificial intelligence, software engineering and business innovation.",
-    "From autonomous AI systems to intelligent automation and digital products to web and Mobile applications, we help businesses solve problems that demand more than off-the-shelf technology.",
+    "We are an AI-first technology company, incorporated in 2023, working at the intersection of artificial intelligence, software engineering and business innovation.",
+    "From autonomous AI systems to intelligent automation, digital products, web and mobile applications, we help businesses solve problems that demand more than off-the-shelf technology.",
     "We believe good technology should do more than look impressive. It should make work easier, decisions sharper and businesses better equipped for what comes next.",
   ],
   cta: "Discover 21 Spheres",

@@ -118,18 +118,21 @@ export function StaticTestimonialCard({ card, bricks, size = "full" }: StaticTes
           style={{ background: theme.tintBg }}
         />
 
-        {/* TOP BLOCK: Company Logo + Quote Text right at top */}
+        {/* TOP BLOCK: quote mark, then the quote */}
         <div className={`relative z-10 flex flex-col items-start ${small ? "gap-2" : "gap-4"}`}>
           {/* Company Logo / Name */}
-          {card.company && (
-            <span className={`font-bold tracking-tight ${small ? "text-[14px] leading-tight" : "text-lg sm:text-xl"} ${theme.titleColor}`}>
-              {card.company}
-            </span>
-          )}
+          {/* An opening quote mark in place of a company name */}
+          <span
+            aria-hidden="true"
+            className={`select-none font-serif leading-[0.55] opacity-60 ${small ? "h-4 text-[34px]" : "h-7 text-[64px] sm:h-8 sm:text-[72px]"} ${theme.titleColor}`}
+          >
+            &ldquo;
+          </span>
 
           {/* Quote Text immediately at top under logo */}
           <p className={`font-normal leading-snug tracking-tight text-left ${small ? (size === "wide" ? "line-clamp-4 text-[13.5px]" : "line-clamp-5 text-[12px]") : "text-sm leading-relaxed sm:text-base sm:leading-relaxed"} [text-wrap:pretty] ${theme.quoteColor}`}>
             {card.subhead}
+            <span aria-hidden="true" className={`ml-0.5 font-serif opacity-60 ${theme.titleColor}`}>&rdquo;</span>
           </p>
         </div>
 
