@@ -54,7 +54,8 @@ const SOCIALS = ([
 
 const ADDRESSES = [
   { label: "Office", value: "Ahmedabad, Gujarat" },
-  { label: "Registered office (R.O.)", value: "171 & 172, Shivam, Main Bazzar,\nNear Suparshav Jain Derasar, Bhuj-Nakhatrana Road,\nNakhatrana, Kutch, Gujarat - 370615" },
+  // Four lines, broken at the address's own phrases so they come out about the same length.
+  { label: "Registered office (R.O.)", value: "171 & 172, Shivam, Main Bazzar,\nNear Suparshav Jain Derasar,\nBhuj-Nakhatrana Road, Nakhatrana,\nKutch, Gujarat - 370615" },
 ] as const;
 /** Trademark application number, shown under the copyright line. */
 const TM_APPLICATION_NUMBER = "7352610";
@@ -194,9 +195,12 @@ export function Footer() {
                 {ADDRESSES.map((address) => (
                   <div key={address.label}>
                     <dt className="text-[12px] text-[#2A2A2E]/55">{address.label}</dt>
-                    {/* Balanced wrapping in a width that fits three lines: the browser evens them out,
-                        so the R.O. reads as three lines of about the same length */}
-                    <dd className="max-w-[44ch] [text-wrap:balance] max-[380px]:text-[12px]">{address.value.replace(/\n/g, " ")}</dd>
+                    {/* One line per line of the address, never wrapping */}
+                    <dd className="max-[380px]:text-[12px]">
+                      {address.value.split("\n").map((line) => (
+                        <span key={line} className="block whitespace-nowrap">{line}</span>
+                      ))}
+                    </dd>
                   </div>
                 ))}
               </dl>
