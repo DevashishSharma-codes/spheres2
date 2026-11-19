@@ -11,58 +11,17 @@ interface ClientLogo {
   customText?: React.ReactNode;
 }
 
+// The client logos, from public/new_client_logos. Every file is 720×240 (3:1) with its own padding,
+// so they all render at the same height and line up evenly. (logo-4.webp is the WTMF logo.)
 const CLIENTS: ClientLogo[] = [
-  // 1. Bimakart
-  {
-    id: "bimakart",
-    name: "Bimakart",
-    image: "/clients/bimakart.png",
-    width: 120,
-    height: 32,
-  },
-  // 2. Healthcare / CarePoint
-  {
-    id: "healthcare",
-    name: "Clinical Health",
-    image: "/clients/healthcare.png",
-    width: 32,
-    height: 32,
-  },
-  // 3. Jetaa
-  {
-    id: "jetaa",
-    name: "Jetaa",
-    image: "/clients/jetaa.png",
-    width: 95,
-    height: 32,
-  },
-  // 4. ENSPIRE
-  {
-    id: "enspire",
-    name: "ENSPIRE",
-    image: "/clients/enspire.png",
-    width: 110,
-    height: 30,
-  },
-  // 5. WTMF
-  {
-    id: "wtmf",
-    name: "WTMF",
-    image: "/clients/wtmf.png",
-    width: 32,
-    height: 32,
-  },
-  // 6. Wealth Wisdom (Cool modern typographic logo)
-  {
-    id: "wealth-wisdom",
-    name: "Wealth Wisdom",
-    customText: (
-      <div className="flex items-center gap-1.5 whitespace-nowrap tracking-[-0.04em] text-[17px] sm:text-[19px] leading-none select-none">
-        <span className="font-semibold text-[#2A2A2E]">WEALTH</span>
-        <span className="font-light text-[#2A2A2E]/70">WISDOM</span>
-      </div>
-    ),
-  },
+  { id: "bimakart", name: "Bimakart", image: "/new_client_logos/bimakart.webp", width: 720, height: 240 },
+  { id: "hirani-homeopathy", name: "Hirani Homeopathy", image: "/new_client_logos/hirani-homeopathy.webp", width: 720, height: 240 },
+  { id: "jetaa", name: "Jetaa", image: "/new_client_logos/jetaa.webp", width: 720, height: 240 },
+  { id: "enspire", name: "Enspire", image: "/new_client_logos/enspire.webp", width: 720, height: 240 },
+  { id: "wtmf", name: "WTMF", image: "/new_client_logos/logo-4.webp", width: 720, height: 240 },
+  { id: "wealth-wisdom", name: "Wealth Wisdom", image: "/new_client_logos/wealth-wisdom.webp", width: 720, height: 240 },
+  { id: "cohesyun", name: "Cohesyun", image: "/new_client_logos/cohesyun.webp", width: 720, height: 240 },
+  { id: "futureogy", name: "Futureogy", image: "/new_client_logos/futureogy.webp", width: 720, height: 240 },
 ];
 
 // Duplicate items for a continuous, seamless infinite loop
@@ -81,7 +40,7 @@ export function PartnerMarquee() {
 
           {/* Infinite Running Loop with lower opacity logos (matches reference screenshot) */}
           <div className="flex w-full overflow-hidden mask-gradient-sides">
-            <div className="flex shrink-0 items-center gap-12 sm:gap-16 lg:gap-20 animate-marquee">
+            <div className="flex shrink-0 items-center gap-6 sm:gap-10 lg:gap-12 animate-marquee">
               {MARQUEE_ITEMS.map((client, idx) => (
                 <div
                   key={`${client.id}-${idx}`}
@@ -94,7 +53,9 @@ export function PartnerMarquee() {
                         alt={client.name}
                         width={client.width || 100}
                         height={client.height || 28}
-                        className="max-h-[22px] sm:max-h-[26px] w-auto object-contain grayscale"
+                        // The files carry their own white padding: shown taller than the old tight-cropped logos,
+                        // multiplied so the white drops out against the page
+                        className="h-10 w-auto object-contain grayscale mix-blend-multiply sm:h-12"
                       />
                     </div>
                   ) : (

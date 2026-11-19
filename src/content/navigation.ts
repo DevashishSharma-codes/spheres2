@@ -8,5 +8,6 @@ export const NAVIGATION_ITEMS: NavItem[] = [
   { label: "Insights", href: "/insights", description: "Engineering memos, RFCs and architecture notes" },
   { label: "Industries", href: "/#industries", description: "Vertical domains and sector expertise" },
   { label: "Testimonials", href: "/#testimonials", description: "Founder and CTO verified reviews" },
+  { label: "Intro Video", href: "/intro", description: "21 Spheres in 50 seconds" },
   { label: "Contact Us", href: "/contact", description: "Reserve an architecture sprint or consultation" },
 ];

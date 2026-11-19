@@ -61,6 +61,8 @@ export function FloatingBackToTop() {
       aria-label="Back to top"
       tabIndex={visible ? 0 : -1}
       aria-hidden={!visible}
+      // Sits above the floating intro video when that is showing (it sets --intro-mini-offset)
+      style={{ marginBottom: "var(--intro-mini-offset, 0px)" }}
       className={`fixed bottom-4 right-3 z-[60] flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/85 text-[#2A2A2E] shadow-[0_8px_24px_-8px_rgba(40,30,90,.35),inset_0_1px_0_rgba(255,255,255,.9)] backdrop-blur-xl transition-all duration-300 hover:border-[#7057D9]/40 hover:bg-[#7057D9] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7057D9] motion-reduce:transition-none sm:bottom-5 sm:right-4 ${
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"
       }`}

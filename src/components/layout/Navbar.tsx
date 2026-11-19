@@ -96,9 +96,11 @@ export function Navbar() {
   const pathname = usePathname();
 
   const isHomePage = pathname === "/";
+  // The intro video page is full screen, so the bar floats over it as on the home page.
+  const isIntroPage = pathname === "/intro";
   const isDarkPage = DARK_PAGES.some((page) => pathname.startsWith(page));
-  // The home hero is now a light video, so the navbar keeps its light style there too.
-  const isDarkHero = isDarkPage;
+  // Over the dark handshake hero the bar is clear with white type, until the page scrolls.
+  const isDarkHero = (isHomePage && !scrolled) || isDarkPage;
 
   const handleMouseEnter = (key: string) => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
@@ -194,6 +196,7 @@ export function Navbar() {
     { label: "Insights", href: "/insights", key: "insights" },
     { label: "Industries", href: "/#industries", key: "industries" },
     { label: "Testimonials", href: "/#testimonials", key: "testimonials" },
+    { label: "Intro Video", href: "/intro", key: "intro" },
   ];
 
   const isItemActive = (href: string) => {
@@ -216,10 +219,14 @@ export function Navbar() {
     <>
     <header
       className={`z-50 w-full transition-all duration-300 ease-out ${isDarkPage ? "-mb-[57px] sm:-mb-[65px]" : ""} ${
-        isHomePage
+        isHomePage || isIntroPage
           ? `fixed top-0 left-0 right-0 ${
-              // Frosted white over the hero video, which is light for most of its length and dark near the end.
-              "bg-white/80 backdrop-blur-xl border-b border-[#DADADD]/70 shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
+              isDarkHero
+                ? hoveredKey
+                  ? "bg-[rgba(18,18,22,0.42)] backdrop-blur-2xl border-b border-white/[0.10] shadow-[0_4px_30px_rgba(0,0,0,0.35)]"
+                  : "bg-transparent border-b border-transparent"
+                : // Frosted white, as over the intro video (light for most of its length)
+                  "bg-white/80 backdrop-blur-xl border-b border-[#DADADD]/70 shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
             }`
           : `sticky top-0 ${
               isDarkPage
