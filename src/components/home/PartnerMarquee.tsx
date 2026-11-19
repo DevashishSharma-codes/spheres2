@@ -5,24 +5,53 @@ import Image from "next/image";
 interface ClientLogo {
   id: string;
   name: string;
-  image?: string;
-  width?: number;
-  height?: number;
-  customText?: React.ReactNode;
+  image: string;
+  /** Where the logo itself sits in its 720×240 file (measured from the image), in source pixels. */
+  box: { x: number; y: number; w: number; h: number };
 }
 
-// The client logos, from public/new_client_logos. Every file is 720×240 (3:1) with its own padding,
-// so they all render at the same height and line up evenly. (logo-4.webp is the WTMF logo.)
+const FILE = { w: 720, h: 240 };
+
+/* The client logos, from public/new_client_logos (logo-4.webp is the WTMF logo). The files share a
+   size but the logos inside them don't: WTMF is a small stacked mark, Hirani a tall one, Wealth
+   Wisdom a long, short one. So each logo is cropped to its own edges and scaled to the same visual
+   weight (about the same area on screen), with tall marks capped, and they read as one even row. */
 const CLIENTS: ClientLogo[] = [
-  { id: "bimakart", name: "Bimakart", image: "/new_client_logos/bimakart.webp", width: 720, height: 240 },
-  { id: "hirani-homeopathy", name: "Hirani Homeopathy", image: "/new_client_logos/hirani-homeopathy.webp", width: 720, height: 240 },
-  { id: "jetaa", name: "Jetaa", image: "/new_client_logos/jetaa.webp", width: 720, height: 240 },
-  { id: "enspire", name: "Enspire", image: "/new_client_logos/enspire.webp", width: 720, height: 240 },
-  { id: "wtmf", name: "WTMF", image: "/new_client_logos/logo-4.webp", width: 720, height: 240 },
-  { id: "wealth-wisdom", name: "Wealth Wisdom", image: "/new_client_logos/wealth-wisdom.webp", width: 720, height: 240 },
-  { id: "cohesyun", name: "Cohesyun", image: "/new_client_logos/cohesyun.webp", width: 720, height: 240 },
-  { id: "futureogy", name: "Futureogy", image: "/new_client_logos/futureogy.webp", width: 720, height: 240 },
+  { id: "bimakart", name: "Bimakart", image: "/new_client_logos/bimakart.webp", box: { x: 33, y: 39, w: 653, h: 163 } },
+  { id: "hirani-homeopathy", name: "Hirani Homeopathy", image: "/new_client_logos/hirani-homeopathy.webp", box: { x: 23, y: 17, w: 674, h: 203 } },
+  { id: "jetaa", name: "Jetaa", image: "/new_client_logos/jetaa.webp", box: { x: 119, y: 32, w: 482, h: 176 } },
+  { id: "enspire", name: "Enspire", image: "/new_client_logos/enspire.webp", box: { x: 32, y: 44, w: 653, h: 143 } },
+  { id: "wtmf", name: "WTMF", image: "/new_client_logos/logo-4.webp", box: { x: 227, y: 32, w: 266, h: 176 } },
+  { id: "wealth-wisdom", name: "Wealth Wisdom", image: "/new_client_logos/wealth-wisdom.webp", box: { x: 23, y: 53, w: 692, h: 134 } },
+  { id: "cohesyun", name: "Cohesyun", image: "/new_client_logos/cohesyun.webp", box: { x: 23, y: 44, w: 674, h: 152 } },
+  { id: "futureogy", name: "Futureogy", image: "/new_client_logos/futureogy.webp", box: { x: 32, y: 38, w: 656, h: 164 } },
 ];
+
+// Every logo covers about this many square pixels on screen (phones; larger screens scale it up),
+// and none stands taller than MAX_H.
+const TARGET_AREA = 3000;
+const MAX_H = 36;
+const scaleFor = ({ w, h }: ClientLogo["box"]) => Math.min(Math.sqrt(TARGET_AREA / (w * h)), MAX_H / h);
+
+/** A logo cropped to its own edges at an even visual weight. --k grows it on larger screens. */
+function ClientMark({ client }: { client: ClientLogo }) {
+  const s = scaleFor(client.box);
+  const px = (n: number) => `calc(${(n * s).toFixed(2)}px * var(--k))`;
+  return (
+    <span className="relative block overflow-hidden" style={{ width: px(client.box.w), height: px(client.box.h) }}>
+      <Image
+        src={client.image}
+        alt={client.name}
+        width={FILE.w}
+        height={FILE.h}
+        sizes="200px"
+        // Multiplied, so the file's white background drops out against the page
+        className="absolute max-w-none grayscale mix-blend-multiply"
+        style={{ width: px(FILE.w), height: px(FILE.h), left: px(-client.box.x), top: px(-client.box.y) }}
+      />
+    </span>
+  );
+}
 
 // Duplicate items for a continuous, seamless infinite loop
 const MARQUEE_ITEMS = [...CLIENTS, ...CLIENTS, ...CLIENTS, ...CLIENTS];
@@ -40,27 +69,13 @@ export function PartnerMarquee() {
 
           {/* Infinite Running Loop with lower opacity logos (matches reference screenshot) */}
           <div className="flex w-full overflow-hidden mask-gradient-sides">
-            <div className="flex shrink-0 items-center gap-6 sm:gap-10 lg:gap-12 animate-marquee">
+            <div className="flex shrink-0 items-center gap-10 [--k:1] sm:gap-14 sm:[--k:1.2] lg:gap-16 animate-marquee">
               {MARQUEE_ITEMS.map((client, idx) => (
                 <div
                   key={`${client.id}-${idx}`}
                   className="flex items-center shrink-0 opacity-30 hover:opacity-90 transition-opacity duration-200 cursor-default"
                 >
-                  {client.image ? (
-                    <div className="flex items-center justify-center">
-                      <Image
-                        src={client.image}
-                        alt={client.name}
-                        width={client.width || 100}
-                        height={client.height || 28}
-                        // The files carry their own white padding: shown taller than the old tight-cropped logos,
-                        // multiplied so the white drops out against the page
-                        className="h-10 w-auto object-contain grayscale mix-blend-multiply sm:h-12"
-                      />
-                    </div>
-                  ) : (
-                    client.customText
-                  )}
+                  <ClientMark client={client} />
                 </div>
               ))}
             </div>
