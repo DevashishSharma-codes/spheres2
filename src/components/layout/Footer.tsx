@@ -194,7 +194,9 @@ export function Footer() {
                 {ADDRESSES.map((address) => (
                   <div key={address.label}>
                     <dt className="text-[12px] text-[#2A2A2E]/55">{address.label}</dt>
-                    <dd className="max-w-[340px] whitespace-pre-line">{address.value}</dd>
+                    {/* Balanced wrapping in a width that fits three lines: the browser evens them out,
+                        so the R.O. reads as three lines of about the same length */}
+                    <dd className="max-w-[44ch] [text-wrap:balance] max-[380px]:text-[12px]">{address.value.replace(/\n/g, " ")}</dd>
                   </div>
                 ))}
               </dl>
