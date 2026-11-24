@@ -132,8 +132,8 @@ function IndustryWords({ industry, compact = false }: { industry: IndustryItem; 
   const hasMore = compact && industry.paragraphs.length > 1;
   return (
     <>
-      <p className={`font-medium leading-snug tracking-[-0.01em] text-[#C9BBFF] ${compact ? "text-[14.5px]" : "text-[14px] xl:text-[15px]"}`}>{industry.subhead}</p>
-      <div className={`mt-2.5 space-y-2 text-white/80 ${compact ? "text-[13px] leading-[1.6]" : "border-l-2 border-[#D9CCFF]/30 pl-3 text-[12.5px] leading-relaxed xl:text-[13px]"}`}>
+      <p className={`font-medium leading-snug tracking-[-0.01em] text-[#C9BBFF] ${compact ? "text-[14.5px]" : "text-[15px]"}`}>{industry.subhead}</p>
+      <div className={`mt-2.5 space-y-2 text-white/80 ${compact ? "text-[13px] leading-[1.6]" : "border-l-2 border-[#D9CCFF]/30 pl-3 text-[13px] leading-relaxed"}`}>
         {industry.paragraphs.map((paragraph, i) => (
           <p key={paragraph} className={hasMore && i > 0 && !more ? "hidden md:block" : ""}>{paragraph}</p>
         ))}
@@ -194,9 +194,34 @@ function PanelShapes() {
   );
 }
 
+/* The desktop panels are laid out once, at one design size (the proportions of a large monitor),
+   and that whole design is scaled to the width it has. Every laptop and monitor then shows exactly
+   the same composition, larger or smaller: the mock-up is never cut and never leaves a gap. */
+const STAGE = { width: 1316, height: 648 };
+
+function ScaledStage({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) => setScale(Math.min(1, entry.contentRect.width / STAGE.width)));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className="relative hidden w-full overflow-hidden lg:block" style={{ height: STAGE.height * scale }}>
+      <div className="absolute left-0 top-0 origin-top-left" style={{ width: STAGE.width, height: STAGE.height, transform: `scale(${scale})` }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function DesktopPanels({ industries, activeIdx, setActiveIdx }: { industries: IndustryItem[]; activeIdx: number; setActiveIdx: (index: number) => void }) {
   return (
-    <div className="hidden min-h-0 flex-1 gap-3 lg:flex">
+    <ScaledStage>
+    <div className="flex h-full gap-3">
       {industries.map((industry, index) => {
         const isActive = index === activeIdx;
         return (
@@ -214,15 +239,15 @@ function DesktopPanels({ industries, activeIdx, setActiveIdx }: { industries: In
                 type="button"
                 aria-expanded={isActive}
                 onFocus={() => setActiveIdx(index)}
-                className={`relative z-10 shrink-0 rounded-[28px] pb-1 pt-6 text-left focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#C9BBFF] ${isActive ? "px-5 xl:px-6" : "px-2"}`}
+                className={`relative z-10 shrink-0 rounded-[28px] pb-1 pt-6 text-left focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#C9BBFF] ${isActive ? "px-6" : "px-2"}`}
               >
                 {isActive && <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.16em] text-[#C9BBFF]">{countLabel(index, industries.length, industry)}</span>}
                 {isActive ? (
-                  <h3 className="w-fit whitespace-nowrap bg-gradient-to-r from-white via-[#E4DCFF] to-[#B9A6FF] bg-clip-text pb-0.5 text-[26px] font-light leading-[1.1] tracking-[-0.03em] text-transparent xl:text-[30px]">
+                  <h3 className="w-fit whitespace-nowrap bg-gradient-to-r from-white via-[#E4DCFF] to-[#B9A6FF] bg-clip-text pb-0.5 text-[30px] font-light leading-[1.1] tracking-[-0.03em] text-transparent">
                     {industry.name}
                   </h3>
                 ) : (
-                  <h3 className="mx-auto text-center text-[13.5px] font-light leading-[1.2] tracking-[-0.02em] text-white/90 [hyphens:auto] xl:text-[16px]">
+                  <h3 className="mx-auto text-center text-[16px] font-light leading-[1.2] tracking-[-0.02em] text-white/90 [hyphens:auto]">
                     {industry.shortName}
                   </h3>
                 )}
@@ -233,7 +258,7 @@ function DesktopPanels({ industries, activeIdx, setActiveIdx }: { industries: In
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3, delay: 0.35 }}
-                  className="flex min-h-0 flex-1 flex-col px-5 xl:px-6"
+                  className="flex min-h-0 flex-1 flex-col px-6"
                 >
                   {/* The bottom padding is a gap the mock-up can never close, however short the panel */}
                   <div className="mt-1.5 shrink-0 pb-5">
@@ -252,6 +277,7 @@ function DesktopPanels({ industries, activeIdx, setActiveIdx }: { industries: In
         );
       })}
     </div>
+    </ScaledStage>
   );
 }
 
@@ -382,7 +408,7 @@ export function IndustriesLandingSection() {
     <section
       id="industries"
       onKeyDown={handleKeyDown}
-      className="relative z-10 flex w-full scroll-mt-14 flex-col border-y border-white/10 text-white sm:scroll-mt-16 lg:h-[clamp(680px,calc(100svh-4rem),800px)] lg:overflow-hidden"
+      className="relative z-10 flex w-full scroll-mt-14 flex-col border-y border-white/10 text-white sm:scroll-mt-16"
       style={{
         background: `
           radial-gradient(ellipse 90% 95% at 80% 8%, rgba(112, 72, 194, 0.3) 0%, rgba(72, 43, 123, 0.18) 42%, transparent 78%),

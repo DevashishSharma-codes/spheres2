@@ -196,7 +196,6 @@ export function Navbar() {
     { label: "Insights", href: "/insights", key: "insights" },
     { label: "Industries", href: "/#industries", key: "industries" },
     { label: "Testimonials", href: "/#testimonials", key: "testimonials" },
-    { label: "Intro Video", href: "/intro", key: "intro" },
   ];
 
   const isItemActive = (href: string) => {

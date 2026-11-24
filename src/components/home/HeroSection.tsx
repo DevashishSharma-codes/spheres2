@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
+import { Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ROTATING_WORDS = ["Products", "Startups", "Tools", "Companies"];
@@ -127,6 +128,24 @@ export function HeroSection() {
                 and the people who refuse to wait for the future.
               </p>
             </motion.div>
+
+            {/* Watch our intro. This static pill is where the floating intro video starts its flight:
+                once the page is running, the flying copy (FloatingIntroVideo) sits exactly on top of it and
+                this one hides (html[data-intro-morph]), so the visitor sees one button that, on scroll,
+                travels down into the corner and grows into the video window. */}
+            <div className="mt-6 sm:mt-8">
+              <Link
+                id="intro-cta-anchor"
+                href="/intro"
+                className="group inline-flex h-11 items-center gap-2.5 rounded-[22px] border border-white/25 bg-white/10 pl-1.5 pr-5 text-[14px] font-medium text-white shadow-[0_10px_30px_-12px_rgba(0,0,0,.6),inset_0_1px_0_rgba(255,255,255,.25)] backdrop-blur-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:h-12 sm:rounded-[24px] [html[data-intro-morph]_&]:invisible"
+              >
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#5A43C0] transition-transform duration-300 group-hover:scale-110 sm:h-9 sm:w-9">
+                  <Play aria-hidden="true" className="ml-0.5 h-3.5 w-3.5 fill-current" />
+                </span>
+                Watch our intro
+                <span className="text-white/55">0:50</span>
+              </Link>
+            </div>
           </div>
 
           {/* Bottom Right Large Geometric Arrow */}
