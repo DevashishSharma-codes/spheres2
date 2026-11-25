@@ -274,10 +274,10 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
         id="about"
         className="relative z-10 flex w-full scroll-mt-14 flex-col justify-center overflow-hidden py-8 md:min-h-[calc(100vh-64px)] sm:scroll-mt-16 lg:py-10"
       >
-        {/* The misty mountain photo behind the section, softened top and bottom, with a faint grid */}
+        {/* A bright glass-walled office behind the section, softened top and bottom, with a faint grid */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
           <Image
-            src="/minimalist-misty-mountain-panorama.png"
+            src="/about/about_us_new/image.png"
             alt=""
             fill
             sizes="100vw"

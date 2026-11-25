@@ -62,8 +62,39 @@ export const DISCIPLINE_TABS = [
 /* Content below is taken from public/portfolio/Case Studies.docx. */
 export const PORTFOLIO_CASE_STUDIES: DetailedCaseStudy[] = [
   {
+    id: "the-repertory",
+    index: "01 / KNOWLEDGE",
+    title: "The Repertory",
+    client: "The Repertory",
+    year: "2025",
+    category: "Healthcare Technology · AI & Knowledge Systems",
+    discipline: "Autonomous AI & Agents",
+    featured: false,
+    headline: "Centuries of Homeopathic Knowledge. One Intelligent Digital Experience.",
+    summary:
+      "A structured digital homeopathic repertory designed to transform traditional medical literature into an organized, searchable knowledge system, connecting symptoms, rubrics, remedies, and clinical references.",
+    brief: {
+      problemStatement:
+        "Traditional homeopathic repertories contain extensive medical knowledge distributed across books, editions, and fragmented digital resources. Finding relevant rubrics, understanding symptom hierarchies, and identifying associated remedies often requires extensive manual navigation.\n\nThe challenge was to transform this unstructured, historically documented knowledge into a consistent digital database while preserving the relationships and hierarchy essential to repertory-based research.",
+    },
+    technology: {
+      stack: ["Python", "MongoDB", "FastAPI", "React", "TypeScript", "NLP", "Semantic Search", "JSON Data Processing"],
+    },
+    whatChanged: {
+      empiricalOutcome:
+        "We approached the problem by developing a structured repertory data system that organizes medical knowledge into searchable chapters, rubrics, sub-rubrics, and remedy associations.\n\nThe solution focuses on digitizing repertory content, maintaining hierarchical relationships, standardizing remedy references, and enabling efficient retrieval through structured data and intelligent search capabilities.\n\nThe result is a foundation for a modern digital repertory experience, making extensive homeopathic literature more accessible, navigable, and integration-ready.",
+      metrics: [
+        { label: "Data points of Repertory Data", value: "1 Crore+", context: "Organized chapter and rubric hierarchy" },
+        { label: "Repertories Rubric–Remedy Mapping", value: "15+", context: "Structured symptom-to-remedy relationships" },
+        { label: "Digital Knowledge search latency", value: "<50 ms", context: "Accessible, query-ready medical references" },
+      ],
+    },
+    image: "/portfolio/case-studies/the-repertory.webp",
+    cardImage: "/portfolio/case-studies/the-repertory-card.webp",
+  },
+  {
     id: "hahnemann-ai",
-    index: "01 / CLINICAL AI",
+    index: "02 / CLINICAL AI",
     title: "Hahnemann AI",
     client: "Hahnemann AI",
     year: "2025",
@@ -94,7 +125,7 @@ export const PORTFOLIO_CASE_STUDIES: DetailedCaseStudy[] = [
   },
   {
     id: "enspire-device-service-chatbot",
-    index: "02 / SUPPORT AI",
+    index: "03 / SUPPORT AI",
     title: "Enspire",
     client: "Enspire",
     year: "2025",
@@ -122,37 +153,6 @@ export const PORTFOLIO_CASE_STUDIES: DetailedCaseStudy[] = [
     },
     image: "/portfolio/case-studies/enspire.webp",
     cardImage: "/portfolio/case-studies/enspire-card.webp",
-  },
-  {
-    id: "the-repertory",
-    index: "03 / KNOWLEDGE",
-    title: "The Repertory",
-    client: "The Repertory",
-    year: "2025",
-    category: "Healthcare Technology · AI & Knowledge Systems",
-    discipline: "Autonomous AI & Agents",
-    featured: false,
-    headline: "Centuries of Homeopathic Knowledge. One Intelligent Digital Experience.",
-    summary:
-      "A structured digital homeopathic repertory designed to transform traditional medical literature into an organized, searchable knowledge system, connecting symptoms, rubrics, remedies, and clinical references.",
-    brief: {
-      problemStatement:
-        "Traditional homeopathic repertories contain extensive medical knowledge distributed across books, editions, and fragmented digital resources. Finding relevant rubrics, understanding symptom hierarchies, and identifying associated remedies often requires extensive manual navigation.\n\nThe challenge was to transform this unstructured, historically documented knowledge into a consistent digital database while preserving the relationships and hierarchy essential to repertory-based research.",
-    },
-    technology: {
-      stack: ["Python", "MongoDB", "FastAPI", "React", "TypeScript", "NLP", "Semantic Search", "JSON Data Processing"],
-    },
-    whatChanged: {
-      empiricalOutcome:
-        "We approached the problem by developing a structured repertory data system that organizes medical knowledge into searchable chapters, rubrics, sub-rubrics, and remedy associations.\n\nThe solution focuses on digitizing repertory content, maintaining hierarchical relationships, standardizing remedy references, and enabling efficient retrieval through structured data and intelligent search capabilities.\n\nThe result is a foundation for a modern digital repertory experience, making extensive homeopathic literature more accessible, navigable, and integration-ready.",
-      metrics: [
-        { label: "Data points of Repertory Data", value: "1 Crore+", context: "Organized chapter and rubric hierarchy" },
-        { label: "Repertories Rubric–Remedy Mapping", value: "15+", context: "Structured symptom-to-remedy relationships" },
-        { label: "Digital Knowledge search latency", value: "<50 ms", context: "Accessible, query-ready medical references" },
-      ],
-    },
-    image: "/portfolio/case-studies/the-repertory.webp",
-    cardImage: "/portfolio/case-studies/the-repertory-card.webp",
   },
   {
     id: "wealth-wisdom-goals-planner",
