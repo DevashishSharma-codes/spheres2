@@ -274,14 +274,15 @@ export function AboutSection({ showStatistics = false }: { showStatistics?: bool
         id="about"
         className="relative z-10 flex w-full scroll-mt-14 flex-col justify-center overflow-hidden py-8 md:min-h-[calc(100vh-64px)] sm:scroll-mt-16 lg:py-10"
       >
-        {/* A bright glass-walled office behind the section, softened top and bottom, with a faint grid */}
+        {/* A pale sunrise skyline behind the section, softened top and bottom, with a faint grid.
+            It is a wide panorama, so it is anchored low to keep the skyline and its waves in view. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
           <Image
-            src="/about/about_us_new/image.png"
+            src="/about/about_us_new/skyline.webp"
             alt=""
             fill
             sizes="100vw"
-            className="scale-[1.02] object-cover object-center opacity-95"
+            className="scale-[1.02] object-cover object-[center_70%] opacity-95"
           />
           <div
             className="absolute inset-0 opacity-15"
