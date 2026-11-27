@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
-import { COMPANY_SOCIALS } from "@/content/company";
+import {
+  COMPANY_ADDRESSES,
+  COMPANY_EMAIL,
+  COMPANY_GSTIN,
+  COMPANY_PHONE,
+  COMPANY_SOCIALS,
+  COMPANY_TM_APPLICATION,
+} from "@/content/company";
 import { BackToTopButton, FooterCone } from "./FooterCone";
 import { FooterWordmark } from "./FooterWordmark";
 import { FooterAfterConeSlot, FooterClosingSlot } from "./FooterClosingLine";
@@ -52,21 +59,11 @@ const SOCIALS = ([
   { label: "Facebook", href: COMPANY_SOCIALS.facebook, icon: "facebook", fill: "#1877F2" },
 ] as const).map((social) => ({ ...social, ariaLabel: `21 Spheres on ${social.label}` }));
 
-const ADDRESSES = [
-  { label: "Office", value: "Ahmedabad, Gujarat" },
-  // Four lines, broken at the address's own phrases so they come out about the same length.
-  { label: "Registered office (R.O.)", value: "171 & 172, Shivam, Main Bazzar,\nNear Suparshav Jain Derasar,\nBhuj-Nakhatrana Road, Nakhatrana,\nKutch, Gujarat - 370615" },
-] as const;
-/** Trademark application number, shown under the copyright line. */
-const TM_APPLICATION_NUMBER = "7352610";
-/** Shown with the addresses. */
-const GST_NUMBER = "24FIFPB9060K1Z6";
-const EMAIL = "info@21spheres.com";
-const PHONE = {
-  label: "+91 97247 80021",
-  href: "tel:+919724780021",
-  whatsappHref: "https://wa.me/919724780021",
-};
+const ADDRESSES = COMPANY_ADDRESSES;
+const TM_APPLICATION_NUMBER = COMPANY_TM_APPLICATION;
+const GST_NUMBER = COMPANY_GSTIN;
+const EMAIL = COMPANY_EMAIL;
+const PHONE = COMPANY_PHONE;
 
 const labelClass = "text-[11px] font-medium uppercase tracking-[0.12em] text-[#2A2A2E]/50";
 const linkClass = "text-[#2A2A2E] transition-colors hover:text-[#7057D9]";
@@ -233,8 +230,10 @@ export function Footer() {
           <IconRow title="Ask AI for a summary of 21 Spheres" shortTitle="Ask AI about us" items={ASK_AI} />
         </div>
 
-        {/* The name sits bottom-left, with the copyright and the way back up beside it */}
-        <div className="flex flex-col gap-4 border-t border-[#E7E5EB] pb-6 pt-4 sm:flex-row sm:items-end sm:justify-between sm:gap-5">
+        {/* The name sits bottom-left, with the copyright and the way back up beside it. The bottom
+            padding keeps the copyright 12px clear of the chat button in the corner (44px at 12px from
+            the edge on phones, 48px at 16px above). */}
+        <div className="flex flex-col gap-4 border-t border-[#E7E5EB] pb-[68px] pt-4 sm:flex-row sm:items-end sm:justify-between sm:gap-5 sm:pb-[76px]">
           <FooterWordmark className="w-full max-w-[520px]" />
           <div className="flex shrink-0 items-center justify-between gap-4 text-xs text-[#2A2A2E]/60 sm:flex-col sm:items-end">
             <BackToTopButton />

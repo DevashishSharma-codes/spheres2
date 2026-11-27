@@ -1,8 +1,8 @@
 import { FounderNote } from "@/components/insights/FounderNote";
+import { FOUNDER_LETTER } from "@/content/founderNoteEssays";
 import { pageMetadata } from "@/lib/seo";
 
-const DEK =
-  "Every meaningful journey begins with a belief. Mine was that technology should not just solve today’s problems, but create possibilities for tomorrow.";
+const DEK = FOUNDER_LETTER.dek;
 
 export const metadata = pageMetadata({
   title: "A Note from the Founder",

@@ -1,5 +1,5 @@
 import { FloatingIntroVideo } from "@/components/intro/FloatingIntroVideo";
-import { FloatingBackToTop } from "@/components/layout/FloatingBackToTop";
+import { ChatAssistant } from "@/components/chat/ChatAssistant";
 import type { Metadata } from "next";
 import { Geist, Caveat } from "next/font/google";
 import "./globals.css";
@@ -92,7 +92,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <FloatingIntroVideo />
-        <FloatingBackToTop />
+        <ChatAssistant />
       </body>
     </html>
   );

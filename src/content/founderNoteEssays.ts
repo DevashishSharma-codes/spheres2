@@ -1546,3 +1546,32 @@ export const FOUNDER_ESSAYS: Essay[] = [
     ]
   }
 ];
+
+/** The founder's letter that opens /insights/founders-note. `quote` lines show as a pull quote. */
+export const FOUNDER_LETTER: {
+  author: string;
+  role: string;
+  title: string;
+  dek: string;
+  heading: string;
+  body: ({ p: string } | { quote: string })[];
+  signOff: string;
+} = {
+  author: "Om Baval",
+  role: "Founder & CEO, 21 Spheres",
+  title: "Building beyond what exists. Creating what comes next.",
+  dek: "Every meaningful journey begins with a belief. Mine was that technology should not just solve today’s problems, but create possibilities for tomorrow.",
+  heading: "A belief that became a journey.",
+  body: [
+    { p: "Hello, and welcome to 21 Spheres." },
+    { p: "When I started 21 Spheres, I had a simple belief: technology has the power to reshape how we think, work, build, and experience the world. But meaningful innovation goes beyond simply adopting new technologies. It comes from understanding problems deeply, questioning conventional approaches, and having the courage to build something different." },
+    { p: "That belief became the foundation of 21 Spheres." },
+    { p: "We started with the ambition to explore the possibilities of technology and turn ideas into meaningful solutions. Today, we are building at the intersection of software engineering, artificial intelligence, and research, helping businesses navigate complexity and discover new opportunities through technology." },
+    { quote: "I believe the future belongs to those who are willing to explore it." },
+    { p: "At 21 Spheres, we don’t want to limit ourselves to what technology can do today. We want to continuously experiment, learn, challenge assumptions, and push boundaries. Every project is an opportunity to solve something meaningful, every challenge an opportunity to grow, and every idea a possibility waiting to be explored." },
+    { p: "Building a company is never a solo journey. It takes people who share the curiosity to explore, the discipline to execute, and the determination to keep moving forward. I am grateful to everyone who has been part of this journey: our team, clients, collaborators, and everyone who has believed in what we are building." },
+    { p: "As we move forward, our ambition remains unchanged: to build thoughtfully, innovate responsibly, and create technology that makes a difference." },
+    { p: "This is just the beginning." },
+  ],
+  signOff: "A World Within.",
+};

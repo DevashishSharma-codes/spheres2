@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import Image from "next/image";
+import { COMPANY_BOOKING_URL } from "@/content/company";
 
-// Availability and bookings are managed in Google Calendar. This is the live schedule.
-const calendarUrl = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ08BaXRCtnGSSZM8qLs5VTV1lhd5j9wOkiBRFFAD8_93kF6yVHFyT8qgGORaV43Mzfm6CMr5Xmo?gv=true";
+// Availability and bookings are managed in Google Calendar (the URL lives in content/company).
+const calendarUrl = COMPANY_BOOKING_URL;
 
 const milestones = [
   { year: 2021, startups: 20 },

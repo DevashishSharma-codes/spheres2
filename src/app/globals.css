@@ -323,3 +323,21 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .about-glass-blob { animation: none; }
 }
+
+/* While the chat window is open, the intro video window beside the chat button steps aside. */
+html[data-chat-open] [data-intro-float] {
+  visibility: hidden;
+}
+
+/* The chat capsule's hover animations (ChatAssistant). */
+@keyframes chevron-rise {
+  0%, 25% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(-10px); opacity: 0; }
+  51% { transform: translateY(10px); opacity: 0; }
+  78%, 100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.55; }
+  30% { transform: translateY(-3px); opacity: 1; }
+}
+}

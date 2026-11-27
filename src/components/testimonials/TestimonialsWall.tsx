@@ -4,97 +4,32 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Globe as GlobeIcon, Heart } from "lucide-react";
 import { StaticTestimonialCard, TestimonialCardData } from "./StaticTestimonialCard";
+import { TESTIMONIAL_PHRASES, TESTIMONIALS } from "@/content/testimonials";
 
-// The real testimonials. No photos, so each card shows the person's initials.
-const CARDS: TestimonialCardData[] = [
-  {
-    id: 1,
-    company: "WTMF.ai",
-    subhead: "21 Spheres brings the rare ability to turn ambitious ideas into practical technology solutions, combining technical depth with a clear understanding of business.",
-    name: "Shreyak Singh",
-    role: "Co-Founder, WTMF.ai | Knockverse Private Limited",
-    avatar: "",
-    bgImage: "/card-bgs/user-bg-pink-purple.png",
-    themeVariant: "purple",
-  },
-  {
-    id: 2,
-    company: "Enspire Devices",
-    subhead: "What stands out about 21 Spheres is their thoughtful approach to product development and their ability to translate complex requirements into working solutions.",
-    name: "Hitesh Patel",
-    role: "Founder & CEO, Enspire Devices Private Limited",
-    avatar: "",
-    bgImage: "/card-bgs/user-bg-yellow-peach.jpg",
-    themeVariant: "noir",
-  },
-  {
-    id: 3,
-    company: "",
-    subhead: "Technology can make a real difference when designed around people. The team at 21 Spheres understands this and focuses on practical, accessible solutions.",
-    name: "Dr. Manthan Hirani",
-    role: "Homeopathic Practitioner",
-    avatar: "",
-    bgImage: "/card-bgs/user-bg-green-gradient.png",
-    themeVariant: "slate",
-  },
-  {
-    id: 4,
-    company: "Bimakart.in",
-    subhead: "From evolving requirements to complex product features, 21 Spheres has shown strong ownership, adaptability, and the ability to keep execution on track.",
-    name: "Vinayak Parashar",
-    role: "Senior Project Manager, Bimakart.in | Incio Fintech Private Limited",
-    avatar: "",
-    bgImage: "/card-bgs/user-bg-pink-purple.png",
-    themeVariant: "purple",
-  },
-  {
-    id: 5,
-    company: "Wealth Wisdom",
-    subhead: "I appreciate their curiosity and willingness to explore unconventional approaches. 21 Spheres brings fresh thinking to technology challenges and business opportunities.",
-    name: "Keshav Malpani",
-    role: "Wealth Wisdom",
-    avatar: "",
-    bgImage: "/card-bgs/user-bg-yellow-peach.jpg",
-    themeVariant: "noir",
-  },
-  {
-    id: 6,
-    company: "Futureogy",
-    subhead: "Turning a product vision into reality requires more than code. 21 Spheres brings the technical ownership and adaptability needed to build ambitious products.",
-    name: "Bijal Kothari",
-    role: "Founder, Futureogy | Neffertum Labs Private Limited",
-    avatar: "",
-    bgImage: "/card-bgs/user-bg-green-gradient.png",
-    themeVariant: "slate",
-  },
-  {
-    id: 7,
-    company: "PIERC, Parul University",
-    subhead: "21 Spheres exemplifies entrepreneurial innovation, bringing research-driven thinking and emerging technologies closer to practical applications with real-world potential.",
-    name: "Jay Sudani",
-    role: "CEO, PIERC | Parul University",
-    avatar: "",
-    bgImage: "/card-bgs/user-bg-pink-purple.png",
-    themeVariant: "purple",
-  },
-  {
-    id: 8,
-    company: "MK Consulting",
-    subhead: "Om has extended his exceptional ability in technology, specifically in Artificial Intelligence. Through 21 Spheres, he is translating innovation into customised AI-driven business tools.",
-    name: "Martin Kennedy",
-    role: "Founder, MK Consulting | Seychelles",
-    avatar: "",
-    bgImage: "/card-bgs/user-bg-yellow-peach.jpg",
-    themeVariant: "slate",
-  },
+// The real testimonials (from content/testimonials). No photos, so each card shows the person's initials.
+// Each card keeps its own background and colour scheme, by position.
+const CARD_LOOKS: Pick<TestimonialCardData, "bgImage" | "themeVariant">[] = [
+  { bgImage: "/card-bgs/user-bg-pink-purple.png", themeVariant: "purple" },
+  { bgImage: "/card-bgs/user-bg-yellow-peach.jpg", themeVariant: "noir" },
+  { bgImage: "/card-bgs/user-bg-green-gradient.png", themeVariant: "slate" },
+  { bgImage: "/card-bgs/user-bg-pink-purple.png", themeVariant: "purple" },
+  { bgImage: "/card-bgs/user-bg-yellow-peach.jpg", themeVariant: "noir" },
+  { bgImage: "/card-bgs/user-bg-green-gradient.png", themeVariant: "slate" },
+  { bgImage: "/card-bgs/user-bg-pink-purple.png", themeVariant: "purple" },
+  { bgImage: "/card-bgs/user-bg-yellow-peach.jpg", themeVariant: "slate" },
 ];
+const CARDS: TestimonialCardData[] = TESTIMONIALS.map((testimonial, index) => ({
+  id: index + 1,
+  company: testimonial.company,
+  subhead: testimonial.quote,
+  name: testimonial.name,
+  role: testimonial.role,
+  avatar: "",
+  ...CARD_LOOKS[index % CARD_LOOKS.length],
+}));
 
 // The lines that change, one after another, in the testimonials header. Always on one line.
-const PHRASES = [
-  "Engineering intelligence into the next generation of business",
-  "From experimental research to real-world AI applications",
-  "Building intelligent systems that solve real business challenges",
-];
+const PHRASES = TESTIMONIAL_PHRASES;
 const PHRASE_MS = 2600;
 
 const GLOBE_MARKERS = [

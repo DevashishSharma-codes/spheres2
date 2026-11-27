@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
-import { FOUNDER_ESSAYS, type EssayBlock } from "@/content/founderNoteEssays";
+import { FOUNDER_ESSAYS, FOUNDER_LETTER, type EssayBlock } from "@/content/founderNoteEssays";
 import { OmBavalSignature } from "@/components/ui/OmBavalSignature";
 
 /*
@@ -163,7 +163,7 @@ export function FounderNote({ dek }: { dek: string }) {
             <p className={`mt-3 text-[12px] ${MUTED}`}>A World Within &middot; {FOUNDER_ESSAYS.length} sections &middot; {TOTAL_MIN} min read</p>
 
             <h1 className="mt-6 text-[22px] font-normal leading-[1.3] tracking-[-0.02em] text-[#171717] sm:mt-8 sm:text-[28px]">
-              Building beyond what exists. Creating what comes next.
+              {FOUNDER_LETTER.title}
             </h1>
             <p className={`mt-3 text-[15px] leading-[1.7] ${MUTED}`}>{dek}</p>
           </header>
@@ -173,37 +173,18 @@ export function FounderNote({ dek }: { dek: string }) {
           <section aria-label="A note from the founder" className={`${ROW} border-b ${HAIR} !py-8 sm:!py-10`}>
             <p className={`hidden text-[14px] sm:block ${MUTED}`}>Note</p>
             <div className="space-y-5">
-              <h2 className="text-[17px] font-medium text-[#171717]">A belief that became a journey.</h2>
-              <p className={TEXT}>Hello, and welcome to 21 Spheres.</p>
-              <p className={TEXT}>
-                When I started 21 Spheres, I had a simple belief: technology has the power to reshape how we think, work, build, and
-                experience the world. But meaningful innovation goes beyond simply adopting new technologies. It comes from
-                understanding problems deeply, questioning conventional approaches, and having the courage to build something different.
-              </p>
-              <p className={TEXT}>That belief became the foundation of 21 Spheres.</p>
-              <p className={TEXT}>
-                We started with the ambition to explore the possibilities of technology and turn ideas into meaningful solutions. Today,
-                we are building at the intersection of software engineering, artificial intelligence, and research, helping businesses
-                navigate complexity and discover new opportunities through technology.
-              </p>
-              <blockquote className="border-l border-[#7057D9] pl-4 text-[15px] font-medium leading-[1.7] text-[#171717]">
-                I believe the future belongs to those who are willing to explore it.
-              </blockquote>
-              <p className={TEXT}>
-                At 21 Spheres, we don&rsquo;t want to limit ourselves to what technology can do today. We want to continuously
-                experiment, learn, challenge assumptions, and push boundaries. Every project is an opportunity to solve something
-                meaningful, every challenge an opportunity to grow, and every idea a possibility waiting to be explored.
-              </p>
-              <p className={TEXT}>
-                Building a company is never a solo journey. It takes people who share the curiosity to explore, the discipline to
-                execute, and the determination to keep moving forward. I am grateful to everyone who has been part of this journey:
-                our team, clients, collaborators, and everyone who has believed in what we are building.
-              </p>
-              <p className={TEXT}>
-                As we move forward, our ambition remains unchanged: to build thoughtfully, innovate responsibly, and create technology
-                that makes a difference.
-              </p>
-              <p className={TEXT}>This is just the beginning.</p>
+              <h2 className="text-[17px] font-medium text-[#171717]">{FOUNDER_LETTER.heading}</h2>
+              {FOUNDER_LETTER.body.map((line) =>
+                "quote" in line ? (
+                  <blockquote key={line.quote} className="border-l border-[#7057D9] pl-4 text-[15px] font-medium leading-[1.7] text-[#171717]">
+                    {line.quote}
+                  </blockquote>
+                ) : (
+                  <p key={line.p} className={TEXT}>
+                    {line.p}
+                  </p>
+                ),
+              )}
             </div>
           </section>
 

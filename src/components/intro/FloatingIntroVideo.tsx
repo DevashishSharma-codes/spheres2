@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { animate, useMotionValue, type MotionValue } from "framer-motion";
 import { Play, X } from "lucide-react";
+import { chatLauncherSpace } from "@/lib/chatbot/config";
 
 const SMALL_VIDEO = "/hero/explainer-720.mp4";
 const POSTER = "/hero/explainer-poster.webp";
@@ -22,13 +23,17 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 type Box = { x: number; y: number; w: number; h: number; r: number };
 
-/** The floating window's box, tight in the bottom-right corner. */
+/**
+ * The floating window's box, bottom right: just left of the chat button, its bottom edge level with
+ * the button's, so the corner reads as one tidy group (back-to-top sits above the chat button).
+ */
 function windowBox(): Box {
   const phone = window.innerWidth < 640;
   const w = phone ? 168 : 232;
   const margin = phone ? 12 : 16;
   const h = Math.round(((w - 12) * 9) / 16 + 12); // a 16:9 video inside a 6px glass frame
-  return { x: window.innerWidth - margin - w, y: window.innerHeight - margin - h, w, h, r: 16 };
+  const chat = chatLauncherSpace(window.innerWidth); // the chat button plus its 12px gap
+  return { x: window.innerWidth - margin - chat - w, y: window.innerHeight - margin - h, w, h, r: 16 };
 }
 
 const closedBefore = () => {
@@ -40,7 +45,7 @@ const closedBefore = () => {
 };
 
 /**
- * The intro video's floating window, bottom right. On the home page it is the hero's
+ * The intro video's floating window, bottom right beside the chat button. On the home page it is the hero's
  * "Watch our intro" button: one element that, as the page scrolls, flies along a gentle arc into the
  * corner, growing from the pill into the window while the label dissolves out and the video in, and
  * flies back into the button at the top. Every frame is set directly from one progress value, so the
@@ -94,8 +99,6 @@ export function FloatingIntroVideo() {
     if (mediaRef.current) mediaRef.current.style.opacity = String(clamp01((p - 0.5) / 0.4));
     if (closeRef.current) closeRef.current.style.opacity = String(clamp01((p - 0.85) / 0.15));
 
-    // Lets the back-to-top button sit just above the window
-    document.documentElement.style.setProperty("--intro-mini-offset", visibility.get() > 0.5 && p > 0.5 ? `${end.h + 12}px` : "0px");
   }, [progress, visibility]);
 
   // A new page starts fresh: its first placement is instant again. (Declared before the effect below,
@@ -162,7 +165,6 @@ export function FloatingIntroVideo() {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
       document.documentElement.removeAttribute("data-intro-morph");
-      document.documentElement.style.setProperty("--intro-mini-offset", "0px");
     };
   }, [onIntroPage, pathname, closed, paint, progress, visibility]);
 
@@ -195,6 +197,7 @@ export function FloatingIntroVideo() {
   return (
     <div
       ref={shellRef}
+      data-intro-float=""
       aria-hidden={!interactive}
       className={`group fixed left-0 top-0 z-[60] overflow-hidden border opacity-0 shadow-[0_18px_40px_-14px_rgba(40,30,90,.45),0_2px_6px_rgba(40,30,90,.08),inset_0_1px_0_rgba(255,255,255,.6)] backdrop-blur-xl will-change-transform ${
         interactive ? "" : "pointer-events-none"
